@@ -139,7 +139,7 @@
 
 - [X] T038 [P] [US5] Write interface contract test in `server/tests/unit/framework_interfaces_test.go` verifying ClaimsProvider, StreamInfo, TokenBlacklist implementations
 - [X] T039 [P] [US5] Write config validation test in `server/tests/unit/config_load_test.go` for fail-fast behavior
-- [ ] T040 [US5] Write mock injection integration test in `server/tests/integration/mock_injection_test.go`
+- [X] T040 [US5] Write mock injection integration test in `server/tests/integration/mock_injection_test.go`
 
 ### Verification for User Story 5
 
