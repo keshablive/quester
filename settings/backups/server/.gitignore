@@ -1,0 +1,58 @@
+# Go Backend Server - .gitignore
+
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.txt
+coverage.html
+cover.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# JWT Keys (sensitive)
+.keys/
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+tmp/
+
+# Database files (local development)
+*.db
+*.sqlite
+*.sqlite3
+data/

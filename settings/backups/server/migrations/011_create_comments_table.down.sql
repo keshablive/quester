@@ -1,0 +1,9 @@
+DROP INDEX IF EXISTS idx_comments_parent_created;
+DROP INDEX IF EXISTS idx_comments_post_created;
+DROP INDEX IF EXISTS idx_comments_deleted_at;
+DROP INDEX IF EXISTS idx_comments_created_at;
+DROP INDEX IF EXISTS idx_comments_parent;
+DROP INDEX IF EXISTS idx_comments_user;
+DROP INDEX IF EXISTS idx_comments_post;
+DROP INDEX IF EXISTS idx_comments_tenant;
+DROP TABLE IF EXISTS comments;
