@@ -10,6 +10,9 @@
 // User queries
 export { useUser, useCurrentUser, useUserHeader } from './useUser';
 
+// Social queries
+export { useFollowStats } from './useSocial';
+
 // Dashboard queries
 export {
   useDashboardStats,

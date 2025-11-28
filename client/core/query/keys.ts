@@ -45,6 +45,9 @@ export const queryKeys = {
       [...queryKeys.users.detail(id), 'followers'] as const,
     following: (id: string) =>
       [...queryKeys.users.detail(id), 'following'] as const,
+    /** Follow statistics (follower/following counts) */
+    followStats: (id: string) =>
+      [...queryKeys.users.detail(id), 'followStats'] as const,
     /** Current authenticated user */
     current: () => [...queryKeys.users.all, 'current'] as const,
     /** Current authenticated user (alias for current) */

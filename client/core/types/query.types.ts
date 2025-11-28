@@ -234,6 +234,15 @@ export interface UserProfile extends User {
 }
 
 /**
+ * Follow statistics for a user
+ * Returned from /api/v1/users/:userId/follow-stats
+ */
+export interface FollowStats {
+  followers: number;
+  following: number;
+}
+
+/**
  * Course entity
  */
 export interface Course {
