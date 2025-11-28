@@ -41,7 +41,7 @@
 - [ ] T006 Add useEngagementSummary hook to `client/core/hooks/queries/useAnalytics.ts`
 - [ ] T007 Add useEngagementTimeseries hook to `client/core/hooks/queries/useAnalytics.ts`
 - [ ] T008 Export all analytics hooks from `client/core/hooks/queries/index.ts`
-- [ ] T009 Create formatNumber utility function in `client/core/utils/format.ts` (or inline in component)
+- [ ] T009 Create formatCompactNumber utility in `client/core/utils/format.ts` for readable display (1000 → "1k", 1500000 → "1.5M")
 
 **Checkpoint**: Foundation ready - hooks available for component integration
 
@@ -58,7 +58,7 @@
 - [ ] T010 [US1] Update KeyMetrics to accept optional userId prop in `client/components/pages/analytics/KeyMetrics.tsx`
 - [ ] T011 [US1] Integrate useUserAnalytics and useCurrentUser hooks in KeyMetrics
 - [ ] T012 [US1] Replace hardcoded metrics array with real data (totalSessions, averageScore, coursesCompleted)
-- [ ] T013 [US1] Add formatNumber utility for readable display (1000 → "1k")
+- [ ] T013 [US1] Format metrics using formatCompactNumber utility
 - [ ] T014 [US1] Add loading skeleton state to KeyMetrics
 - [ ] T015 [US1] Add error state with retry button to KeyMetrics
 - [ ] T016 [US1] Handle zero-data state ("No activity yet") in KeyMetrics
@@ -80,7 +80,7 @@
 - [ ] T019 [US2] Display course title, enrollmentCount, and completionRate
 - [ ] T020 [US2] Add loading skeleton state to TopPages
 - [ ] T021 [US2] Add empty state when no courses exist ("No courses available")
-- [ ] T022 [US2] Format enrollment counts using formatNumber utility
+- [ ] T022 [US2] Format enrollment counts using formatCompactNumber utility
 
 **Checkpoint**: User Story 2 complete - TopPages shows real top courses data
 
@@ -116,7 +116,7 @@
 - [ ] T029 [US4] Replace "Top Locations" with platform engagement metrics (DAU, WAU, MAU)
 - [ ] T030 [US4] Keep device breakdown as placeholder with "Coming soon" note
 - [ ] T031 [US4] Add loading skeleton state to Demographics
-- [ ] T032 [US4] Format large user counts using formatNumber utility
+- [ ] T032 [US4] Format large user counts using formatCompactNumber utility
 
 **Checkpoint**: User Story 4 complete - Demographics shows available platform metrics
 
@@ -148,6 +148,7 @@
 - [ ] T039 Run quickstart.md testing checklist
 - [ ] T040 Verify all components have loading skeletons (SC-004)
 - [ ] T041 Verify error states allow retry without page refresh (SC-005)
+- [ ] T042 Verify analytics page loads within 3 seconds under normal network (SC-002)
 
 ---
 
@@ -233,8 +234,8 @@ T037, T038
 | US3 (P2) | 5 | 0 |
 | US4 (P2) | 5 | 0 |
 | US5 (P3) | 4 | 0 |
-| Polish | 5 | 2 |
-| **Total** | **41** | **5** |
+| Polish | 6 | 2 |
+| **Total** | **42** | **5** |
 
 ---
 

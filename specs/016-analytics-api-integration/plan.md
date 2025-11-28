@@ -17,7 +17,7 @@ Replace hardcoded mock data in analytics dashboard components (KeyMetrics, TopPa
 **Project Type**: Mobile + Web client  
 **Performance Goals**: 3 second page load, 100ms cached data display  
 **Constraints**: 5-minute stale time for analytics data  
-**Scale/Scope**: 4 components to integrate, 3 new query hooks
+**Scale/Scope**: 4 components to integrate, 4 query hooks, 8 implementation phases
 
 ## Constitution Check
 

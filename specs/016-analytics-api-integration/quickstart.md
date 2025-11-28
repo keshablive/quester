@@ -194,9 +194,13 @@ Key changes:
 
 ## Utility Functions Needed
 
-### formatNumber
+### formatCompactNumber
+
+> **Note**: `formatNumber` already exists in `client/core/utils/common.ts` for locale formatting (1,234,567). Use `formatCompactNumber` for compact notation (1.2M).
+
 ```typescript
-function formatNumber(num: number): string {
+// client/core/utils/format.ts
+export function formatCompactNumber(num: number): string {
   if (num >= 1000000) {
     return `${(num / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
   }
@@ -208,6 +212,7 @@ function formatNumber(num: number): string {
 ```
 
 ### formatDuration
+
 ```typescript
 function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
@@ -220,6 +225,7 @@ function formatDuration(seconds: number): string {
 ```
 
 ### getDateRange
+
 ```typescript
 function getDateRange(days: number): { start: string; end: string } {
   const end = new Date();

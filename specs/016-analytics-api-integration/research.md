@@ -52,9 +52,9 @@ export function useUserAnalytics(userId: string, options?) {
 - No existing utility found in codebase
 - Pattern needed: 1000 → "1K", 1500 → "1.5K", 1000000 → "1M"
 
-**Decision**: Create `formatNumber` utility function:
+**Decision**: Create `formatCompactNumber` utility function (note: `formatNumber` already exists in `common.ts` for locale formatting):
 ```typescript
-function formatNumber(num: number): string {
+function formatCompactNumber(num: number): string {
   if (num >= 1000000) {
     return `${(num / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
   }
