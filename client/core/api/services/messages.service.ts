@@ -20,6 +20,10 @@ export interface MessageThread {
     lastMessage: string;
     lastMessageAt: string;
     unreadCount: number;
+    /** Indicates if this is a group conversation */
+    isGroup?: boolean;
+    /** Member count for group conversations */
+    memberCount?: number;
 }
 
 export interface Group {

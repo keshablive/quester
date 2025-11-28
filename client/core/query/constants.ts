@@ -30,6 +30,10 @@ export const STALE_TIMES = {
   NOTIFICATIONS: 60 * 1000,
   /** Analytics - 5 minutes (FR-009: cache with 5-minute stale time) */
   ANALYTICS: 5 * 60 * 1000,
+  /** Message threads - 30 seconds (FR-010: frequent updates from new messages) */
+  MESSAGES_THREADS: 30 * 1000,
+  /** Message content - 60 seconds (FR-010: content rarely changes) */
+  MESSAGES: 60 * 1000,
   /** Default fallback */
   DEFAULT: 5 * 60 * 1000,
 } as const;

@@ -39,3 +39,17 @@ export {
   useDeleteNotification,
   useUpdateNotificationSettings,
 } from './useNotificationMutations';
+
+// Message mutations (send, delete, mark read) - Feature 017
+export {
+  useSendDirectMessage,
+  useSendGroupMessage,
+  useMarkAsRead,
+  useMarkMultipleAsRead,
+  useDeleteMessage,
+} from './useMessageMutations';
+export type {
+  SendDirectMessageInput,
+  SendGroupMessageInput,
+  DeleteMessageInput,
+} from './useMessageMutations';

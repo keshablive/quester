@@ -50,6 +50,18 @@ export interface NotificationFilters {
 }
 
 /**
+ * Message filters (Feature 017)
+ */
+export interface MessageFilters {
+  /** Filter by read status */
+  unreadOnly?: boolean;
+  /** Filter by conversation type */
+  type?: 'direct' | 'group' | 'all';
+  /** Search query */
+  search?: string;
+}
+
+/**
  * Leaderboard types
  */
 export type LeaderboardType =

@@ -69,3 +69,14 @@ export type {
   EngagementSummary,
   TimeSeriesData,
 } from './useAnalytics';
+
+// Messages queries (Feature 017)
+export {
+  useMessageThreads,
+  useRecentMessages,
+  useConversationMessages,
+  useGroupMessages,
+  useUnreadCount,
+  useMessageStats,
+  useSearchMessages,
+} from './useMessages';

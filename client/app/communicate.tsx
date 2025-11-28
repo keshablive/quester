@@ -7,7 +7,6 @@ import {
   MessagesHeader,
   MessageSearch,
   MessageList,
-  Message,
   // Social
   Feed,
   CreatePost,
@@ -20,6 +19,7 @@ import {
   CreateGroup,
 } from '@/components/pages/communicate';
 import { Post } from '@/core';
+import { useUnreadCount } from '@/core/hooks/queries';
 
 export default function CommunicateScreen() {
   const router = useRouter();
@@ -36,34 +36,12 @@ export default function CommunicateScreen() {
   const navigateTo = (newView: string) => {
     router.push({
       pathname: '/communicate',
-      params: { view: newView }
+      params: { view: newView },
     });
   };
 
-  // Message data (mock)
-  const messages: Message[] = [
-    {
-      sender: 'Sarah Wilson',
-      preview: 'Hey! I loved your latest project...',
-      time: '2m ago',
-      unread: true,
-      initials: 'SW',
-    },
-    {
-      sender: 'Mike Johnson',
-      preview: 'Can we schedule a meeting for...',
-      time: '1h ago',
-      unread: true,
-      initials: 'MJ',
-    },
-    {
-      sender: 'Emma Davis',
-      preview: 'Thanks for the feedback! I will...',
-      time: '3h ago',
-      unread: true,
-      initials: 'ED',
-    },
-  ];
+  // Get unread count from API
+  const { data: unreadCount = 0 } = useUnreadCount();
 
   // Handlers
   const handleCreatePostSuccess = () => {
@@ -94,24 +72,19 @@ export default function CommunicateScreen() {
         return (
           <View className="flex-1">
             <View className="p-6 pb-4">
-              <MessagesHeader unreadCount={messages.filter(m => m.unread).length} />
+              <MessagesHeader unreadCount={unreadCount} />
               <MessageSearch />
             </View>
             <ScrollView className="flex-1">
               <View className="px-6 pb-6">
-                <MessageList messages={messages} />
+                <MessageList />
               </View>
             </ScrollView>
           </View>
         );
 
       case 'social':
-        return (
-          <Feed
-            onCreatePost={() => setShowCreatePost(true)}
-            onPostPress={handlePostPress}
-          />
-        );
+        return <Feed onCreatePost={() => setShowCreatePost(true)} onPostPress={handlePostPress} />;
 
       case 'streams':
         return (
@@ -142,12 +115,8 @@ export default function CommunicateScreen() {
         visible={showCreatePost}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowCreatePost(false)}
-      >
-        <CreatePost
-          onSuccess={handleCreatePostSuccess}
-          onCancel={() => setShowCreatePost(false)}
-        />
+        onRequestClose={() => setShowCreatePost(false)}>
+        <CreatePost onSuccess={handleCreatePostSuccess} onCancel={() => setShowCreatePost(false)} />
       </Modal>
 
       {/* Create Stream Modal */}
@@ -155,8 +124,7 @@ export default function CommunicateScreen() {
         visible={showCreateStream}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowCreateStream(false)}
-      >
+        onRequestClose={() => setShowCreateStream(false)}>
         <CreateStream
           onSuccess={handleCreateStreamSuccess}
           onCancel={() => setShowCreateStream(false)}
@@ -168,8 +136,7 @@ export default function CommunicateScreen() {
         visible={showCreateGroup}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowCreateGroup(false)}
-      >
+        onRequestClose={() => setShowCreateGroup(false)}>
         <CreateGroup onCancel={() => setShowCreateGroup(false)} />
       </Modal>
 
@@ -178,8 +145,7 @@ export default function CommunicateScreen() {
         visible={showStreamPlayer}
         animationType="slide"
         presentationStyle="fullScreen"
-        onRequestClose={() => setShowStreamPlayer(false)}
-      >
+        onRequestClose={() => setShowStreamPlayer(false)}>
         {currentStreamKey && <StreamPlayer streamKey={currentStreamKey} />}
       </Modal>
     </View>

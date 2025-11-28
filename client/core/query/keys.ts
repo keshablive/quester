@@ -160,6 +160,36 @@ export const queryKeys = {
     engagementTimeseries: (startDate: string, endDate: string) =>
       [...queryKeys.analytics.all, 'engagement', 'timeseries', startDate, endDate] as const,
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Messages Queries (Feature 017)
+  // ═══════════════════════════════════════════════════════════════
+  messages: {
+    all: ['messages'] as const,
+    /** All message threads */
+    threads: () => [...queryKeys.messages.all, 'threads'] as const,
+    /** Single thread by ID */
+    thread: (id: string) => [...queryKeys.messages.all, 'thread', id] as const,
+    /** Direct message conversation with a user */
+    conversation: (userId: string) =>
+      [...queryKeys.messages.all, 'conversation', userId] as const,
+    /** Infinite scroll for direct messages */
+    conversationInfinite: (userId: string) =>
+      [...queryKeys.messages.all, 'conversation', userId, 'infinite'] as const,
+    /** Group conversation messages */
+    groupConversation: (groupId: string) =>
+      [...queryKeys.messages.all, 'group', groupId] as const,
+    /** Infinite scroll for group messages */
+    groupInfinite: (groupId: string) =>
+      [...queryKeys.messages.all, 'group', groupId, 'infinite'] as const,
+    /** Search messages by content */
+    search: (query: string) =>
+      [...queryKeys.messages.all, 'search', query] as const,
+    /** Unread message count */
+    unreadCount: () => [...queryKeys.messages.all, 'unread-count'] as const,
+    /** Message statistics */
+    stats: () => [...queryKeys.messages.all, 'stats'] as const,
+  },
 } as const;
 
 // Export type for the entire query keys object

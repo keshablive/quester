@@ -29,7 +29,11 @@ export type MutationType =
   | 'social.unfollow'
   | 'social.block'
   | 'notification.markRead'
-  | 'notification.markAllRead';
+  | 'notification.markAllRead'
+  | 'message.send'
+  | 'message.sendGroup'
+  | 'message.markRead'
+  | 'message.delete';
 
 /**
  * Invalidation map - defines which query keys to invalidate for each mutation
@@ -113,6 +117,29 @@ export const INVALIDATION_MAP: Record<MutationType, readonly (readonly unknown[]
   ],
   'notification.markAllRead': [
     queryKeys.notifications.all,
+  ],
+
+  // ═══════════════════════════════════════════════════════════════
+  // Message Mutations - Feature 017
+  // ═══════════════════════════════════════════════════════════════
+  'message.send': [
+    queryKeys.messages.threads(),
+    queryKeys.messages.unreadCount(),
+    queryKeys.messages.stats(),
+  ],
+  'message.sendGroup': [
+    queryKeys.messages.threads(),
+    queryKeys.messages.unreadCount(),
+    queryKeys.messages.stats(),
+  ],
+  'message.markRead': [
+    queryKeys.messages.threads(),
+    queryKeys.messages.unreadCount(),
+    queryKeys.messages.stats(),
+  ],
+  'message.delete': [
+    queryKeys.messages.threads(),
+    queryKeys.messages.stats(),
   ],
 };
 
@@ -220,5 +247,54 @@ export async function invalidateLeaderboards(
 ): Promise<void> {
   await queryClient.invalidateQueries({
     queryKey: queryKeys.leaderboards.all,
+  });
+}
+
+/**
+ * Invalidate message thread data
+ *
+ * @param queryClient - The QueryClient instance
+ * @param userId - Optional user ID to invalidate specific conversation
+ */
+export async function invalidateMessageThread(
+  queryClient: QueryClient,
+  userId?: string
+): Promise<void> {
+  if (userId) {
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.messages.thread(userId),
+    });
+  } else {
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.messages.threads(),
+    });
+  }
+}
+
+/**
+ * Invalidate group message data
+ *
+ * @param queryClient - The QueryClient instance
+ * @param groupId - The group ID whose messages should be invalidated
+ */
+export async function invalidateGroupMessages(
+  queryClient: QueryClient,
+  groupId: string
+): Promise<void> {
+  await queryClient.invalidateQueries({
+    queryKey: queryKeys.messages.groupConversation(groupId),
+  });
+}
+
+/**
+ * Invalidate all message-related caches
+ *
+ * @param queryClient - The QueryClient instance
+ */
+export async function invalidateAllMessages(
+  queryClient: QueryClient
+): Promise<void> {
+  await queryClient.invalidateQueries({
+    queryKey: queryKeys.messages.all,
   });
 }
