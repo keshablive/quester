@@ -8,6 +8,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/config"
 	"github.com/keshablive/quester/internal/framework/container"
+	fmiddleware "github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/framework/payment"
 	"github.com/keshablive/quester/internal/framework/websocket"
 	"github.com/keshablive/quester/internal/models"
@@ -21,6 +22,35 @@ func Setup(app *fiber.App, cont *container.Container) {
 	// Resolve infrastructure dependencies from container
 	db := cont.MustResolve("database").(*gorm.DB)
 	cfg := cont.MustResolve("config").(*config.Config)
+
+	// Resolve CacheService from container (007-api-performance-caching T036)
+	var cacheService *services.CacheService
+	if cs, err := cont.Resolve("cacheService"); err == nil && cs != nil {
+		cacheService = cs.(*services.CacheService)
+		log.Println("✓ CacheService resolved for route injection (007-api-performance-caching)")
+	} else {
+		log.Println("⚠ CacheService not available - caching disabled for services")
+	}
+
+	// =========================================================================
+	// 008-api-response-optimization: Response Optimization Middleware
+	// =========================================================================
+	// T008: Wire request_id middleware (early in chain)
+	app.Use(fmiddleware.RequestID())
+	log.Println("✓ RequestID middleware enabled (008-api-response-optimization)")
+
+	// T009: Wire response_version middleware (API version detection)
+	app.Use(fmiddleware.ResponseVersion())
+	log.Println("✓ ResponseVersion middleware enabled (008-api-response-optimization)")
+
+	// T016: Wire fields middleware (sparse fieldsets)
+	app.Use(fmiddleware.Fields())
+	log.Println("✓ Fields middleware enabled (008-api-response-optimization)")
+
+	// T042: Wire cache_control middleware
+	app.Use(fmiddleware.CacheControl())
+	log.Println("✓ CacheControl middleware enabled (008-api-response-optimization)")
+
 	// Health check
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
@@ -31,6 +61,12 @@ func Setup(app *fiber.App, cont *container.Container) {
 
 	// API v1 group
 	v1 := app.Group("/api/v1")
+
+	// T023: Wire ETag middleware for API routes (after response generation)
+	v1.Use(fmiddleware.ETag(fmiddleware.ETagConfig{
+		IncludeUserID: true, // FR-010: Include user ID for user-specific responses
+	}))
+	log.Println("✓ ETag middleware enabled for /api/v1 (008-api-response-optimization)")
 
 	// =========================================================================
 	// Initialization Phase
@@ -63,9 +99,15 @@ func Setup(app *fiber.App, cont *container.Container) {
 	classifiedAdService := services.NewClassifiedAdService(db)
 	videoStreamingService := services.NewVideoStreamingService(db, nil) // Redis TBD
 	certificateService := services.NewCertificateService(db)
-	badgeService := services.NewBadgeService(badgeRepo, badgeRepo, nil, notificationService) // Redis TBD
+	badgeService := services.NewBadgeService(db, nil, badgeRepo, badgeRepo, nil, notificationService) // logger=nil, Redis=nil (TBD)
 	questRepo := repositories.NewQuestRepository(db)
-	questService := services.NewQuestService(questRepo, userRepo, badgeService, notificationService)
+	// 007-api-performance-caching T036: Inject CacheService into QuestService
+	var questService *services.QuestService
+	if cacheService != nil {
+		questService = services.NewQuestServiceWithCache(db, nil, nil, questRepo, userRepo, badgeService, notificationService, cacheService)
+	} else {
+		questService = services.NewQuestService(db, nil, nil, questRepo, userRepo, badgeService, notificationService)
+	}
 
 	// Two-Factor Service with repositories
 	twoFactorRepo := repositories.NewTwoFactorRepository(db)
@@ -148,6 +190,35 @@ func Setup(app *fiber.App, cont *container.Container) {
 		wsHandler.SetRedisManager(redisManager)
 	}
 
+	// Social Gamification Service (005-social-feed-gamification)
+	// Must be after redisClient initialization
+	socialXPRepo := repositories.NewSocialXPRepository(db)
+	dailyChallengeRepo := repositories.NewDailyChallengeRepository(db)
+	contentMilestoneRepo := repositories.NewContentMilestoneRepository(db)
+
+	// Initialize queue service for async XP processing (FR-013)
+	var queueService *services.QueueService
+	if redisClient != nil {
+		queueService = services.NewQueueService(redisClient)
+	}
+
+	socialGamifService := services.NewSocialGamificationService(
+		socialXPRepo,
+		dailyChallengeRepo,
+		contentMilestoneRepo,
+		userRepo,
+	)
+	// Inject optional dependencies
+	if queueService != nil {
+		socialGamifService.SetQueueService(queueService)
+	}
+	if notificationService != nil {
+		socialGamifService.SetNotificationService(notificationService)
+	}
+
+	// Link gamification service to social service
+	socialService.SetGamificationService(socialGamifService)
+
 	// Initialize Controllers
 	propertyController := controllers.NewPropertyController(propertyService)
 	classifiedAdController := controllers.NewClassifiedAdController(classifiedAdService)
@@ -163,10 +234,27 @@ func Setup(app *fiber.App, cont *container.Container) {
 	authController := controllers.NewAuthController(authService, twoFactorService)
 	transactionController := controllers.NewTransactionController(transactionService, cfg)
 	socialController := controllers.NewSocialController(socialService)
+	socialGamifController := controllers.NewSocialGamificationController(socialGamifService) // 005-social-feed-gamification T027
 	analyticsController := controllers.NewAnalyticsController(analyticsService)
 	messagesController := controllers.NewMessagesController(messagingService, wsHandler, redisManager, typingIndicator)
 	groupsController := controllers.NewGroupsController(messagingService)
 	notificationsController := controllers.NewNotificationsController(notificationService, fcmService)
+
+	// Learning Gamification Service (006-course-gamification T024)
+	// Resolve from container where it was registered in app.go
+	var learningGamifController *controllers.LearningGamificationController
+	if learningGamifSvc, err := cont.Resolve("learningGamificationService"); err == nil {
+		if learningGamifService, ok := learningGamifSvc.(*services.LearningGamificationService); ok && learningGamifService != nil {
+			// Inject optional dependencies
+			if queueService != nil {
+				learningGamifService.SetQueueService(queueService)
+			}
+			if notificationService != nil {
+				learningGamifService.SetNotificationService(notificationService)
+			}
+			learningGamifController = controllers.NewLearningGamificationController(learningGamifService)
+		}
+	}
 
 	// KMS Controller (Admin)
 	kmsController, err := controllers.NewKMSController()
@@ -215,6 +303,29 @@ func Setup(app *fiber.App, cont *container.Container) {
 
 	// Social Routes
 	SetupSocialRoutes(v1, socialController)
+
+	// Social Gamification Routes (005-social-feed-gamification T028)
+	SetupSocialGamificationRoutes(v1, socialGamifController)
+
+	// Learning Gamification Routes (006-course-gamification T033)
+	if learningGamifController != nil {
+		SetupLearningGamificationRoutes(v1, learningGamifController)
+	}
+
+	// Leaderboard Controller (013-leaderboard-controller-integration T007)
+	// Resolve LeaderboardService from container and create controller
+	var leaderboardController *controllers.LeaderboardController
+	if leaderboardSvc, err := cont.Resolve("leaderboardService"); err == nil {
+		if leaderboardService, ok := leaderboardSvc.(*services.LeaderboardService); ok && leaderboardService != nil {
+			leaderboardController = controllers.NewLeaderboardController(leaderboardService)
+			log.Println("✓ LeaderboardController initialized (013-leaderboard-controller-integration)")
+		}
+	}
+
+	// Leaderboard Routes (013-leaderboard-controller-integration T007)
+	if leaderboardController != nil {
+		SetupLeaderboardRoutes(v1, leaderboardController)
+	}
 
 	// Analytics Routes
 	SetupAnalyticsRoutes(v1, analyticsController)

@@ -85,6 +85,18 @@ The codebase maintains a clear separation between the **Framework Layer** (`inte
 | `RAZORPAY_KEY_ID` | - | Required when provider is `razorpay` or `both` |
 | `RAZORPAY_KEY_SECRET` | - | Required when provider is `razorpay` or `both` |
 
+#### Query Optimization Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SLOW_QUERY_THRESHOLD_MS` | `500` | Queries exceeding this threshold (ms) trigger EXPLAIN ANALYZE logging |
+| `DB_REPLICA_ENABLED` | `false` | Enable read replica routing |
+| `DB_REPLICA_DSNS` | - | Comma-separated list of replica connection strings |
+| `DB_REPLICA_MAX_OPEN_CONNS` | `10` | Max open connections per replica |
+| `DB_REPLICA_MAX_IDLE_CONNS` | `2` | Max idle connections per replica |
+| `DB_REPLICA_STALE_THRESHOLD_MS` | `1000` | Maximum acceptable replication lag (ms) before marking replica unhealthy |
+| `DB_REPLICA_HEALTH_CHECK_INTERVAL` | `10s` | How often to check replica health |
+
 ### Verifying Framework Independence
 
 ```bash
@@ -129,8 +141,33 @@ server/
 │   │   │   └── 2fa.go          # Two-factor authentication
 │   │   ├── cache/               # Redis cache wrapper
 │   │   ├── config/              # Config loading
+│   │   ├── controller/          # Controller helpers (NEW)
+│   │   │   ├── auth_context.go  # GetAuthContext helper
+│   │   │   ├── pagination.go    # ParsePagination helper
+│   │   │   └── helpers.go       # ParseAndValidate[T]
 │   │   ├── database/            # Database connection
+│   │   │   ├── database.go      # GORM initialization
+│   │   │   └── pool/            # Connection pool management (NEW)
+│   │   │       ├── pool.go      # Package exports
+│   │   │       ├── config.go    # Pool configuration
+│   │   │       ├── stats.go     # Pool statistics
+│   │   │       ├── errors.go    # Pool errors
+│   │   │       ├── metrics.go   # Prometheus metrics
+│   │   │       ├── warmup.go    # Connection warmup
+│   │   │       ├── health.go    # Health checks
+│   │   │       └── adaptive.go  # Adaptive sizing
 │   │   ├── email/               # Email sending
+│   │   ├── repository/          # Repository patterns (NEW)
+│   │   │   ├── generic.go       # GenericRepository[T]
+│   │   │   ├── tenant_model.go  # TenantModel interface
+│   │   │   ├── options.go       # QueryOption functions
+│   │   │   └── errors.go        # Repository errors
+│   │   ├── responses/           # Response helpers (NEW)
+│   │   │   └── helpers.go       # BadRequest, Success, etc.
+│   │   ├── service/             # Service patterns (NEW)
+│   │   │   ├── base.go          # BaseService struct
+│   │   │   ├── transaction.go   # TransactionManager
+│   │   │   └── errors.go        # Service errors
 │   │   ├── storage/             # File storage (S3, local)
 │   │   ├── metrics/             # Prometheus metrics
 │   │   ├── sentry/              # Error tracking
@@ -540,6 +577,112 @@ type AppError struct {
 - SQL injection prevention via GORM
 - XSS prevention via HTML sanitization
 
+## Connection Pool Management
+
+The `internal/framework/database/pool/` package provides comprehensive connection pool management for PostgreSQL connections via `sql.DB`.
+
+### Pool Components
+
+| Component | File | Description |
+|-----------|------|-------------|
+| Configuration | `config.go` | Pool configuration with validation |
+| Statistics | `stats.go` | Real-time pool statistics and computed metrics |
+| Errors | `errors.go` | Typed errors for pool operations |
+| Metrics | `metrics.go` | Prometheus metrics for monitoring |
+| Warmup | `warmup.go` | Pre-establish connections on startup |
+| Health Checks | `health.go` | Background health validation with recovery |
+| Adaptive Sizing | `adaptive.go` | Automatic pool size adjustment |
+
+### Pool Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    GORM / sql.DB                             │
+└─────────────────────────────────────────────────────────────┘
+                            ↑
+┌─────────────────────────────────────────────────────────────┐
+│                    Pool Management                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │   Metrics   │  │  Warmup     │  │   Health    │         │
+│  │  Collector  │  │   Pool      │  │   Checker   │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              Adaptive Manager                        │   │
+│  │   (scale up/down based on utilization)              │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                            ↑
+┌─────────────────────────────────────────────────────────────┐
+│                    Prometheus                                │
+│   quester_db_pool_* metrics                                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Features
+
+**Metrics Collection** (US1)
+- Exports Prometheus metrics every 5 seconds
+- Tracks: connections, utilization, wait times, closures
+- Enables alerting on pool exhaustion or high wait times
+
+**Warmup** (US2)
+- Pre-establishes connections on startup
+- Eliminates cold-start latency for first requests
+- Configurable warmup size and timeout
+
+**Health Checks** (US3)
+- Background validation with `SELECT 1` queries
+- Tracks consecutive failures (3+ = unhealthy)
+- Automatic recovery detection
+
+**Adaptive Sizing** (US4)
+- Automatic scale up when utilization > 80%
+- Automatic scale down when utilization < 20%
+- Respects floor/ceiling bounds
+- 30-second evaluation interval
+
+### Configuration
+
+See `server/.env.example` for all pool configuration options:
+
+```bash
+# Core pool settings
+DB_MAX_OPEN_CONNS=25
+DB_MAX_IDLE_CONNS=5
+DB_CONN_MAX_LIFETIME=5m
+
+# Warmup
+DB_POOL_WARMUP_ENABLED=true
+DB_POOL_WARMUP_SIZE=10
+
+# Health checks
+DB_HEALTH_CHECK_ENABLED=true
+DB_HEALTH_CHECK_INTERVAL=30s
+
+# Adaptive sizing
+DB_POOL_ADAPTIVE_ENABLED=true
+DB_POOL_MIN_FLOOR=5
+DB_POOL_MAX_CEILING=50
+```
+
+### Monitoring
+
+Pool metrics are available at `/metrics` with the `quester_db_pool_` prefix:
+
+```promql
+# Current utilization
+quester_db_pool_utilization
+
+# P95 connection acquisition latency
+histogram_quantile(0.95, rate(quester_db_pool_wait_duration_seconds_bucket[5m]))
+
+# Alert on pool exhaustion
+quester_db_pool_utilization > 0.9
+```
+
+For detailed tuning guidance, see `server/docs/POOL_TUNING.md`.
+
 ## Monitoring
 
 ### Metrics (Prometheus)
@@ -548,6 +691,7 @@ type AppError struct {
 - Cache hit/miss ratio
 - Active connections
 - Error rates
+- Connection pool metrics (utilization, wait times, health status)
 
 ### Error Tracking (Sentry)
 - Automatic error capture
@@ -640,6 +784,263 @@ make test-coverage
 - Check JWT secret is set
 - Verify token format
 - Check token expiration
+
+## Framework Reusability Patterns
+
+### Overview
+
+The framework layer (`internal/framework/`) provides reusable patterns that reduce boilerplate code across:
+- **Repositories**: GenericRepository[T] for type-safe CRUD operations
+- **Controllers**: Auth context extraction, pagination, request validation
+- **Services**: BaseService with logging, caching, and transaction management
+- **Responses**: Standardized error responses with request_id tracing
+
+### GenericRepository[T]
+
+```go
+// Embed GenericRepository in your repository
+type BadgeRepository struct {
+    *repository.GenericRepository[*models.Badge]
+    db *gorm.DB
+}
+
+// Delegate CRUD operations
+func (r *BadgeRepository) Create(ctx context.Context, badge *models.Badge) error {
+    return r.GenericRepository.Create(r.WithTenantContext(ctx, badge.TenantID), badge)
+}
+```
+
+### Controller Helpers
+
+```go
+// Extract authenticated user context
+auth, err := controller.GetAuthContext(c)
+if err != nil {
+    return responses.Unauthorized(c, err.Error())
+}
+// Use: auth.UserID, auth.TenantID, auth.Role
+
+// Parse pagination parameters
+pagination := controller.ParsePagination(c)
+// Use: pagination.Page, pagination.PageSize, pagination.Offset
+```
+
+### BaseService
+
+```go
+// Embed BaseService in your service
+type BadgeService struct {
+    service.BaseService
+    badgeRepo interfaces.BadgeRepository
+}
+
+func NewBadgeService(db *gorm.DB, logger *slog.Logger, cache *cache.PooledRedisClient, ...) *BadgeService {
+    return &BadgeService{
+        BaseService: service.NewBaseService(db, logger, cache, nil),
+        // ... other dependencies
+    }
+}
+
+// Use built-in methods
+s.LogInfo("Badge awarded", "user_id", userID, "badge_id", badgeID)
+s.GetCache().Set(ctx, key, value, ttl)
+s.GetTxManager().RunInTransaction(ctx, func(tx *gorm.DB) error { ... })
+```
+
+### Standardized Responses
+
+```go
+// Error responses (all include request_id)
+responses.BadRequest(c, "Invalid input")
+responses.Unauthorized(c, "Token expired")
+responses.Forbidden(c, "Insufficient permissions")
+responses.NotFound(c, "Resource not found")
+responses.InternalError(c, "Database error")
+
+// Success responses
+responses.Success(c, data)
+responses.Created(c, resource)
+```
+
+### TenantModel Interface
+
+Models with tenant isolation must implement:
+
+```go
+type TenantModel interface {
+    GetID() uuid.UUID
+    GetTenantID() uuid.UUID
+    SetTenantID(tenantID uuid.UUID)
+    TableName() string
+}
+```
+
+For detailed usage examples, see `server/docs/FRAMEWORK_PATTERNS.md`.
+
+## Social Gamification System
+
+The social gamification system rewards users with XP for social interactions, tracks achievements, and manages daily challenges.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Social Gamification Flow                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  User Action (Like, Comment, Post, Follow, Share)               │
+│         ↓                                                        │
+│  SocialService (Executes social action)                         │
+│         ↓                                                        │
+│  SocialGamificationService.AwardSocialXP()                      │
+│         │                                                        │
+│         ├─→ Check rate limits (100 XP actions/hour)             │
+│         ├─→ Check duplicate prevention (user-content-action)    │
+│         ├─→ Check self-interaction (no XP for own content)      │
+│         ├─→ Award XP to SocialXPRepository                      │
+│         ├─→ Update challenge progress (DailyChallengeRepository)│
+│         ├─→ Check achievements (CheckSocialAchievements)        │
+│         ├─→ Check content milestones (CheckContentMilestones)   │
+│         └─→ Update global XP (UserRepository)                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Component Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Controllers                               │
+│  SocialGamificationController                                   │
+│  - GetUserSocialXP()                                            │
+│  - GetDailyChallenges()                                         │
+│  - GetMySocialAchievements()                                    │
+│  - GetSocialLeaderboard()                                       │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                         Services                                 │
+│  SocialGamificationService                                      │
+│  - AwardSocialXP(params)                                        │
+│  - GetUserDailyChallenges(tenantID, userID)                    │
+│  - CheckSocialAchievements(tenantID, userID, metric, value)    │
+│  - CheckContentMilestones(tenantID, contentType, contentID,    │
+│                            authorID, likesCount)               │
+│                                                                  │
+│  LeaderboardService                                             │
+│  - RefreshSocialLeaderboard(tenantID)                          │
+│  - GetCategoryLeaderboard(category, limit, period)             │
+│                                                                  │
+│  CronService                                                     │
+│  - runLeaderboardSyncLoop() (every 5 minutes)                  │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                       Repositories                               │
+│  SocialXPRepository                                             │
+│  - Create(transaction)                                          │
+│  - GetUserStats(tenantID, userID)                              │
+│  - FindByUser(tenantID, userID, limit)                         │
+│                                                                  │
+│  DailyChallengeRepository                                       │
+│  - GetOrCreateUserDailyChallenges(tenantID, userID)            │
+│  - IncrementChallengeProgress(tenantID, userID, actionType)    │
+│  - CheckPerfectDayBonus(tenantID, userID)                      │
+│                                                                  │
+│  ContentMilestoneRepository                                     │
+│  - CheckAndAwardMilestones(tenantID, contentType, contentID,   │
+│                             authorID, likesCount)               │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                         Models                                   │
+│  SocialXPTransaction     - Records XP awards                    │
+│  UserSocialStats         - Aggregated user stats                │
+│  DailyChallengeTemplate  - Admin-defined challenges             │
+│  UserDailyChallenge      - User progress on challenges          │
+│  ContentMilestone        - Post milestone achievements          │
+│  PerfectDayBonus         - All-challenges-completed bonus       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### XP Award Flow
+
+```go
+// 1. Social action triggers XP award
+params := &XPAwardParams{
+    TenantID:   tenantID,
+    UserID:     userID,
+    ActionType: models.SocialActionLike,
+    ContentID:  postID,
+}
+
+// 2. Service performs validations
+result, err := socialGamifService.AwardSocialXP(ctx, params)
+
+// 3. Result includes XP earned and any triggered events
+type XPAwardResult struct {
+    XPAwarded           int                    // XP amount earned
+    TotalXP             int                    // New total social XP
+    ChallengeUpdates    []ChallengeUpdate      // Challenge progress
+    AchievementsUnlocked []UnlockedAchievement // New achievements
+}
+```
+
+### Daily Challenges Flow
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ User views challenges → GetOrCreateUserDailyChallenges()         │
+│                        │                                          │
+│                        ├─→ Check if today's challenges exist      │
+│                        ├─→ If not, create from active templates   │
+│                        ├─→ Mark first_viewed_at (locks 24h timer) │
+│                        └─→ Return challenges with progress        │
+│                                                                   │
+│ User performs action → IncrementChallengeProgress()              │
+│                        │                                          │
+│                        ├─→ Find matching uncompleted challenges   │
+│                        ├─→ Increment current_count                │
+│                        ├─→ Check if completed (award XP)          │
+│                        └─→ Check Perfect Day bonus                │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Content Milestones
+
+| Milestone | Threshold | XP Bonus | Badge |
+|-----------|-----------|----------|-------|
+| Trending | 10 likes | +25 XP | 🔥 |
+| Viral | 50 likes | +100 XP | 📈 |
+| Legendary | 100 likes | +250 XP | 👑 |
+
+### Redis Caching
+
+```
+social:xp:{user_id}          # User's social XP stats (5 min TTL)
+social:leaderboard:{period}  # Social leaderboard (5 min TTL)
+social:challenges:{user_id}  # Today's challenges (1 hour TTL)
+```
+
+### Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `social_xp_transactions` | Individual XP awards |
+| `user_social_stats` | Aggregated stats per user |
+| `daily_challenge_templates` | Admin-defined challenge types |
+| `user_daily_challenges` | User progress per challenge per day |
+| `content_milestones` | Awarded content milestones |
+| `perfect_day_bonuses` | Perfect day bonus records |
+
+### Cron Jobs
+
+| Job | Interval | Purpose |
+|-----|----------|---------|
+| Social Leaderboard Sync | 5 minutes | Refresh Redis leaderboard from DB |
 
 ## Future Improvements
 

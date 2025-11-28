@@ -1,0 +1,63 @@
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.work
+go.work.sum
+
+# Build artifacts
+server/tmp/
+server/cmd/server/server
+build/
+dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+*.tmp
+*.temp
+
+# HLS streaming temp files
+tmp/hls/
+tmp/recordings/
+
+# Coverage
+coverage/
+*.cover
+*.coverage
+
+# Secrets (never commit)
+*.pem
+*.key
+*.crt
+secrets/

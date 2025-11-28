@@ -12,16 +12,22 @@ import (
 
 // LessonService handles business logic for lessons
 type LessonService struct {
-	db                 *gorm.DB
-	achievementService *AchievementService
+	db                          *gorm.DB
+	achievementService          *AchievementService
+	learningGamificationService *LearningGamificationService // 006-course-gamification T034
 }
 
 // NewLessonService creates a new lesson service
 func NewLessonService(db *gorm.DB) *LessonService {
 	return &LessonService{
 		db:                 db,
-		achievementService: NewAchievementService(db),
+		achievementService: NewAchievementService(db, nil, nil),
 	}
+}
+
+// SetLearningGamificationService sets the learning gamification service (T034)
+func (s *LessonService) SetLearningGamificationService(lgs *LearningGamificationService) {
+	s.learningGamificationService = lgs
 }
 
 // CreateLessonRequest contains data for creating a lesson
@@ -290,6 +296,31 @@ func (s *LessonService) Complete(req *CompleteLessonRequest) (*models.LessonComp
 				}
 			}
 		}
+
+		// 006-course-gamification T034: Award learning XP with full gamification tracking
+		if s.learningGamificationService != nil {
+			// Get tenant ID from course
+			var course models.Course
+			if err := s.db.First(&course, lesson.CourseID).Error; err == nil {
+				params := &LearningXPAwardParams{
+					TenantID:    course.TenantID,
+					UserID:      req.UserID,
+					ActionType:  models.LearningActionLessonCompletion,
+					ContentType: "Lesson",
+					ContentID:   req.LessonID,
+					Description: "Completed lesson: " + lesson.Title,
+					XPOverride:  lesson.XPReward,
+				}
+				result, err := s.learningGamificationService.AwardLessonXP(ctx, params)
+				if err != nil {
+					log.Warnf("Failed to award learning XP: user_id=%s, lesson_id=%s, error=%v",
+						req.UserID, req.LessonID, err)
+				} else if !result.IsDuplicate {
+					log.Infof("Learning XP awarded: user_id=%s, lesson_id=%s, xp=%d, new_total=%d, leveled_up=%t",
+						req.UserID, req.LessonID, result.XPAwarded, result.NewTotalXP, result.LeveledUp)
+				}
+			}
+		}
 	}
 
 	// Update enrollment progress
@@ -298,6 +329,7 @@ func (s *LessonService) Complete(req *CompleteLessonRequest) (*models.LessonComp
 		First(&enrollment).Error
 
 	if err == nil {
+		prevCompletionPct := enrollment.CompletionPercentage
 		if err := enrollment.UpdateProgress(s.db); err != nil {
 			// Log error but don't fail completion
 			log.Warnf("Failed to update enrollment progress: user_id=%s, course_id=%d, error=%v",
@@ -305,6 +337,32 @@ func (s *LessonService) Complete(req *CompleteLessonRequest) (*models.LessonComp
 		} else {
 			log.Infof("Enrollment progress updated: user_id=%s, course_id=%d, completion=%.2f%%",
 				req.UserID, lesson.CourseID, enrollment.CompletionPercentage)
+
+			// 006-course-gamification T035: Award course completion XP
+			// Check if course just reached 100% (and wasn't already complete)
+			if enrollment.CompletionPercentage >= 100.0 && prevCompletionPct < 100.0 {
+				if s.learningGamificationService != nil {
+					var course models.Course
+					if err := s.db.First(&course, lesson.CourseID).Error; err == nil {
+						// Course is complete - award XP
+						// Note: Grade-based eligibility could be added to Course model later
+						result, err := s.learningGamificationService.AwardCourseCompletionXP(
+							ctx,
+							course.TenantID,
+							req.UserID,
+							lesson.CourseID,
+							course.Title,
+						)
+						if err != nil {
+							log.Warnf("Failed to award course completion XP: user_id=%s, course_id=%s, error=%v",
+								req.UserID, lesson.CourseID, err)
+						} else if !result.IsDuplicate {
+							log.Infof("Course completion XP awarded: user_id=%s, course_id=%s, xp=%d",
+								req.UserID, lesson.CourseID, result.XPAwarded)
+						}
+					}
+				}
+			}
 		}
 
 		// Check if certificate should be issued

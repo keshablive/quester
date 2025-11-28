@@ -9,6 +9,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Database Query Optimization** (`009-database-query-optimization`)
+  - Composite indexes for list query optimization with tenant_id as leading column (Constitution compliance)
+  - Cursor-based pagination for O(1) deep page access (`internal/framework/pagination/`)
+  - Include-based batch loading to eliminate N+1 queries (`internal/framework/includes/`)
+  - Query monitoring with EXPLAIN ANALYZE for slow queries (`internal/framework/metrics/query_metrics.go`)
+  - Read replica support with round-robin selection (`internal/framework/database/replica.go`)
+  - Health endpoint with replica status (`/health/database`)
+
+- **Cursor Pagination** (`internal/framework/pagination/`)
+  - `CursorToken` struct with ID, SortValue, Direction, SortField
+  - `EncodeCursor()` / `DecodeCursor()` for base64 token handling
+  - `ApplyCursorPagination()` GORM scope for easy integration
+  - Support for multiple sort fields and directions
+
+- **Include Parameter (Batch Loading)** (`internal/framework/includes/`)
+  - `IncludeConfig` with allowed includes and max depth validation
+  - `ParseIncludes()` for parsing comma-separated include parameter
+  - `ApplyIncludes()` for converting to GORM Preload calls
+  - `ValidateIncludeDepth()` for nested relation depth checking
+
+- **Read Replica Support** (`internal/framework/database/replica.go`)
+  - `ReplicaManager` with primary and replica connection pools
+  - Round-robin replica selection with health-based filtering
+  - Automatic fallback to primary when replicas unavailable
+  - Replication lag monitoring with configurable stale threshold
+  - `WithForceReadPrimary()` context flag for read-after-write consistency
+
+- **Query Monitoring** (`internal/framework/metrics/query_metrics.go`)
+  - `RegisterQueryMetricsCallback()` for GORM query instrumentation
+  - Slow query detection with configurable threshold (default: 500ms)
+  - EXPLAIN ANALYZE logging for queries exceeding threshold
+  - Prometheus metrics: query duration histogram, slow query counter
+
+- **New Environment Variables**
+  - `SLOW_QUERY_THRESHOLD_MS`: Threshold for slow query logging (default: 500)
+  - `DB_REPLICA_ENABLED`: Enable read replica routing (default: false)
+  - `DB_REPLICA_DSNS`: Comma-separated replica connection strings
+  - `DB_REPLICA_STALE_THRESHOLD_MS`: Max acceptable replication lag (default: 1000)
+
+- **New Prometheus Metrics**
+  - `quester_db_query_duration_seconds`: Query duration histogram with endpoint label
+  - `quester_db_slow_queries_total`: Counter for slow queries
+  - `quester_db_replica_routing_total`: Counter for replica vs primary routing
+  - `quester_db_replica_lag_seconds`: Gauge for replica replication lag
+
+- **SQL Migrations** (`internal/migrations/20250615_add_query_optimization_indexes`)
+  - `idx_courses_tenant_status_category`: Composite index for course list queries
+  - `idx_courses_tenant_published_created`: Composite index for published course sorting
+  - `idx_transactions_tenant_user_status`: Composite index for user transaction queries
+  - `idx_transactions_tenant_status_created`: Composite index for transaction list queries
+  - `idx_quests_tenant_status_difficulty`: Composite index for quest filtering
+  - `idx_quests_tenant_status`: Composite index for active quest queries
+
+- **Replica Routing Middleware** (`internal/framework/middleware/replica_routing.go`)
+  - Routes GET/HEAD/OPTIONS to replicas
+  - Routes POST/PUT/PATCH/DELETE to primary
+  - Supports `X-Read-Primary` header for forcing primary reads
+  - Configurable admin paths for always using primary
+
+- **Integration Tests** (`tests/integration/query_optimization_test.go`)
+  - Cursor pagination traversal test with large dataset
+  - O(1) performance verification for deep pages
+  - Include preloading query count verification
+  - N+1 query pattern detection
+
 - **Framework/Application Layer Separation** (`003-framework-consolidation`)
   - Clear boundary: `internal/framework/` contains reusable framework code
   - Framework has zero imports from application layer (`internal/models`, `internal/services`, etc.)

@@ -12,11 +12,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/config"
 	"github.com/keshablive/quester/internal/framework/container"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/framework/metrics"
+	"github.com/keshablive/quester/internal/framework/middleware"
 	sentryPkg "github.com/keshablive/quester/internal/framework/sentry"
 	"github.com/keshablive/quester/internal/migrations"
 	"github.com/keshablive/quester/internal/repositories"
@@ -25,18 +27,45 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// TenantViolationLoggerAdapter implements middleware.TenantViolationLogger
+// using the app's AuditLogService for tenant isolation violation logging
+type TenantViolationLoggerAdapter struct{}
+
+// LogViolation logs a tenant isolation violation using the app's audit service
+func (t *TenantViolationLoggerAdapter) LogViolation(ctx context.Context, userID, userTenantID, resourceTenantID uuid.UUID, resourceType string, resourceID uuid.UUID, action, ip, userAgent string) {
+	// Create repository and service (safe for concurrent use)
+	auditRepo := repositories.NewAuditLogRepository(database.DB)
+	auditSvc := services.NewAuditLogService(auditRepo)
+
+	// Fire-and-forget audit logging
+	_ = auditSvc.LogTenantViolation(ctx, userID, userTenantID, resourceTenantID, resourceType, resourceID, action, ip, userAgent)
+
+	// Increment Prometheus metric
+	metrics.IncTenantViolation()
+}
+
+// initMiddleware initializes the framework middleware with app-specific implementations
+func initMiddleware() {
+	middleware.SetTenantViolationLogger(&TenantViolationLoggerAdapter{})
+}
+
 // App represents the application
 type App struct {
-	Fiber               *fiber.App
-	Config              *config.Config
-	Container           *container.Container // DI container for managing dependencies (T016)
-	cancelCleanup       context.CancelFunc   // Cancel function for token cleanup scheduler
-	cancelLeaderboard   context.CancelFunc   // Cancel function for leaderboard reset scheduler
-	cancelStreamCleanup context.CancelFunc   // Cancel function for video stream retention cleanup (T099)
+	Fiber                  *fiber.App
+	Config                 *config.Config
+	Container              *container.Container // DI container for managing dependencies (T016)
+	cancelCleanup          context.CancelFunc   // Cancel function for token cleanup scheduler
+	cancelLeaderboard      context.CancelFunc   // Cancel function for leaderboard reset scheduler
+	cancelStreamCleanup    context.CancelFunc   // Cancel function for video stream retention cleanup (T099)
+	cancelStreakReset      context.CancelFunc   // Cancel function for learning streak reset scheduler (T074)
+	cancelChallengeCleanup context.CancelFunc   // Cancel function for daily challenge cleanup scheduler (T094)
 }
 
 // New creates a new application instance
 func New() (*App, error) {
+	// Initialize middleware with app-specific implementations
+	initMiddleware()
+
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
@@ -118,6 +147,18 @@ func New() (*App, error) {
 	go startStreamRetentionCleanup(streamCleanupCtx, cfg)
 	log.Println("✓ Video stream retention cleanup scheduler started (runs daily at 02:00 UTC)")
 
+	// Start learning streak reset scheduler (T074)
+	// Runs daily at 03:00 UTC to reset expired streaks
+	streakResetCtx, cancelStreakReset := context.WithCancel(context.Background())
+	go startStreakResetScheduler(streakResetCtx)
+	log.Println("✓ Learning streak reset scheduler started (runs daily at 03:00 UTC)")
+
+	// Start daily challenge cleanup scheduler (T094)
+	// Runs daily at 04:00 UTC to expire old challenges
+	challengeCleanupCtx, cancelChallengeCleanup := context.WithCancel(context.Background())
+	go startChallengeCleanupScheduler(challengeCleanupCtx)
+	log.Println("✓ Daily challenge cleanup scheduler started (runs daily at 04:00 UTC)")
+
 	// Initialize metrics if enabled
 	if cfg.MetricsEnabled {
 		metrics.Init()
@@ -157,6 +198,11 @@ func New() (*App, error) {
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${status} - ${latency} ${method} ${path}\n",
 	}))
+
+	// Response compression (007-api-performance-caching T009)
+	// Level 6 balanced compression, applied after logging but before routes
+	app.Use(middleware.NewCompressionWithDefaults())
+	log.Println("✓ Compression middleware enabled (level 6, min 1KB)")
 
 	// Sentry error tracking and performance monitoring
 	if cfg.SentryDSN != "" {
@@ -204,12 +250,14 @@ func New() (*App, error) {
 	routes.Setup(app, diContainer)
 
 	return &App{
-		Fiber:               app,
-		Config:              cfg,
-		Container:           diContainer,
-		cancelCleanup:       cancelCleanup,
-		cancelLeaderboard:   cancelLeaderboard,
-		cancelStreamCleanup: cancelStreamCleanup,
+		Fiber:                  app,
+		Config:                 cfg,
+		Container:              diContainer,
+		cancelCleanup:          cancelCleanup,
+		cancelLeaderboard:      cancelLeaderboard,
+		cancelStreamCleanup:    cancelStreamCleanup,
+		cancelStreakReset:      cancelStreakReset,
+		cancelChallengeCleanup: cancelChallengeCleanup,
 	}, nil
 }
 
@@ -240,6 +288,18 @@ func (a *App) Shutdown() error {
 	if a.cancelStreamCleanup != nil {
 		a.cancelStreamCleanup()
 		log.Println("✓ Video stream retention cleanup scheduler stopped")
+	}
+
+	// Stop learning streak reset scheduler (T074)
+	if a.cancelStreakReset != nil {
+		a.cancelStreakReset()
+		log.Println("✓ Learning streak reset scheduler stopped")
+	}
+
+	// Stop daily challenge cleanup scheduler (T094)
+	if a.cancelChallengeCleanup != nil {
+		a.cancelChallengeCleanup()
+		log.Println("✓ Daily challenge cleanup scheduler stopped")
 	}
 
 	// Close database connection
@@ -391,6 +451,112 @@ func startStreamRetentionCleanup(ctx context.Context, cfg *config.Config) {
 	}
 }
 
+// startStreakResetScheduler runs daily streak expiry check at 03:00 UTC (T074)
+func startStreakResetScheduler(ctx context.Context) {
+	ticker := time.NewTicker(1 * time.Hour) // Check every hour
+	defer ticker.Stop()
+
+	log.Println("Learning streak reset scheduler initialized")
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Learning streak reset scheduler stopped")
+			return
+		case <-ticker.C:
+			now := time.Now().UTC()
+
+			// Check if it's 03:00 UTC (with 1-hour window)
+			if now.Hour() == 3 {
+				log.Printf("Running learning streak reset check at %s", now.Format(time.RFC3339))
+
+				// Create service instance to call ResetExpiredStreaks
+				db := database.DB
+				if db != nil {
+					streakRepo := repositories.NewLearningStreakRepository(db)
+					xpRepo := repositories.NewLearningXPRepository(db)
+					levelRepo := repositories.NewLearningLevelRepository(db)
+					challengeRepo := repositories.NewLearningChallengeRepository(db)
+					userRepo := repositories.NewUserRepository(db)
+
+					svc := services.NewLearningGamificationService(
+						xpRepo,
+						streakRepo,
+						levelRepo,
+						challengeRepo,
+						userRepo,
+					)
+
+					count, err := svc.ResetExpiredStreaks(ctx)
+					if err != nil {
+						log.Printf("Error resetting expired streaks: %v", err)
+					} else {
+						log.Printf("✓ Learning streak reset completed: %d streaks reset", count)
+					}
+				} else {
+					log.Println("Warning: database not available for streak reset")
+				}
+
+				// Sleep for 2 hours to avoid running multiple times in the same hour
+				time.Sleep(2 * time.Hour)
+			}
+		}
+	}
+}
+
+// startChallengeCleanupScheduler runs daily challenge cleanup at 04:00 UTC (T094)
+func startChallengeCleanupScheduler(ctx context.Context) {
+	ticker := time.NewTicker(1 * time.Hour) // Check every hour
+	defer ticker.Stop()
+
+	log.Println("Daily challenge cleanup scheduler initialized")
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Daily challenge cleanup scheduler stopped")
+			return
+		case <-ticker.C:
+			now := time.Now().UTC()
+
+			// Check if it's 04:00 UTC (with 1-hour window)
+			if now.Hour() == 4 {
+				log.Printf("Running daily challenge cleanup at %s", now.Format(time.RFC3339))
+
+				// Create service instance to call ExpireOldChallenges
+				db := database.DB
+				if db != nil {
+					streakRepo := repositories.NewLearningStreakRepository(db)
+					xpRepo := repositories.NewLearningXPRepository(db)
+					levelRepo := repositories.NewLearningLevelRepository(db)
+					challengeRepo := repositories.NewLearningChallengeRepository(db)
+					userRepo := repositories.NewUserRepository(db)
+
+					svc := services.NewLearningGamificationService(
+						xpRepo,
+						streakRepo,
+						levelRepo,
+						challengeRepo,
+						userRepo,
+					)
+
+					err := svc.ExpireOldChallenges(ctx)
+					if err != nil {
+						log.Printf("Error cleaning up expired challenges: %v", err)
+					} else {
+						log.Println("✓ Daily challenge cleanup completed")
+					}
+				} else {
+					log.Println("Warning: database not available for challenge cleanup")
+				}
+
+				// Sleep for 2 hours to avoid running multiple times in the same hour
+				time.Sleep(2 * time.Hour)
+			}
+		}
+	}
+}
+
 // registerRepositories registers all P1 repositories in the DI container (T047-T052)
 func registerRepositories(c *container.Container) {
 	// Get database from container - fail fast if not initialized
@@ -440,6 +606,61 @@ func registerRepositories(c *container.Container) {
 	}); err != nil {
 		log.Fatalf("Failed to register leaderboardRepository: %v", err)
 	}
+
+	// Social Gamification Repositories (005-social-feed-gamification)
+	if err := c.RegisterSingleton("socialXPRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewSocialXPRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register socialXPRepository: %v", err)
+	}
+
+	if err := c.RegisterSingleton("dailyChallengeRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewDailyChallengeRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register dailyChallengeRepository: %v", err)
+	}
+
+	if err := c.RegisterSingleton("contentMilestoneRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewContentMilestoneRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register contentMilestoneRepository: %v", err)
+	}
+
+	// Learning Gamification Repositories (006-course-gamification T024)
+	if err := c.RegisterSingleton("learningXPRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewLearningXPRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register learningXPRepository: %v", err)
+	}
+
+	if err := c.RegisterSingleton("learningStreakRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewLearningStreakRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register learningStreakRepository: %v", err)
+	}
+
+	if err := c.RegisterSingleton("learningLevelRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewLearningLevelRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register learningLevelRepository: %v", err)
+	}
+
+	if err := c.RegisterSingleton("learningChallengeRepository", func(c *container.Container) (interface{}, error) {
+		return repositories.NewLearningChallengeRepository(db), nil
+	}); err != nil {
+		log.Fatalf("Failed to register learningChallengeRepository: %v", err)
+	}
+
+	log.Println("✓ Container registered: learning gamification repositories")
+
+	// CacheService (007-api-performance-caching T035)
+	if err := c.RegisterSingleton("cacheService", func(c *container.Container) (interface{}, error) {
+		return services.NewCacheServiceFromGlobal(), nil
+	}); err != nil {
+		log.Fatalf("Failed to register cacheService: %v", err)
+	}
+
+	log.Println("✓ Container registered: cacheService")
 }
 
 // registerServices registers all P1 services in the DI container (T053)
@@ -469,6 +690,105 @@ func registerRepositories(c *container.Container) {
 //
 // ============================================================================
 func registerServices(c *container.Container) {
+	// Social Gamification Service (005-social-feed-gamification T016)
+	if err := c.RegisterSingleton("socialGamificationService", func(c *container.Container) (interface{}, error) {
+		socialXPRepo, _ := c.Resolve("socialXPRepository")
+		dailyChallengeRepo, _ := c.Resolve("dailyChallengeRepository")
+		contentMilestoneRepo, _ := c.Resolve("contentMilestoneRepository")
+		userRepo, _ := c.Resolve("userRepository")
+
+		// Queue service and notification service are optional
+		var queueService *services.QueueService
+		if qs, err := c.Resolve("queueService"); err == nil {
+			queueService = qs.(*services.QueueService)
+		}
+
+		var notifService *services.NotificationService
+		if ns, err := c.Resolve("notificationService"); err == nil {
+			notifService = ns.(*services.NotificationService)
+		}
+
+		svc := services.NewSocialGamificationService(
+			socialXPRepo.(*repositories.SocialXPRepository),
+			dailyChallengeRepo.(*repositories.DailyChallengeRepository),
+			contentMilestoneRepo.(*repositories.ContentMilestoneRepository),
+			userRepo.(*repositories.UserRepository),
+		)
+		// Inject optional dependencies
+		if queueService != nil {
+			svc.SetQueueService(queueService)
+		}
+		if notifService != nil {
+			svc.SetNotificationService(notifService)
+		}
+		return svc, nil
+	}); err != nil {
+		log.Fatalf("Failed to register socialGamificationService: %v", err)
+	}
+
+	log.Println("✓ Container registered: socialGamificationService")
+
+	// Learning Gamification Service (006-course-gamification T024)
+	if err := c.RegisterSingleton("learningGamificationService", func(c *container.Container) (interface{}, error) {
+		learningXPRepo, _ := c.Resolve("learningXPRepository")
+		learningStreakRepo, _ := c.Resolve("learningStreakRepository")
+		learningLevelRepo, _ := c.Resolve("learningLevelRepository")
+		learningChallengeRepo, _ := c.Resolve("learningChallengeRepository")
+		userRepo, _ := c.Resolve("userRepository")
+
+		// Queue service and notification service are optional
+		var queueService *services.QueueService
+		if qs, err := c.Resolve("queueService"); err == nil {
+			queueService = qs.(*services.QueueService)
+		}
+
+		var notifService *services.NotificationService
+		if ns, err := c.Resolve("notificationService"); err == nil {
+			notifService = ns.(*services.NotificationService)
+		}
+
+		svc := services.NewLearningGamificationService(
+			learningXPRepo.(*repositories.LearningXPRepository),
+			learningStreakRepo.(*repositories.LearningStreakRepository),
+			learningLevelRepo.(*repositories.LearningLevelRepository),
+			learningChallengeRepo.(*repositories.LearningChallengeRepository),
+			userRepo.(*repositories.UserRepository),
+		)
+		// Inject optional dependencies
+		if queueService != nil {
+			svc.SetQueueService(queueService)
+		}
+		if notifService != nil {
+			svc.SetNotificationService(notifService)
+		}
+		return svc, nil
+	}); err != nil {
+		log.Fatalf("Failed to register learningGamificationService: %v", err)
+	}
+
+	log.Println("✓ Container registered: learningGamificationService")
+
+	// LeaderboardService (013-leaderboard-controller-integration T003)
+	if err := c.RegisterSingleton("leaderboardService", func(c *container.Container) (interface{}, error) {
+		// Resolve dependencies
+		redisCache := c.MustResolve("cache").(*cache.PooledRedisClient)
+		leaderboardRepo, _ := c.Resolve("leaderboardRepository")
+		userRepo, _ := c.Resolve("userRepository")
+
+		return services.NewLeaderboardService(
+			database.DB,
+			nil, // logger - will use default from BaseService
+			redisCache,
+			leaderboardRepo.(*repositories.LeaderboardRepository), // implements interfaces.LeaderboardRepository
+			leaderboardRepo.(*repositories.LeaderboardRepository), // for custom methods like BulkUpsert
+			userRepo.(*repositories.UserRepository),
+		), nil
+	}); err != nil {
+		log.Fatalf("Failed to register leaderboardService: %v", err)
+	}
+
+	log.Println("✓ Container registered: leaderboardService (013-leaderboard-controller-integration)")
+
 	// Note: Services still require dependencies that aren't in container yet
 	// This is a partial implementation - full registration requires other services/controllers
 	// For now, we're establishing the pattern
@@ -521,7 +841,7 @@ func initializeContainer(cfg *config.Config) *container.Container {
 
 	// Register repositories (T047-T052)
 	registerRepositories(c)
-	log.Println("✓ Container registered: 6 P1 repositories")
+	log.Println("✓ Container registered: 9 repositories (6 P1 + 3 social gamification)")
 
 	// Register services (T053)
 	registerServices(c)
