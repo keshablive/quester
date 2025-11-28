@@ -1,5 +1,13 @@
 import { LucideIcon } from 'lucide-react-native';
 
+/**
+ * Props for analytics components that need user context
+ */
+export interface AnalyticsProps {
+    /** Optional user ID - defaults to current authenticated user */
+    userId?: string;
+}
+
 export interface MetricItem {
     label: string;
     value: string;

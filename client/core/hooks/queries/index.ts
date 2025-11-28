@@ -55,3 +55,17 @@ export {
   useUnreadNotificationCount,
   useUnreadNotifications,
 } from './useNotifications';
+
+// Analytics queries
+export {
+  useUserAnalytics,
+  useTopCourses,
+  useEngagementSummary,
+  useEngagementTimeseries,
+} from './useAnalytics';
+export type {
+  UserAnalyticsSummary,
+  TopCourse,
+  EngagementSummary,
+  TimeSeriesData,
+} from './useAnalytics';

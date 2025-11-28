@@ -138,6 +138,28 @@ export const queryKeys = {
     infinite: (filters?: NotificationFilters) =>
       [...queryKeys.notifications.all, 'infinite', filters ?? {}] as const,
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Analytics Queries
+  // ═══════════════════════════════════════════════════════════════
+  analytics: {
+    all: ['analytics'] as const,
+    /** User analytics summary (sessions, scores, courses) */
+    userSummary: (userId: string) =>
+      [...queryKeys.analytics.all, 'user', userId, 'summary'] as const,
+    /** User analytics timeseries */
+    userTimeseries: (userId: string, startDate: string, endDate: string) =>
+      [...queryKeys.analytics.all, 'user', userId, 'timeseries', startDate, endDate] as const,
+    /** Top performing courses */
+    topCourses: (limit?: number) =>
+      [...queryKeys.analytics.all, 'courses', 'top', limit ?? 10] as const,
+    /** Platform engagement summary (DAU, WAU, MAU) */
+    engagementSummary: () =>
+      [...queryKeys.analytics.all, 'engagement', 'summary'] as const,
+    /** Engagement timeseries for charts */
+    engagementTimeseries: (startDate: string, endDate: string) =>
+      [...queryKeys.analytics.all, 'engagement', 'timeseries', startDate, endDate] as const,
+  },
 } as const;
 
 // Export type for the entire query keys object

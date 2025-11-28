@@ -28,6 +28,8 @@ export const STALE_TIMES = {
   DASHBOARD: 5 * 60 * 1000,
   /** Notifications - 1 minute */
   NOTIFICATIONS: 60 * 1000,
+  /** Analytics - 5 minutes (FR-009: cache with 5-minute stale time) */
+  ANALYTICS: 5 * 60 * 1000,
   /** Default fallback */
   DEFAULT: 5 * 60 * 1000,
 } as const;
