@@ -146,7 +146,8 @@
 - [ ] T051 [US5] Enhance client/components/shared/InfiniteScrollList.tsx with FlashList and useInfiniteQuery integration
 - [ ] T052 [US5] Migrate client/components/shared/FollowLists.tsx to use useFollowers/useFollowing hooks
 - [ ] T053 [US5] Add automatic page loading on scroll threshold in InfiniteScrollList.tsx
-- [ ] T054 [US5] Add per-page retry button for failed page loads in InfiniteScrollList.tsx
+- [ ] T054 [US5] Implement cursor-based pagination in useInfiniteScrollList to prevent duplicate/missing items per Edge Case 3
+- [ ] T055 [US5] Add per-page retry button for failed page loads in InfiniteScrollList.tsx
 
 **Checkpoint**: User Story 5 complete - Infinite scroll works seamlessly with automatic page loading
 
@@ -156,12 +157,12 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T055 [P] Verify all hooks follow patterns in core/hooks/queries/useSocial.ts
-- [ ] T056 [P] Ensure consistent error handling across all new hooks
-- [ ] T057 [P] Update client/core/hooks/index.ts to export all new hooks
-- [ ] T058 Run quickstart.md validation steps to verify all migrations work
-- [ ] T059 [P] Add JSDoc comments to all new hook exports
-- [ ] T060 Remove deprecated useState/useEffect patterns from migrated components
+- [ ] T056 [P] Verify all hooks follow patterns in core/hooks/queries/useSocial.ts (check: return types, error handling, staleTime config)
+- [ ] T057 [P] Ensure consistent error handling across all new hooks
+- [ ] T058 [P] Update client/core/hooks/index.ts to export all new hooks
+- [ ] T059 Run quickstart.md validation steps to verify all migrations work
+- [ ] T060 [P] Add JSDoc comments to all new hook exports
+- [ ] T061 Remove deprecated useState/useEffect patterns from migrated components
 
 ---
 
@@ -271,9 +272,9 @@ With multiple developers:
 | SC-001: <100ms cached display | T018, T019, T029, T030, T037, T044, T051, T052 |
 | SC-002: Zero requests in stale time | T005 (stale times), all query hooks |
 | SC-003: Offline functionality | T020, T031, T039, T047 |
-| SC-004: 50% boilerplate reduction | T018, T019, T029, T030, T037, T044, T051, T052, T060 |
+| SC-004: 50% boilerplate reduction | T018, T019, T029, T030, T037, T044, T051, T052, T061 |
 | SC-005: <50ms optimistic updates | T041, T045, T046 |
-| SC-006: 60fps infinite scroll | T051, T053, T054 |
+| SC-006: 60fps infinite scroll | T051, T053, T054, T055 |
 
 ---
 
@@ -286,3 +287,9 @@ With multiple developers:
 - Stop at any checkpoint to validate story independently
 - Tests not included (not explicitly requested in specification)
 - Follow existing patterns in core/hooks/queries/useSocial.ts
+
+### Implicit Coverage (No Explicit Tasks Required)
+
+- **FR-003** (AsyncStorage persistence): Already configured via `@tanstack/query-async-storage-persister` in `core/query/persister.ts`
+- **FR-004** (Request deduplication): Automatic TanStack Query behavior within stale time window
+- **FR-006** (Loading skeletons): Use existing skeleton components from `components/shared/` or create inline
