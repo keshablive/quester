@@ -2,7 +2,7 @@
 
 **Feature**: 019-client-image-list-performance  
 **Generated**: 2025-11-29  
-**Total Tasks**: 42
+**Total Tasks**: 52
 
 ---
 
@@ -70,9 +70,11 @@
 - [ ] T023 [P] [US2] Update any achievement-related list components to use OptimizedList
 - [ ] T024 [P] [US2] Update any leaderboard list components to use OptimizedList
 - [ ] T025 [P] [US2] Update any marketplace listing components to use OptimizedList
-- [ ] T026 [US2] Profile scroll performance using React DevTools - verify 60fps maintained
+- [ ] T026 [US2] Implement pull-to-refresh in achievements.tsx using OptimizedList refreshing/onRefresh props (FR-010)
+- [ ] T027 [US2] Implement infinite scroll pagination using onEndReached/onEndReachedThreshold props (FR-011)
+- [ ] T028 [US2] Profile scroll performance using React DevTools - verify 60fps maintained
 
-**Checkpoint**: List scrolling smooth at 60fps, FlashList migration complete
+**Checkpoint**: List scrolling smooth at 60fps, FlashList migration complete with pull-to-refresh and pagination
 
 ---
 
@@ -84,13 +86,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Measure initial bundle size via `npx expo export --platform web` (baseline)
-- [ ] T028 [US3] Create Suspense loading fallback component at client/core/components/LoadingFallback.tsx
-- [ ] T029 [P] [US3] Wrap client/app/admin.tsx with React.lazy and Suspense using ChunkErrorBoundary
-- [ ] T030 [P] [US3] Wrap client/app/analytics.tsx with React.lazy and Suspense using ChunkErrorBoundary
-- [ ] T031 [P] [US3] Wrap client/app/reports.tsx with React.lazy and Suspense using ChunkErrorBoundary
-- [ ] T032 [US3] Measure bundle size after code splitting - verify 15%+ reduction
-- [ ] T033 [US3] Test chunk load failure scenario - verify error boundary retry works
+- [ ] T029 [US3] Measure initial bundle size via `npx expo export --platform web` (baseline)
+- [ ] T030 [US3] Create Suspense loading fallback component at client/core/components/LoadingFallback.tsx
+- [ ] T031 [P] [US3] Wrap client/app/admin.tsx with React.lazy and Suspense using ChunkErrorBoundary
+- [ ] T032 [P] [US3] Wrap client/app/analytics.tsx with React.lazy and Suspense using ChunkErrorBoundary
+- [ ] T033 [P] [US3] Wrap client/app/reports.tsx with React.lazy and Suspense using ChunkErrorBoundary
+- [ ] T034 [US3] Measure bundle size after code splitting - verify 15%+ reduction
+- [ ] T035 [US3] Test chunk load failure scenario - verify error boundary retry works
 
 **Checkpoint**: Bundle reduced by 15%+, lazy-loaded screens work with error handling
 
@@ -104,18 +106,18 @@
 
 ### Implementation for User Story 4
 
-- [ ] T034 [US4] Create contexts directory at client/core/auth/contexts/
-- [ ] T035 [US4] Create CoreAuthContext at client/core/auth/contexts/CoreAuthContext.tsx (user, tokens, signIn, signOut)
-- [ ] T036 [US4] Create TwoFactorContext at client/core/auth/contexts/TwoFactorContext.tsx (2FA state, submitCode)
-- [ ] T037 [US4] Create BiometricContext at client/core/auth/contexts/BiometricContext.tsx (biometric state, enable/disable)
-- [ ] T038 [US4] Create hooks directory at client/core/auth/hooks/
-- [ ] T039 [P] [US4] Create useCoreAuth hook at client/core/auth/hooks/useCoreAuth.ts
-- [ ] T040 [P] [US4] Create useTwoFactor hook at client/core/auth/hooks/useTwoFactor.ts
-- [ ] T041 [P] [US4] Create useBiometricAuth hook at client/core/auth/hooks/useBiometricAuth.ts
-- [ ] T042 [US4] Create AuthProviders composite at client/core/auth/providers/AuthProviders.tsx (wraps all 3 contexts)
-- [ ] T043 [US4] Update useAuth hook in client/core/auth/AuthContext.tsx to use composite pattern (backward compatible)
-- [ ] T044 [US4] Update client/app/_layout.tsx to use new AuthProviders wrapper
-- [ ] T045 [US4] Profile re-renders using React DevTools - verify 60% reduction for non-auth operations
+- [ ] T036 [US4] Create contexts directory at client/core/auth/contexts/
+- [ ] T037 [US4] Create CoreAuthContext at client/core/auth/contexts/CoreAuthContext.tsx (user, tokens, signIn, signOut)
+- [ ] T038 [US4] Create TwoFactorContext at client/core/auth/contexts/TwoFactorContext.tsx (2FA state, submitCode)
+- [ ] T039 [US4] Create BiometricContext at client/core/auth/contexts/BiometricContext.tsx (biometric state, enable/disable)
+- [ ] T040 [US4] Create hooks directory at client/core/auth/hooks/
+- [ ] T041 [P] [US4] Create useCoreAuth hook at client/core/auth/hooks/useCoreAuth.ts
+- [ ] T042 [P] [US4] Create useTwoFactor hook at client/core/auth/hooks/useTwoFactor.ts
+- [ ] T043 [P] [US4] Create useBiometricAuth hook at client/core/auth/hooks/useBiometricAuth.ts
+- [ ] T044 [US4] Create AuthProviders composite at client/core/auth/providers/AuthProviders.tsx (wraps all 3 contexts)
+- [ ] T045 [US4] Update useAuth hook in client/core/auth/AuthContext.tsx to use composite pattern (backward compatible)
+- [ ] T046 [US4] Update client/app/_layout.tsx to use new AuthProviders wrapper
+- [ ] T047 [US4] Profile re-renders using React DevTools - verify 60% reduction for non-auth operations
 
 **Checkpoint**: AuthContext split complete, useAuth() backward compatible, re-renders reduced by 60%
 
@@ -125,11 +127,11 @@
 
 **Purpose**: Documentation, cleanup, and validation across all user stories
 
-- [ ] T046 [P] Update client/core/index.ts with all new exports (OptimizedImage, OptimizedList, hooks)
-- [ ] T047 [P] Update client/core/auth/index.ts with new auth exports (contexts, hooks, providers)
-- [ ] T048 Run quickstart.md validation checklist - verify all items pass
-- [ ] T049 Update client/IMPORT_PATTERNS.md with new component import patterns
-- [ ] T050 Final performance verification - all 4 success criteria met (images <100ms, 60fps, 15% bundle, 60% re-render reduction)
+- [ ] T048 [P] Update client/core/index.ts with all new exports (OptimizedImage, OptimizedList, hooks)
+- [ ] T049 [P] Update client/core/auth/index.ts with new auth exports (contexts, hooks, providers)
+- [ ] T050 Run quickstart.md validation checklist - verify all items pass
+- [ ] T051 Update client/IMPORT_PATTERNS.md with new component import patterns
+- [ ] T052 Final performance verification - all 4 success criteria met (images <100ms, 60fps, 15% bundle, 60% re-render reduction)
 
 ---
 
@@ -144,6 +146,8 @@
 - **User Story 3 (Phase 5)**: Depends on Foundational (T009-T011 LazyRoute, ErrorBoundary)
 - **User Story 4 (Phase 6)**: Can start after Foundational - no dependency on other stories
 - **Polish (Phase 7)**: Depends on all desired user stories being complete
+
+**Note**: US2 now includes explicit tasks for FR-010 (pull-to-refresh) and FR-011 (infinite scroll/pagination)
 
 ### User Story Dependencies
 
@@ -168,11 +172,11 @@
 
 **User Story 1 (T013-T020)**: T013-T019 (all 7 file migrations) can run in parallel
 
-**User Story 2 (T021-T026)**: T023-T025 can run in parallel after T022
+**User Story 2 (T021-T028)**: T023-T025 can run in parallel after T022; T026-T027 sequential after list migration
 
-**User Story 3 (T027-T033)**: T029-T031 (all 3 lazy routes) can run in parallel
+**User Story 3 (T029-T035)**: T031-T033 (all 3 lazy routes) can run in parallel
 
-**User Story 4 (T034-T045)**: T039-T041 (all 3 hooks) can run in parallel
+**User Story 4 (T036-T047)**: T041-T043 (all 3 hooks) can run in parallel
 
 ---
 
@@ -241,11 +245,11 @@ With 2+ developers:
 | Setup | T001-T004 | 4 | Dependencies installed |
 | Foundational | T005-T012 | 8 | Wrapper components ready |
 | US1: Images | T013-T020 | 8 | 7 files migrated to expo-image |
-| US2: Lists | T021-T026 | 6 | FlashList migration complete |
-| US3: Code Split | T027-T033 | 7 | 3 routes lazy-loaded |
-| US4: AuthContext | T034-T045 | 12 | Context split, backward compatible |
-| Polish | T046-T050 | 5 | Documentation, validation |
-| **Total** | **T001-T050** | **50** | **All 4 user stories complete** |
+| US2: Lists | T021-T028 | 8 | FlashList migration + pull-to-refresh + pagination |
+| US3: Code Split | T029-T035 | 7 | 3 routes lazy-loaded |
+| US4: AuthContext | T036-T047 | 12 | Context split, backward compatible |
+| Polish | T048-T052 | 5 | Documentation, validation |
+| **Total** | **T001-T052** | **52** | **All 4 user stories complete** |
 
 ---
 
