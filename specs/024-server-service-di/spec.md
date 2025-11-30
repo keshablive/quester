@@ -31,6 +31,8 @@ The full server codebase (in backup) has ~25 services that accept `*gorm.DB` dir
 **I want** the full server codebase restored from backup  
 **So that** I have a compilable codebase to refactor
 
+**Restoration Method:** File copy with verification using `cp -r` or `rsync` from `settings/backups/server/internal/` to `server/internal/`, followed by compilation check and test execution.
+
 **Acceptance Criteria:**
 - [ ] All 56 services restored to `internal/services/`
 - [ ] All 35 controllers restored to `internal/controllers/`
@@ -80,10 +82,13 @@ The full server codebase (in backup) has ~25 services that accept `*gorm.DB` dir
 **So that** constructors are readable and extensible
 
 **Acceptance Criteria:**
+
 - [ ] `SocialService` (7 params) uses `SocialServiceConfig` struct
 - [ ] `TransactionService` (6 params) uses `TransactionServiceConfig` struct
 - [ ] `MarketplaceService` (5 params) uses `MarketplaceServiceConfig` struct
-- [ ] Config structs include validation and sensible defaults
+- [ ] Config structs separate required fields (repos, core deps) from optional fields (timeouts, limits)
+- [ ] Required fields panic if nil at construction time
+- [ ] Optional fields have documented defaults via `NewDefaultConfig()` factory function
 
 ### US5: Mock Generation & Unit Tests
 **As a** backend developer  
@@ -99,22 +104,27 @@ The full server codebase (in backup) has ~25 services that accept `*gorm.DB` dir
 ## Functional Requirements
 
 ### FR1: Repository Interface Design
+
 - Interfaces MUST follow context-first parameter signature: `func Method(ctx context.Context, ...)`
-- Interfaces MUST include tenant-scoped methods where applicable
+- Tenant-scoped methods MUST include explicit `tenantID uuid.UUID` parameter (e.g., `FindByTenant(ctx context.Context, tenantID uuid.UUID, ...)`) for compile-time isolation enforcement
 - Interfaces MUST NOT import from application layer (models, services)
 - Each interface MUST have corresponding mock implementation
 
 ### FR2: Service Constructor Changes
+
 - New constructors MUST accept interfaces, not concrete types
 - Old constructors MUST be marked deprecated with `// Deprecated: use NewXServiceWithConfig` comment
 - Services MUST NOT hold `*gorm.DB` reference after refactoring
 - Transaction handling MUST use `TransactionManager` interface
+- Migration MUST follow per-service incremental strategy: fully migrate one service (constructor + all routes/controllers using it), run integration tests, then proceed to next service
 
 ### FR3: DI Container Registration
+
 - All refactored services MUST be registered in `app.go` `registerServices()`
 - Registration MUST use singleton lifecycle for services
 - Registration MUST resolve dependencies from container, not globals
 - Registration MUST log success/failure for each service
+- If any required dependency is missing, container MUST fail fast: crash immediately with clear error message identifying the missing component (no graceful degradation)
 
 ### FR4: Global State Removal
 - Services MUST NOT access `database.DB` global after refactoring
@@ -171,6 +181,16 @@ The full server codebase (in backup) has ~25 services that accept `*gorm.DB` dir
 2. Existing `GenericRepository[T]` pattern continues to work alongside interfaces
 3. Team is familiar with testify/mock patterns
 4. CI/CD pipeline supports go test -cover reporting
+
+## Clarifications
+
+### Session 2025-12-01
+
+- Q: What restoration method for Phase 0 codebase recovery? → A: File copy with verification (cp -r/rsync from backup, then verify compilation and tests)
+- Q: How should tenant isolation be enforced in repository interfaces? → A: Explicit tenant parameter in interface methods (e.g., `FindByTenant(ctx, tenantID, ...)`)
+- Q: What migration rollout strategy for V1→V2 constructors? → A: Per-service incremental (fully migrate one service + all call sites, test, then proceed to next)
+- Q: What happens when DI container dependency resolution fails at startup? → A: Fail fast with clear error message identifying the missing component
+- Q: How should config struct defaults be handled? → A: Required fields (repos, core deps) panic if nil; optional fields (timeouts, limits) have documented defaults in `NewDefaultConfig()`
 
 ## Risks
 
