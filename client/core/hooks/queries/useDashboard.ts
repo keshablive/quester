@@ -182,26 +182,23 @@ export function useQuickActions(
 /**
  * Combined hook for all dashboard data
  *
- * Fetches stats and quick actions together for initial load.
- * Useful for dashboard screen that needs both.
- *
- * @example
+ * @deprecated FR-009: This hook duplicates TanStack Query's built-in caching logic.
+ * Use `useDashboardStats` and `useQuickActions` directly instead for better
+ * control over individual query states and to avoid unnecessary coupling.
+ * 
+ * Migration:
  * ```tsx
- * function Dashboard() {
- *   const { stats, quickActions, isLoading } = useDashboardData();
- *
- *   if (isLoading) return <DashboardSkeleton />;
- *
- *   return (
- *     <>
- *       <StatsCards stats={stats} />
- *       <QuickActions actions={quickActions} />
- *     </>
- *   );
- * }
+ * // Before (deprecated)
+ * const { stats, quickActions, isLoading } = useDashboardData();
+ * 
+ * // After (recommended)
+ * const statsQuery = useDashboardStats();
+ * const quickActionsQuery = useQuickActions();
  * ```
+ *
+ * This function is not exported and will be removed in a future version.
  */
-export function useDashboardData() {
+function useDashboardData() {
   const statsQuery = useDashboardStats();
   const quickActionsQuery = useQuickActions();
 

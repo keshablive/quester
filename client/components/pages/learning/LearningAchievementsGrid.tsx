@@ -6,10 +6,10 @@
  * 006-course-gamification T057
  */
 import React from 'react';
-import { View, ScrollView, Image, Pressable } from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/ui';
 import { Award, Lock, Check, Star, Trophy, Zap } from 'lucide-react-native';
-import { cn, formatTimeAgo } from '@/core';
+import { cn, formatTimeAgo, OptimizedImage } from '@/core';
 import type { LearningAchievement } from '@/core/types';
 
 /**
@@ -125,14 +125,15 @@ function AchievementCard({
             compact ? 'h-10 w-10' : 'h-12 w-12'
           )}>
           {achievement.icon_url ? (
-            <Image
-              source={{ uri: achievement.icon_url }}
+            <OptimizedImage
+              source={achievement.icon_url}
               className={cn(
                 'rounded-full',
                 compact ? 'h-8 w-8' : 'h-10 w-10',
                 !isUnlocked && 'opacity-50'
               )}
-              accessibilityIgnoresInvertColors
+              placeholder="achievementBadge"
+              contentFit="cover"
             />
           ) : (
             <IconComponent

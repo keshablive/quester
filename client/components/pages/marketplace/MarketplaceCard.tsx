@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { Property, ClassifiedAd } from '@/core';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Property, ClassifiedAd, OptimizedImage } from '@/core';
 import { MapPin, DollarSign, Home, Tag, Calendar, Package } from 'lucide-react-native';
 
 import { MarketplaceCardProps } from './types';
@@ -19,7 +19,7 @@ export function MarketplaceCard({ item, type, onPress }: MarketplaceCardProps) {
     const itemDate = new Date(date);
     const diffTime = Math.abs(now.getTime() - itemDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -33,25 +33,18 @@ export function MarketplaceCard({ item, type, onPress }: MarketplaceCardProps) {
 
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
-      onPress={() => onPress(item)}
-    >
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => onPress(item)}>
       {item.images && item.images.length > 0 ? (
-        <Image
-          source={{ uri: item.images[0] }}
+        <OptimizedImage
+          source={item.images[0]}
           style={styles.image}
-          resizeMode="cover"
+          contentFit="cover"
+          placeholder="marketplace"
         />
       ) : (
         <View style={styles.imagePlaceholder}>
-          {isProperty ? (
-            <Home size={48} color="#9CA3AF" />
-          ) : (
-            <Package size={48} color="#9CA3AF" />
-          )}
+          {isProperty ? <Home size={48} color="#9CA3AF" /> : <Package size={48} color="#9CA3AF" />}
         </View>
       )}
 
@@ -93,13 +86,14 @@ export function MarketplaceCard({ item, type, onPress }: MarketplaceCardProps) {
         </View>
 
         {item.status && (
-          <View style={[
-            styles.statusBadge,
-            (item.status === 'published' || item.status === 'active') && styles.statusActive,
-            (item.status === 'draft') && styles.statusDraft,
-            (item.status === 'sold') && styles.statusSold,
-            (item.status === 'expired') && styles.statusExpired,
-          ]}>
+          <View
+            style={[
+              styles.statusBadge,
+              (item.status === 'published' || item.status === 'active') && styles.statusActive,
+              item.status === 'draft' && styles.statusDraft,
+              item.status === 'sold' && styles.statusSold,
+              item.status === 'expired' && styles.statusExpired,
+            ]}>
             <Text style={styles.statusText}>{item.status}</Text>
           </View>
         )}

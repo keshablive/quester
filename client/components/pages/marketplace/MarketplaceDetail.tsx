@@ -1,41 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
-import { propertiesService, classifiedsService, Property, ClassifiedAd } from '@/core';
-import { MapPin, DollarSign, Home, Calendar, User, Phone, MessageCircle, Tag, CheckCircle, Package } from 'lucide-react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
+import {
+  propertiesService,
+  classifiedsService,
+  useMarketplaceProperty,
+  useMarketplaceClassified,
+  Property,
+  ClassifiedAd,
+  OptimizedImage,
+} from '@/core';
+import { OfflineIndicator, ErrorState, StaleDataIndicator } from '@/components/shared';
+import {
+  MapPin,
+  DollarSign,
+  Home,
+  Calendar,
+  User,
+  Phone,
+  MessageCircle,
+  Tag,
+  CheckCircle,
+  Package,
+  RefreshCw,
+} from 'lucide-react-native';
 
 import { MarketplaceDetailProps } from './types';
 
+/**
+ * MarketplaceDetail Component
+ *
+ * Displays property or classified ad details with TanStack Query caching.
+ * Supports offline viewing, background refresh, and instant cache display.
+ *
+ * US2: Fast Marketplace Browsing with Caching
+ *
+ * @module components/pages/marketplace/MarketplaceDetail
+ */
 export function MarketplaceDetail({ itemId, type, onEdit, onContact }: MarketplaceDetailProps) {
-  const [item, setItem] = useState<Property | ClassifiedAd | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // T018-T020: Use appropriate hook based on type
+  // Both hooks are called but only one will be enabled based on type
+  const propertyQuery = useMarketplaceProperty(itemId, {
+    enabled: type === 'property',
+  });
 
-  useEffect(() => {
-    loadItem();
-  }, [itemId]);
+  const classifiedQuery = useMarketplaceClassified(itemId, {
+    enabled: type === 'classified',
+  });
 
-  const loadItem = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      if (type === 'property') {
-        const data = await propertiesService.get(itemId);
-        setItem(data);
-      } else {
-        const data = await classifiedsService.get(itemId);
-        setItem(data);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load item');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Select the active query based on type
+  const activeQuery = type === 'property' ? propertyQuery : classifiedQuery;
+  const {
+    data: item,
+    isLoading,
+    isRefetching,
+    error,
+    refetch,
+    dataUpdatedAt,
+  } = activeQuery as typeof propertyQuery; // Type assertion for unified access
+
+  // T025: Removed manual loadItem async function - using hooks instead
 
   const handleContact = async () => {
     if (!item) return;
-    
+
     try {
       if (type === 'property') {
         await propertiesService.contact(itemId);
@@ -49,8 +84,9 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
   const handleMarkAsSold = async () => {
     if (!item || type !== 'classified') return;
     try {
-      const updated = await classifiedsService.markAsSold(itemId);
-      setItem(updated);
+      await classifiedsService.markAsSold(itemId);
+      // Refetch to get updated data from server
+      await refetch();
     } catch (err) {
       console.error('Failed to mark as sold:', err);
     }
@@ -72,7 +108,8 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
     });
   };
 
-  if (loading) {
+  // T022: Loading state only on initial load (when no cached data)
+  if (isLoading && !item) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4F46E5" />
@@ -81,14 +118,25 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
     );
   }
 
-  if (error || !item) {
+  // T023: Error state with retry button using refetch
+  if (error && !item) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error || 'Item not found'}</Text>
-        <Pressable style={styles.retryButton} onPress={loadItem}>
-          <Text style={styles.retryText}>Retry</Text>
-        </Pressable>
-      </View>
+      <ErrorState
+        message={
+          error.message ?? `Failed to load ${type === 'property' ? 'property' : 'classified ad'}`
+        }
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  // Handle case where item doesn't exist
+  if (!item) {
+    return (
+      <ErrorState
+        message={`${type === 'property' ? 'Property' : 'Classified ad'} not found`}
+        onRetry={() => refetch()}
+      />
     );
   }
 
@@ -97,16 +145,34 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
   const classified = !isProperty ? (item as ClassifiedAd) : null;
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#4F46E5" />
+      }>
+      {/* T021: Offline indicator (network status) */}
+      <OfflineIndicator />
+      {/* T021: Stale data indicator (cached data age) */}
+      <StaleDataIndicator dataUpdatedAt={dataUpdatedAt} />
+
+      {/* T024: Background refetch indicator */}
+      {isRefetching && (
+        <View style={styles.refetchingIndicator}>
+          <RefreshCw size={14} color="#6B7280" />
+          <Text style={styles.refetchingText}>Updating...</Text>
+        </View>
+      )}
+
       {/* Image Gallery */}
       {item.images && item.images.length > 0 ? (
         <ScrollView horizontal pagingEnabled style={styles.imageGallery}>
           {item.images.map((image, index) => (
-            <Image
+            <OptimizedImage
               key={index}
-              source={{ uri: image }}
+              source={image}
               style={styles.image}
-              resizeMode="cover"
+              contentFit="cover"
+              placeholder="marketplace"
             />
           ))}
         </ScrollView>
@@ -153,12 +219,10 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
         {/* Details */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Details</Text>
-          
+
           <View style={styles.detailRow}>
             <Calendar size={18} color="#6B7280" />
-            <Text style={styles.detailLabel}>
-              {isProperty ? 'Listed on:' : 'Posted:'}
-            </Text>
+            <Text style={styles.detailLabel}>{isProperty ? 'Listed on:' : 'Posted:'}</Text>
             <Text style={styles.detailValue}>{formatDate(item.createdAt)}</Text>
           </View>
 
@@ -179,13 +243,14 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
           {item.status && (
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Status:</Text>
-              <View style={[
-                styles.statusBadge,
-                (item.status === 'published' || item.status === 'active') && styles.statusActive,
-                item.status === 'draft' && styles.statusDraft,
-                item.status === 'sold' && styles.statusSold,
-                item.status === 'expired' && styles.statusExpired,
-              ]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  (item.status === 'published' || item.status === 'active') && styles.statusActive,
+                  item.status === 'draft' && styles.statusDraft,
+                  item.status === 'sold' && styles.statusSold,
+                  item.status === 'expired' && styles.statusExpired,
+                ]}>
                 <Text style={styles.statusText}>{item.status}</Text>
               </View>
             </View>
@@ -196,7 +261,11 @@ export function MarketplaceDetail({ itemId, type, onEdit, onContact }: Marketpla
         <View style={styles.actions}>
           {(isProperty || classified?.status === 'active') && (
             <Pressable style={styles.contactButton} onPress={handleContact}>
-              {isProperty ? <Phone size={20} color="#FFFFFF" /> : <MessageCircle size={20} color="#FFFFFF" />}
+              {isProperty ? (
+                <Phone size={20} color="#FFFFFF" />
+              ) : (
+                <MessageCircle size={20} color="#FFFFFF" />
+              )}
               <Text style={styles.contactButtonText}>
                 {isProperty ? 'Contact Owner' : 'Contact Seller'}
               </Text>
@@ -237,25 +306,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
   },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  refetchingIndicator: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    padding: 24,
+    justifyContent: 'center',
+    paddingVertical: 8,
+    gap: 6,
+    backgroundColor: '#F3F4F6',
   },
-  errorText: {
-    fontSize: 16,
-    color: '#EF4444',
-    textAlign: 'center',
-    marginBottom: 16,
+  refetchingText: {
+    fontSize: 12,
+    color: '#6B7280',
   },
-  retryButton: {
-    backgroundColor: '#4F46E5',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
+  imageGallery: {},
   retryText: {
     fontSize: 16,
     fontWeight: '600',

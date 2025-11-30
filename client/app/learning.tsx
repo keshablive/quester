@@ -1,3 +1,15 @@
+/**
+ * Learning Page
+ *
+ * Route file for learning/courses view with gamification features.
+ * Uses custom hooks that wrap TanStack Query for data fetching.
+ *
+ * Phase 3 Migration: Verified TanStack Query integration via hooks
+ * FR-007: System MUST migrate Learning page to use TanStack Query
+ *
+ * @module app/learning
+ */
+
 import React from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -15,6 +27,8 @@ import {
   LearningLeaderboardWidget,
 } from '@/components/pages/learning';
 import { useLearningXP, useLearningProgress, useLearningGamificationWebSocket } from '@/core/hooks';
+import { OfflineIndicator } from '@/components/shared';
+import { ChunkErrorBoundary } from '@/core/routes';
 
 export default function LearningPage() {
   const router = useRouter();
@@ -136,17 +150,20 @@ export default function LearningPage() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      {renderContent()}
+    <ChunkErrorBoundary>
+      <View className="flex-1 bg-background">
+        <OfflineIndicator />
+        {renderContent()}
 
-      {/* Level Up Modal (T048) */}
-      <LevelUpModal
-        visible={levelUpModal.visible}
-        level={levelUpModal.level}
-        levelName={levelUpModal.levelName}
-        totalXP={levelUpModal.totalXP}
-        onClose={closeLevelUpModal}
-      />
-    </View>
+        {/* Level Up Modal (T048) */}
+        <LevelUpModal
+          visible={levelUpModal.visible}
+          level={levelUpModal.level}
+          levelName={levelUpModal.levelName}
+          totalXP={levelUpModal.totalXP}
+          onClose={closeLevelUpModal}
+        />
+      </View>
+    </ChunkErrorBoundary>
   );
 }

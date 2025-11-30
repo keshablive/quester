@@ -16,14 +16,20 @@ function getTenantId(): string {
 export class ApiError extends Error {
     status: number;
     data: unknown;
+    /** Whether this is a network/timeout error vs server error */
+    isNetworkError: boolean;
 
-    constructor(status: number, message: string, data?: unknown) {
+    constructor(status: number, message: string, data?: unknown, isNetworkError = false) {
         super(message);
         this.status = status;
         this.data = data;
         this.name = 'ApiError';
+        this.isNetworkError = isNetworkError;
     }
 }
+
+/** Default request timeout in milliseconds (FR-014a: 10 seconds) */
+const DEFAULT_TIMEOUT = 10000;
 
 /**
  * API Client configuration
@@ -32,6 +38,17 @@ export interface RequestConfig extends RequestInit {
     token?: string;
     /** Skip token refresh on 401 (used internally to prevent loops) */
     skipRefresh?: boolean;
+    /** Custom timeout in ms (default: 10000) */
+    timeout?: number;
+}
+
+/**
+ * Service request options for API service methods (FR-016)
+ * Used by services to accept AbortSignal for request cancellation
+ */
+export interface ServiceRequestOptions {
+    /** AbortSignal for request cancellation */
+    signal?: AbortSignal;
 }
 
 /** Flag to prevent concurrent refresh attempts */
@@ -230,9 +247,20 @@ export const apiClient = {
 
     /**
      * Generic request handler
+     * FR-014: Implements AbortController for request cancellation
+     * FR-014a: 10-second default timeout
      */
     async request<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
-        const { token, headers, skipRefresh, ...rest } = config;
+        const { token, headers, skipRefresh, signal: externalSignal, timeout = DEFAULT_TIMEOUT, ...rest } = config;
+
+        // Create timeout controller (FR-014a)
+        const timeoutController = new AbortController();
+        const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
+
+        // Combine external signal with timeout signal
+        const combinedSignal = externalSignal
+            ? this.combineAbortSignals(externalSignal, timeoutController.signal)
+            : timeoutController.signal;
 
         // Get token if not provided
         const authToken = token || await this.getToken();
@@ -255,8 +283,11 @@ export const apiClient = {
         try {
             const response = await fetch(url, {
                 headers: requestHeaders,
+                signal: combinedSignal,
                 ...rest,
             });
+
+            clearTimeout(timeoutId);
 
             // Handle 401 Unauthorized (Token expired)
             if (response.status === 401) {
@@ -280,11 +311,49 @@ export const apiClient = {
 
             return data as T;
         } catch (error) {
+            clearTimeout(timeoutId);
+
             if (error instanceof ApiError) {
                 throw error;
             }
-            throw new ApiError(500, error instanceof Error ? error.message : 'Network Error');
+
+            // Handle abort/timeout errors (FR-014, FR-014a)
+            if (error instanceof Error && error.name === 'AbortError') {
+                const isTimeout = timeoutController.signal.aborted;
+                throw new ApiError(
+                    408,
+                    isTimeout ? 'Request timed out' : 'Request was cancelled',
+                    undefined,
+                    true
+                );
+            }
+
+            // Network errors (FR-007: should show toast)
+            throw new ApiError(
+                500,
+                error instanceof Error ? error.message : 'Network Error',
+                undefined,
+                true
+            );
         }
+    },
+
+    /**
+     * Combine multiple AbortSignals into one
+     * Aborts when any of the signals abort
+     */
+    combineAbortSignals(...signals: AbortSignal[]): AbortSignal {
+        const controller = new AbortController();
+
+        for (const signal of signals) {
+            if (signal.aborted) {
+                controller.abort();
+                return controller.signal;
+            }
+            signal.addEventListener('abort', () => controller.abort(), { once: true });
+        }
+
+        return controller.signal;
     },
 
     /**
@@ -343,10 +412,20 @@ export const apiClient = {
 
     /**
      * Upload file (Multipart)
+     * FR-014: Supports AbortController for cancellation
      */
     async upload<T>(endpoint: string, formData: FormData, config: RequestConfig = {}): Promise<T> {
-        const { token, headers, ...rest } = config;
+        const { token, headers, signal: externalSignal, timeout = DEFAULT_TIMEOUT, ...rest } = config;
         const authToken = token || await this.getToken();
+
+        // Create timeout controller (FR-014a)
+        const timeoutController = new AbortController();
+        const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
+
+        // Combine external signal with timeout signal
+        const combinedSignal = externalSignal
+            ? this.combineAbortSignals(externalSignal, timeoutController.signal)
+            : timeoutController.signal;
 
         const requestHeaders: HeadersInit = {
             'Accept': 'application/json',
@@ -362,8 +441,11 @@ export const apiClient = {
                 method: 'POST',
                 headers: requestHeaders,
                 body: formData,
+                signal: combinedSignal,
                 ...rest,
             });
+
+            clearTimeout(timeoutId);
 
             const data = await response.json();
 
@@ -373,8 +455,22 @@ export const apiClient = {
 
             return data as T;
         } catch (error) {
+            clearTimeout(timeoutId);
+
             if (error instanceof ApiError) throw error;
-            throw new ApiError(500, error instanceof Error ? error.message : 'Upload Error');
+
+            // Handle abort/timeout errors
+            if (error instanceof Error && error.name === 'AbortError') {
+                const isTimeout = timeoutController.signal.aborted;
+                throw new ApiError(
+                    408,
+                    isTimeout ? 'Upload timed out' : 'Upload was cancelled',
+                    undefined,
+                    true
+                );
+            }
+
+            throw new ApiError(500, error instanceof Error ? error.message : 'Upload Error', undefined, true);
         }
     }
 };

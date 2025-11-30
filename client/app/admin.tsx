@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { AdminDashboard } from '@/components/pages/admin';
+import { ChunkErrorBoundary, PageLoadingFallback } from '@/core';
+
+// US3: Code split the AdminDashboard component for faster app launch
+const AdminDashboard = lazy(() =>
+  import('@/components/pages/admin').then((module) => ({
+    default: module.AdminDashboard,
+  }))
+);
 
 export default function AdminScreen() {
   return (
     <View style={styles.container}>
-      <AdminDashboard />
+      <ChunkErrorBoundary
+        maxRetries={3}
+        onError={(error) => console.error('Admin chunk load failed:', error)}>
+        <Suspense fallback={<PageLoadingFallback message="Loading admin dashboard..." />}>
+          <AdminDashboard />
+        </Suspense>
+      </ChunkErrorBoundary>
     </View>
   );
 }

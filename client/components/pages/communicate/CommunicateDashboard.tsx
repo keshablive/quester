@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Text, Card, CardContent, Button, Icon, Skeleton } from '@/components/ui';
 import {
@@ -52,39 +52,76 @@ export function CommunicateDashboard({
     groupMembers: 0,
   });
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [recentThreads]);
+  // FR-010: Track mounted state to prevent state updates after unmount
+  const isMountedRef = useRef(true);
 
-  const loadDashboardData = async () => {
+  /**
+   * Load groups data
+   * FR-006: Extracted to useCallback with proper dependencies
+   */
+  const loadGroups = useCallback(async (): Promise<Group[]> => {
     try {
-      setLoading(true);
-
-      // Load user groups
-      try {
-        const groups = await groupsService.getUserGroups();
-        setUserGroups(groups.slice(0, 3));
-      } catch (err) {
-        console.log('Groups not available');
-        setUserGroups([]);
-      }
-
-      // Mock posts - in real app would fetch from postsService
-      const mockPosts: Post[] = [];
-      setRecentPosts(mockPosts);
-
-      // Stats will use the unreadCount from the hook
-      setStats({
-        unreadMessages: unreadCount,
-        activeStreams: 3, // Mock data - will be replaced with real streams API
-        groupMembers: userGroups.reduce((sum: number, g: Group) => sum + (g.memberCount || 0), 0),
-      });
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    } finally {
-      setLoading(false);
+      const groups = await groupsService.getUserGroups();
+      return groups.slice(0, 3);
+    } catch (err) {
+      console.log('Groups not available');
+      return [];
     }
-  };
+  }, []);
+
+  /**
+   * Effect for loading groups
+   * FR-006: Separate effect for groups loading
+   * FR-010: Cleanup function prevents state updates on unmounted component
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchGroups = async () => {
+      setLoading(true);
+      const groups = await loadGroups();
+
+      if (!cancelled && isMountedRef.current) {
+        setUserGroups(groups);
+        setLoading(false);
+      }
+    };
+
+    fetchGroups();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadGroups]);
+
+  /**
+   * Effect for updating stats when dependencies change
+   * FR-006: Separate effect for stats updates with correct dependencies
+   */
+  useEffect(() => {
+    if (!isMountedRef.current) return;
+
+    const groupMemberCount = userGroups.reduce(
+      (sum: number, g: Group) => sum + (g.memberCount || 0),
+      0
+    );
+
+    setStats({
+      unreadMessages: unreadCount,
+      activeStreams: 3, // Mock data - will be replaced with real streams API
+      groupMembers: groupMemberCount,
+    });
+  }, [unreadCount, userGroups]);
+
+  /**
+   * Cleanup on unmount
+   * FR-010: Mark component as unmounted
+   */
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const STATS = [
     {

@@ -1,14 +1,28 @@
+/**
+ * Marketplace Page
+ *
+ * Route file for marketplace view (properties/classifieds).
+ * Uses TanStack Query via sub-components for data fetching.
+ *
+ * Phase 3 Migration: Verified TanStack Query integration
+ * FR-008: System MUST migrate Marketplace page to use TanStack Query
+ *
+ * @module app/marketplace
+ */
+
 import React, { useState } from 'react';
 import { View, Modal } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { 
-  MarketplaceDashboard, 
-  MarketplaceList, 
-  MarketplaceDetail, 
-  MarketplaceForm 
+import {
+  MarketplaceDashboard,
+  MarketplaceList,
+  MarketplaceDetail,
+  MarketplaceForm,
 } from '@/components/pages/marketplace';
 import { Property, ClassifiedAd } from '@/core';
 import { MarketplaceItem, MarketplaceItemType } from '@/components/pages/marketplace/types';
+import { OfflineIndicator } from '@/components/shared';
+import { ChunkErrorBoundary } from '@/core/routes';
 
 export default function MarketplaceScreen() {
   const router = useRouter();
@@ -25,7 +39,7 @@ export default function MarketplaceScreen() {
   const navigateTo = (newView: string) => {
     router.push({
       pathname: '/marketplace',
-      params: { view: newView }
+      params: { view: newView },
     });
   };
 
@@ -72,50 +86,46 @@ export default function MarketplaceScreen() {
       case 'classifieds':
         return <MarketplaceList onItemPress={handleItemPress} initialTab="classifieds" />;
       default:
-        return (
-          <MarketplaceDashboard 
-            onNavigate={navigateTo} 
-            onItemPress={handleItemPress}
-          />
-        );
+        return <MarketplaceDashboard onNavigate={navigateTo} onItemPress={handleItemPress} />;
     }
   };
 
   return (
-    <View className="flex-1 bg-background">
-      {renderContent()}
+    <ChunkErrorBoundary>
+      <View className="flex-1 bg-background">
+        <OfflineIndicator />
+        {renderContent()}
 
-      {/* Item Detail Modal */}
-      <Modal
-        visible={showDetail}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={handleDetailClose}
-      >
-        {selectedItem && (
-          <MarketplaceDetail
-            itemId={selectedItem.id}
-            type={selectedType}
-            onEdit={handleEdit}
-            onContact={handleContact}
+        {/* Item Detail Modal */}
+        <Modal
+          visible={showDetail}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={handleDetailClose}>
+          {selectedItem && (
+            <MarketplaceDetail
+              itemId={selectedItem.id}
+              type={selectedType}
+              onEdit={handleEdit}
+              onContact={handleContact}
+            />
+          )}
+        </Modal>
+
+        {/* Item Form Modal */}
+        <Modal
+          visible={showForm}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={handleFormCancel}>
+          <MarketplaceForm
+            item={editingItem}
+            type={editingType}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
           />
-        )}
-      </Modal>
-
-      {/* Item Form Modal */}
-      <Modal
-        visible={showForm}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={handleFormCancel}
-      >
-        <MarketplaceForm
-          item={editingItem}
-          type={editingType}
-          onSuccess={handleFormSuccess}
-          onCancel={handleFormCancel}
-        />
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </ChunkErrorBoundary>
   );
 }

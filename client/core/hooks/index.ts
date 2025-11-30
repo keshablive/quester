@@ -2,6 +2,7 @@
 export * from './useWebSocket';
 export * from './useResponsive';
 export * from './useToggle';
+export * from './useDebounce';
 
 // Social Gamification Hooks
 export * from './useXPNotification';

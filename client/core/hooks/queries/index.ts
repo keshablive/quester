@@ -11,7 +11,14 @@
 export { useUser, useCurrentUser, useUserHeader } from './useUser';
 
 // Social queries
-export { useFollowStats } from './useSocial';
+export {
+  useFollowStats,
+  useFollowers,
+  useFollowing,
+  useInfiniteFollowers,
+  useInfiniteFollowing,
+  type SocialUser,
+} from './useSocial';
 
 // Dashboard queries
 export {
@@ -80,3 +87,82 @@ export {
   useMessageStats,
   useSearchMessages,
 } from './useMessages';
+
+// Transaction queries (Feature 020 - US1)
+export {
+  useTransactions,
+  useTransaction,
+  useInfiniteTransactions,
+} from './useTransactions';
+
+// Marketplace queries (Feature 020 - US2)
+export {
+  useMarketplaceProperties,
+  useMarketplaceProperty,
+  useInfiniteMarketplaceProperties,
+  useMarketplaceClassifieds,
+  useMarketplaceClassified,
+  useInfiniteMarketplaceClassifieds,
+} from './useMarketplace';
+
+// Certificate queries (Feature 020 - US3)
+export {
+  useCertificates,
+  useCertificate,
+  useCourseCertificate,
+  useCertificateDownloadUrl,
+  useVerifyCertificate,
+  useRegenerateCertificate,
+} from './useCertificates';
+
+// Notification Settings queries (Feature 020 - US4)
+export {
+  useNotificationSettings,
+  useUpdateNotificationSettings,
+  useToggleNotificationSetting,
+  useToggleNotificationType,
+} from './useNotificationSettings';
+
+// Infinite scroll utility (Feature 020)
+export {
+  useInfiniteScrollList,
+  type UseInfiniteScrollListOptions,
+  type UseInfiniteScrollListResult,
+} from './useInfiniteScrollList';
+
+// Achievement queries (Feature 022 - Phase 2)
+export {
+  useAchievements,
+  useAchievement,
+  useUserAchievements,
+} from './useAchievements';
+
+// Badge queries (Feature 022 - Phase 2)
+export {
+  useBadges,
+  useBadge,
+  useUserBadges,
+} from './useBadges';
+
+// Admin queries (Feature 022 - Phase 2)
+export {
+  useAdminStats,
+  useAdminKeys,
+  useAdminAuditLog,
+} from './useAdmin';
+
+// Analytics extension (Feature 022 - Phase 2)
+export { useEngagementChart, type ChartTimeRange } from './useAnalytics';
+
+// Social feed queries (Feature 022 - Phase 2)
+export {
+  useInfiniteSocialPosts,
+  useSocialPost,
+} from './useSocialFeed';
+
+// Group queries (Feature 022 - Phase 2)
+export {
+  useGroups,
+  useGroup,
+  useGroupMembers,
+} from './useGroups';

@@ -44,6 +44,7 @@ export {
 // Cache monitoring
 export {
   cacheMonitor,
+  devCacheLogger,
   type CacheEvictionConfig,
 } from './cacheMonitor';
 

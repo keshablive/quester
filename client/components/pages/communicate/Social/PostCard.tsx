@@ -17,7 +17,13 @@ import { AutoMilestoneBadge } from '@/components/ui/MilestoneBadge';
 
 import { PostCardProps } from './types';
 
-export function PostCard({ post, onLike, onComment, onPress }: PostCardProps) {
+/**
+ * PostCard Component
+ *
+ * Displays a social post in a feed.
+ * FR-005: Wrapped with React.memo to prevent unnecessary re-renders during scroll.
+ */
+function PostCardComponent({ post, onLike, onComment, onPress }: PostCardProps) {
   const formatDate = (date: string) => {
     const now = new Date();
     const postDate = new Date(date);
@@ -86,3 +92,31 @@ export function PostCard({ post, onLike, onComment, onPress }: PostCardProps) {
     </Card>
   );
 }
+
+/**
+ * Custom comparison function for PostCard memoization (FR-005, FR-016)
+ * Compares only the post properties that affect rendering
+ */
+function arePostPropsEqual(prevProps: PostCardProps, nextProps: PostCardProps): boolean {
+  const prevPost = prevProps.post;
+  const nextPost = nextProps.post;
+
+  return (
+    prevPost.id === nextPost.id &&
+    prevPost.content === nextPost.content &&
+    prevPost.authorId === nextPost.authorId &&
+    prevPost.likesCount === nextPost.likesCount &&
+    prevPost.commentsCount === nextPost.commentsCount &&
+    prevPost.createdAt === nextPost.createdAt &&
+    // Callback identity comparison - typically stable from useCallback
+    prevProps.onLike === nextProps.onLike &&
+    prevProps.onComment === nextProps.onComment &&
+    prevProps.onPress === nextProps.onPress
+  );
+}
+
+/**
+ * Memoized PostCard export (FR-005)
+ * Prevents re-renders when scrolling through social feed
+ */
+export const PostCard = React.memo(PostCardComponent, arePostPropsEqual);

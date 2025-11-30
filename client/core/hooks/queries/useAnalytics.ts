@@ -180,3 +180,83 @@ export type {
   EngagementSummary,
   TimeSeriesData,
 } from '../../api/services/analytics.service';
+
+/**
+ * Time range for engagement chart queries
+ */
+export type ChartTimeRange = '7d' | '30d' | '90d' | '1y';
+
+/**
+ * Helper to convert TimeRange to date strings
+ */
+function getDateRangeFromTimeRange(timeRange: ChartTimeRange): { startDate: string; endDate: string } {
+  const endDate = new Date().toISOString().split('T')[0];
+  const startDate = new Date();
+  
+  switch (timeRange) {
+    case '7d':
+      startDate.setDate(startDate.getDate() - 7);
+      break;
+    case '30d':
+      startDate.setDate(startDate.getDate() - 30);
+      break;
+    case '90d':
+      startDate.setDate(startDate.getDate() - 90);
+      break;
+    case '1y':
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      break;
+  }
+  
+  return {
+    startDate: startDate.toISOString().split('T')[0],
+    endDate,
+  };
+}
+
+/**
+ * Fetch engagement chart data for a given time range
+ *
+ * FR-013: Provides engagement chart data
+ * FR-014: Supports independent loading per chart section
+ *
+ * @param timeRange - Time range for the chart ('7d', '30d', '90d', '1y')
+ * @param options - Optional TanStack Query options
+ * @returns Query result with chart data points
+ *
+ * @example
+ * ```tsx
+ * function EngagementChart() {
+ *   const [timeRange, setTimeRange] = useState<ChartTimeRange>('30d');
+ *   const { data, isLoading, error, isFetching } = useEngagementChart(timeRange);
+ *
+ *   if (isLoading) return <ChartSkeleton />;
+ *   if (error) return <ChartError onRetry={() => refetch()} />;
+ *
+ *   return (
+ *     <View>
+ *       {isFetching && <RefreshIndicator />}
+ *       <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
+ *       <LineChart data={data} />
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export function useEngagementChart(
+  timeRange: ChartTimeRange,
+  options?: Omit<
+    UseQueryOptions<TimeSeriesData[], ApiError>,
+    'queryKey' | 'queryFn'
+  >
+): UseQueryResult<TimeSeriesData[], ApiError> {
+  const { startDate, endDate } = getDateRangeFromTimeRange(timeRange);
+  
+  return useQuery({
+    queryKey: queryKeys.analytics.engagementTimeseries(startDate, endDate),
+    queryFn: () => analyticsService.getEngagementTimeseries(startDate, endDate),
+    staleTime: STALE_TIMES.ENGAGEMENT_CHART,
+    gcTime: GC_TIME,
+    ...options,
+  });
+}

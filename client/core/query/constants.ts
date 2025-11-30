@@ -2,7 +2,7 @@
  * TanStack Query Configuration Constants
  *
  * Stale times, retry configuration, and cache settings
- * per resource type as specified in FR-001 and FR-009.
+ * per resource type as specified in FR-001, FR-009, and FR-026.
  *
  * @module core/query/constants
  */
@@ -14,26 +14,57 @@
  * before a background refetch is triggered.
  *
  * FR-001: System MUST cache API responses with configurable TTL
+ * FR-026: System MUST implement tiered stale times based on data volatility
+ *
+ * Tiered Configuration (Spec 023):
+ * - Dashboard: 30s (user expects fresh stats; high visibility)
+ * - Quests/Achievements: 2min (progress changes frequently)
+ * - Learning/Badges: 5min (content is relatively stable)
+ * - Notifications/Transactions: 1min (need reasonable freshness)
  */
 export const STALE_TIMES = {
-  /** User profile - 10 minutes (relatively stable) */
-  USER_PROFILE: 10 * 60 * 1000,
-  /** Courses - 5 minutes (moderately dynamic) */
-  COURSES: 5 * 60 * 1000,
-  /** Quests - 2 minutes (progress changes frequently) */
-  QUESTS: 2 * 60 * 1000,
+  /** Dashboard stats - 30 seconds (FR-026: high visibility, fresh stats) */
+  DASHBOARD: 30 * 1000,
   /** Leaderboards - 30 seconds (real-time competitive data) */
   LEADERBOARDS: 30 * 1000,
-  /** Dashboard stats - 5 minutes */
-  DASHBOARD: 5 * 60 * 1000,
-  /** Notifications - 1 minute */
+  /** Quests - 2 minutes (FR-026: progress changes frequently) */
+  QUESTS: 2 * 60 * 1000,
+  /** Quest progress - 1 minute (active engagement, need fresh data) */
+  QUEST_PROGRESS: 60 * 1000,
+  /** Achievements - 2 minutes (FR-026: progress changes frequently) */
+  ACHIEVEMENTS: 2 * 60 * 1000,
+  /** Notifications - 1 minute (FR-026: new notifications should appear quickly) */
   NOTIFICATIONS: 60 * 1000,
-  /** Analytics - 5 minutes (FR-009: cache with 5-minute stale time) */
-  ANALYTICS: 5 * 60 * 1000,
+  /** Transactions - 1 minute (FR-026: financial data needs reasonable freshness) */
+  TRANSACTIONS: 60 * 1000,
   /** Message threads - 30 seconds (FR-010: frequent updates from new messages) */
   MESSAGES_THREADS: 30 * 1000,
   /** Message content - 60 seconds (FR-010: content rarely changes) */
   MESSAGES: 60 * 1000,
+  /** Courses - 5 minutes (FR-026: content is relatively stable) */
+  COURSES: 5 * 60 * 1000,
+  /** Badge catalog - 5 minutes (FR-026: badge criteria rarely changes) */
+  BADGES_CATALOG: 5 * 60 * 1000,
+  /** User badges - 5 minutes (FR-026: badge criteria rarely changes) */
+  BADGES_USER: 5 * 60 * 1000,
+  /** User profile - 10 minutes (relatively stable) */
+  USER_PROFILE: 10 * 60 * 1000,
+  /** Analytics - 5 minutes (FR-009: cache with 5-minute stale time) */
+  ANALYTICS: 5 * 60 * 1000,
+  /** Marketplace - 5 minutes (catalog data, moderately static) */
+  MARKETPLACE: 5 * 60 * 1000,
+  /** Certificates - 5 minutes (achievement data, rarely changes) */
+  CERTIFICATES: 5 * 60 * 1000,
+  /** Notification settings - 5 minutes (user preference, changes infrequently) */
+  NOTIFICATION_SETTINGS: 5 * 60 * 1000,
+  /** Admin stats - 5 minutes (FR-011: auto-refresh every 5 minutes) */
+  ADMIN_STATS: 5 * 60 * 1000,
+  /** Social feed - 2 minutes (active content, but not real-time) */
+  SOCIAL_FEED: 2 * 60 * 1000,
+  /** Groups - 5 minutes (relatively stable) */
+  GROUPS: 5 * 60 * 1000,
+  /** Engagement charts - 5 minutes (chart data doesn't change rapidly) */
+  ENGAGEMENT_CHART: 5 * 60 * 1000,
   /** Default fallback */
   DEFAULT: 5 * 60 * 1000,
 } as const;

@@ -20,11 +20,32 @@ Use **direct imports** instead of barrel file imports for components in certain 
 ```typescript
 // ✅ GOOD - Core is stable and well-structured
 import { appConfig, useResponsive, cn, ROUTES } from '@/core';
-import { AuthProvider, useAuth } from '@/core/auth/AuthContext';
 import { isProtectedRoute } from '@/core/routes';
+
+// ✅ GOOD - Performance components from core
+import { OptimizedImage, OptimizedList, LoadingFallback } from '@/core';
+import { ChunkErrorBoundary, lazyWithPreload } from '@/core';
 ```
 
-#### 2. UI Component Imports (Use direct paths)
+#### 2. Auth Imports (Use direct paths or specialized hooks)
+```typescript
+// ✅ GOOD - Backward compatible auth (subscribes to all state)
+import { AuthProvider, useAuth } from '@/core/auth/AuthContext';
+
+// ✅ BETTER - New composite provider with split contexts
+import { AuthProviders } from '@/core/auth/providers';
+
+// ✅ BEST - Specialized hooks for optimized re-renders (Feature 019)
+import { useCoreAuth } from '@/core/auth/hooks/useCoreAuth';       // User, auth state only
+import { useTwoFactor } from '@/core/auth/hooks/useTwoFactor';     // 2FA state only
+import { useBiometricAuth } from '@/core/auth/hooks/useBiometricAuth'; // Biometric only
+
+// ✅ GOOD - Import from hooks barrel
+import { useCoreAuth, useTwoFactor, useBiometricAuth } from '@/core/auth/hooks';
+```
+
+#### 3. UI Component Imports (Use direct paths)
+
 ```typescript
 // ✅ GOOD - Direct imports avoid bundler issues
 import { Button } from '@/components/ui/button';
@@ -33,24 +54,58 @@ import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 ```
 
-#### 3. Layout Component Imports (Use relative paths from app/)
+#### 4. Layout Component Imports (Use relative paths from app/)
+
 ```typescript
 // ✅ GOOD - In app/_layout.tsx
 import { MainLayout } from '../components/layout/MainLayout';
 import { SplashScreen } from '../components/ui/SplashScreen';
 ```
 
-#### 4. Auth Component Imports (Use relative paths)
+#### 5. Auth Component Imports (Use relative paths)
+
 ```typescript
 // ✅ GOOD - In components/pages/home/WelcomeScreen.tsx
 import { AuthModal } from '../../auth/AuthModal';
 ```
 
-#### 5. Page Component Imports (Use direct paths)
+#### 6. Page Component Imports (Use direct paths)
+
 ```typescript
 // ✅ GOOD
 import { DashboardHeader } from '@/components/pages/dashboard/DashboardHeader';
 import { StatsCards } from '@/components/pages/dashboard/StatsCards';
+```
+
+#### 7. TanStack Query Hook Imports (Use barrel or direct)
+
+```typescript
+// ✅ GOOD - Barrel file for query hooks (Phase 3)
+import { useAchievements, useBadges, useQuests } from '@/core/hooks/queries';
+import { useDashboardStats, useDashboardActivity } from '@/core/hooks/queries';
+
+// ✅ GOOD - Barrel file for mutation hooks (Phase 3)
+import { useStartQuest, useCompleteQuest, useAbandonQuest } from '@/core/hooks/mutations';
+import { usePurchaseItem, useFavoriteItem } from '@/core/hooks/mutations';
+
+// ✅ GOOD - Direct imports (for specific hook)
+import { useAchievements } from '@/core/hooks/queries/useAchievements';
+import { useStartQuest } from '@/core/hooks/mutations/useQuestMutations';
+
+// ✅ GOOD - Shared components from barrel
+import { OfflineIndicator, ErrorState, StaleDataIndicator } from '@/components/shared';
+```
+
+#### 8. Query Client and Configuration
+
+```typescript
+// ✅ GOOD - Query configuration imports
+import { queryKeys } from '@/core/query/keys';
+import { STALE_TIMES, GC_TIME } from '@/core/query/constants';
+import { ChunkErrorBoundary } from '@/core/routes';
+
+// ✅ GOOD - Prefetch utilities
+import { prefetchDailyQuests, prefetchDashboard } from '@/core/query/prefetch';
 ```
 
 ### ❌ Avoid These Patterns

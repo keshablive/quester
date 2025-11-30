@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, ActivityIndicator, Pressable, Image } from 'react-native';
+import { View, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { Text } from '@/components/ui';
 import {
   BookOpen,
@@ -10,7 +10,7 @@ import {
   ArrowLeft,
   Star,
 } from 'lucide-react-native';
-import { coursesService, Course, Lesson } from '@/core';
+import { coursesService, Course, Lesson, OptimizedImage } from '@/core';
 import { CourseDetailProps } from './course.types';
 import { cn, useLearningProgress } from '@/core';
 import { useRouter } from 'expo-router';
@@ -77,7 +77,12 @@ export function CourseDetail({ courseId, onStartLesson, onBack }: CourseDetailPr
       {/* Header */}
       <View className="relative">
         {course.thumbnail ? (
-          <Image source={{ uri: course.thumbnail }} className="h-64 w-full" resizeMode="cover" />
+          <OptimizedImage
+            source={course.thumbnail}
+            className="h-64 w-full"
+            contentFit="cover"
+            placeholder="courseThumbnail"
+          />
         ) : (
           <View className="h-64 w-full items-center justify-center bg-muted">
             <BookOpen size={64} className="text-muted-foreground" />

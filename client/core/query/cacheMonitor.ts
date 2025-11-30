@@ -258,4 +258,95 @@ class CacheMonitor {
  */
 export const cacheMonitor = new CacheMonitor();
 
+/**
+ * Development-only cache event logger (FR-014)
+ *
+ * Logs cache hits, misses, and stale data events to console
+ * for debugging purposes. Only active in __DEV__ mode.
+ */
+class DevCacheLogger {
+  private enabled: boolean = false;
+
+  /**
+   * Enable dev cache logging
+   */
+  enable(): void {
+    if (__DEV__) {
+      this.enabled = true;
+      console.log('[DevCacheLogger] Cache logging enabled');
+    }
+  }
+
+  /**
+   * Disable dev cache logging
+   */
+  disable(): void {
+    this.enabled = false;
+  }
+
+  /**
+   * Check if logging is enabled
+   */
+  isEnabled(): boolean {
+    return this.enabled && __DEV__;
+  }
+
+  /**
+   * Log a cache hit event
+   */
+  logCacheHit(queryKey: unknown, dataAge?: number): void {
+    if (!this.isEnabled()) return;
+    const keyStr = JSON.stringify(queryKey);
+    const ageStr = dataAge ? ` (age: ${Math.round(dataAge / 1000)}s)` : '';
+    console.log(`[Cache HIT] ${keyStr}${ageStr}`);
+  }
+
+  /**
+   * Log a cache miss event
+   */
+  logCacheMiss(queryKey: unknown): void {
+    if (!this.isEnabled()) return;
+    const keyStr = JSON.stringify(queryKey);
+    console.log(`[Cache MISS] ${keyStr}`);
+  }
+
+  /**
+   * Log a stale data event (data served from cache while refetching)
+   */
+  logStaleData(queryKey: unknown, staleTime: number): void {
+    if (!this.isEnabled()) return;
+    const keyStr = JSON.stringify(queryKey);
+    console.log(`[Cache STALE] ${keyStr} (stale for ${Math.round(staleTime / 1000)}s)`);
+  }
+
+  /**
+   * Log a cache invalidation event
+   */
+  logInvalidation(queryKey: unknown, reason?: string): void {
+    if (!this.isEnabled()) return;
+    const keyStr = JSON.stringify(queryKey);
+    const reasonStr = reason ? ` - ${reason}` : '';
+    console.log(`[Cache INVALIDATE] ${keyStr}${reasonStr}`);
+  }
+
+  /**
+   * Log cache statistics summary
+   */
+  logStats(): void {
+    if (!this.isEnabled()) return;
+    const stats = cacheMonitor.getStats();
+    console.log('[Cache Stats]', {
+      size: `${(stats.sizeBytes / 1024 / 1024).toFixed(2)}MB`,
+      entries: stats.entryCount,
+      utilization: `${(stats.utilizationPercent * 100).toFixed(1)}%`,
+      warning: stats.isWarning,
+    });
+  }
+}
+
+/**
+ * Singleton dev cache logger instance (FR-014)
+ */
+export const devCacheLogger = new DevCacheLogger();
+
 export default cacheMonitor;

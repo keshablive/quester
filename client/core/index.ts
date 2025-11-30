@@ -20,11 +20,17 @@
  * 
  * // Import API services
  * import { apiClient, authService, coursesService } from '@/core';
+ * 
+ * // Import performance components
+ * import { OptimizedImage, OptimizedList } from '@/core';
  * ```
  */
 
 // Configuration
 export * from './config';
+
+// Constants (including performance config)
+export * from './constants';
 
 // Utilities
 export * from './utils';
@@ -35,7 +41,7 @@ export * from './hooks';
 // Types
 export * from './types';
 
-// Routes
+// Routes (including lazy loading utilities)
 export * from './routes';
 
 // Auth
@@ -46,3 +52,16 @@ export * from './api';
 
 // Layout Components
 export * from './components/Layout';
+
+// Performance Components
+export { OptimizedImage } from './components/OptimizedImage';
+export type { OptimizedImageProps } from './components/OptimizedImage';
+export { OptimizedList } from './components/OptimizedList';
+export type { OptimizedListProps, ListRenderItemInfo, ListLoadingState } from './components/OptimizedList';
+export { LoadingFallback, PageLoadingFallback, ComponentLoadingFallback } from './components/LoadingFallback';
+export type { LoadingFallbackProps } from './components/LoadingFallback';
+
+// Lazy Loading Utilities (re-export from routes)
+export { ChunkErrorBoundary, LazyLoadComponent, preloadRoute, lazyWithPreload } from './routes/LazyRoute';
+export type { ChunkErrorBoundaryProps, ChunkErrorFallbackProps, LazyRouteConfig } from './routes/LazyRoute.types';
+

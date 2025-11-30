@@ -13,6 +13,13 @@ import type {
   QuestFilters,
   NotificationFilters,
   LeaderboardType,
+  TransactionFilters,
+  PropertyFilters,
+  ClassifiedFilters,
+  CertificateFilters,
+  AchievementFilters,
+  AuditLogFilters,
+  GroupFilters,
 } from '../types/query.types';
 
 /**
@@ -189,6 +196,146 @@ export const queryKeys = {
     unreadCount: () => [...queryKeys.messages.all, 'unread-count'] as const,
     /** Message statistics */
     stats: () => [...queryKeys.messages.all, 'stats'] as const,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Transaction Queries (Feature 020)
+  // ═══════════════════════════════════════════════════════════════
+  transactions: {
+    all: ['transactions'] as const,
+    lists: () => [...queryKeys.transactions.all, 'list'] as const,
+    list: (filters?: TransactionFilters) =>
+      filters
+        ? ([...queryKeys.transactions.lists(), filters] as const)
+        : queryKeys.transactions.lists(),
+    details: () => [...queryKeys.transactions.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.transactions.details(), id] as const,
+    /** Infinite scroll paginated list */
+    infinite: (filters?: TransactionFilters) =>
+      [...queryKeys.transactions.all, 'infinite', filters ?? {}] as const,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Marketplace Queries (Feature 020)
+  // ═══════════════════════════════════════════════════════════════
+  marketplace: {
+    all: ['marketplace'] as const,
+
+    /** Property listings */
+    properties: {
+      all: () => [...queryKeys.marketplace.all, 'properties'] as const,
+      lists: () => [...queryKeys.marketplace.properties.all(), 'list'] as const,
+      list: (filters?: PropertyFilters) =>
+        filters
+          ? ([...queryKeys.marketplace.properties.lists(), filters] as const)
+          : queryKeys.marketplace.properties.lists(),
+      details: () => [...queryKeys.marketplace.properties.all(), 'detail'] as const,
+      detail: (id: string) =>
+        [...queryKeys.marketplace.properties.details(), id] as const,
+      infinite: (filters?: PropertyFilters) =>
+        [...queryKeys.marketplace.properties.all(), 'infinite', filters ?? {}] as const,
+    },
+
+    /** Classified ad listings */
+    classifieds: {
+      all: () => [...queryKeys.marketplace.all, 'classifieds'] as const,
+      lists: () => [...queryKeys.marketplace.classifieds.all(), 'list'] as const,
+      list: (filters?: ClassifiedFilters) =>
+        filters
+          ? ([...queryKeys.marketplace.classifieds.lists(), filters] as const)
+          : queryKeys.marketplace.classifieds.lists(),
+      details: () => [...queryKeys.marketplace.classifieds.all(), 'detail'] as const,
+      detail: (id: string) =>
+        [...queryKeys.marketplace.classifieds.details(), id] as const,
+      infinite: (filters?: ClassifiedFilters) =>
+        [...queryKeys.marketplace.classifieds.all(), 'infinite', filters ?? {}] as const,
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Certificate Queries (Feature 020)
+  // ═══════════════════════════════════════════════════════════════
+  certificates: {
+    all: ['certificates'] as const,
+    lists: () => [...queryKeys.certificates.all, 'list'] as const,
+    list: (filters?: CertificateFilters) =>
+      filters
+        ? ([...queryKeys.certificates.lists(), filters] as const)
+        : queryKeys.certificates.lists(),
+    details: () => [...queryKeys.certificates.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.certificates.details(), id] as const,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Notification Settings Queries (Feature 020)
+  // ═══════════════════════════════════════════════════════════════
+  notificationSettings: {
+    all: ['notificationSettings'] as const,
+    /** Current user's notification settings */
+    current: () => [...queryKeys.notificationSettings.all, 'current'] as const,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Achievement Queries (Feature 022 - Phase 2)
+  // ═══════════════════════════════════════════════════════════════
+  achievements: {
+    all: ['achievements'] as const,
+    list: (filters?: AchievementFilters) =>
+      filters
+        ? ([...queryKeys.achievements.all, 'list', filters] as const)
+        : ([...queryKeys.achievements.all, 'list'] as const),
+    detail: (id: string) =>
+      [...queryKeys.achievements.all, 'detail', id] as const,
+    user: (userId: string) =>
+      [...queryKeys.achievements.all, 'user', userId] as const,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Badge Queries (Feature 022 - Phase 2)
+  // ═══════════════════════════════════════════════════════════════
+  badges: {
+    all: ['badges'] as const,
+    list: () => [...queryKeys.badges.all, 'list'] as const,
+    user: (userId: string) =>
+      [...queryKeys.badges.all, 'user', userId] as const,
+    detail: (id: string) =>
+      [...queryKeys.badges.all, 'detail', id] as const,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Admin Queries (Feature 022 - Phase 2)
+  // ═══════════════════════════════════════════════════════════════
+  admin: {
+    all: ['admin'] as const,
+    stats: () => [...queryKeys.admin.all, 'stats'] as const,
+    keys: () => [...queryKeys.admin.all, 'keys'] as const,
+    auditLog: (filters?: AuditLogFilters) =>
+      filters
+        ? ([...queryKeys.admin.all, 'auditLog', filters] as const)
+        : ([...queryKeys.admin.all, 'auditLog'] as const),
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // Social Feed & Groups Queries (Feature 022 - Phase 2)
+  // ═══════════════════════════════════════════════════════════════
+  social: {
+    all: ['social'] as const,
+    /** Social feed posts */
+    feed: () => [...queryKeys.social.all, 'feed'] as const,
+    /** Infinite scroll feed */
+    feedInfinite: () => [...queryKeys.social.all, 'feed', 'infinite'] as const,
+    /** Single post by ID */
+    post: (id: string) => [...queryKeys.social.all, 'post', id] as const,
+    /** Group list */
+    groups: (filters?: GroupFilters) =>
+      filters
+        ? ([...queryKeys.social.all, 'groups', filters] as const)
+        : ([...queryKeys.social.all, 'groups'] as const),
+    /** Single group by ID */
+    group: (id: string) => [...queryKeys.social.all, 'group', id] as const,
+    /** Group members */
+    groupMembers: (groupId: string) =>
+      [...queryKeys.social.all, 'group', groupId, 'members'] as const,
   },
 } as const;
 

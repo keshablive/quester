@@ -22,6 +22,24 @@ Auto-generated from all feature plans. Last updated: 2025-11-23
 - PostgreSQL (via GORM), Redis sorted sets (primary for real-time rankings) (013-leaderboard-controller-integration)
 - TypeScript 5.9, React 19.1, React Native 0.81.5 + Expo 54, Expo Router 6, @tanstack/react-query 5.90, AsyncStorage, expo-local-authentication (new), expo-secure-store (new) (014-auth-api-integration)
 - AsyncStorage for session, SecureStore for credentials (biometrics) (014-auth-api-integration)
+- TypeScript 5.9, React Native 0.81.5, Go 1.24 + TanStack Query 5.90, Expo 54, Expo Router 6, NativeWind 4.2 (015-profile-api-integration)
+- PostgreSQL (server), TanStack Query cache (client) (015-profile-api-integration)
+- TypeScript 5.9, React Native 0.81.5 + TanStack Query 5.90, Expo 54, NativeWind 4.2 (016-analytics-api-integration)
+- N/A (client-side, fetches from server API) (016-analytics-api-integration)
+- TypeScript 5.9, Go 1.24 + TanStack Query 5.90, React Native 0.81.5, Expo 54, NativeWind 4.2 (017-messages-api-integration)
+- PostgreSQL (server-side, existing), TanStack Query cache (client-side) (017-messages-api-integration)
+- TypeScript 5.9, React 19.1.0, React Native 0.81.5 + Expo 54, TanStack Query 5.90, NativeWind 4.2, expo-router 6.0 (018-client-performance)
+- AsyncStorage (TanStack Query persister) (018-client-performance)
+- TypeScript 5.9, React 19.1.0, React Native 0.81.5 + Expo SDK 54, expo-router 6.0.10, TanStack Query 5.90, NativeWind 4.2 (019-client-image-list-performance)
+- AsyncStorage (auth tokens), expo-secure-store (credentials), expo-image disk cache (019-client-image-list-performance)
+- TypeScript 5.x with React Native (Expo 54) + @tanstack/react-query ^5.90.11, @tanstack/query-async-storage-persister ^5.90.13, @shopify/flash-list 2.0.2 (020-client-tanstack-query-migration)
+- AsyncStorage for cache persistence (already configured) (020-client-tanstack-query-migration)
+- TypeScript 5.x, React 19.1, React Native 0.81.5 + TanStack Query 5.90, Expo Router 6.x, NativeWind 4.2, @shopify/flash-list 2.0 (021-client-tanstack-completion)
+- AsyncStorage (via @tanstack/query-async-storage-persister for cache persistence) (021-client-tanstack-completion)
+- TypeScript 5.x + React 19.1, React Native 0.81.5, Expo 54, TanStack Query 5.90 (022-client-tanstack-phase2)
+- AsyncStorage (offline persistence), REST API (022-client-tanstack-phase2)
+- TypeScript 5.x, React Native with Expo + TanStack Query v5, NativeWind, React Native Reusables (@shadcn) (023-client-tanstack-phase3)
+- AsyncStorage for query cache persistence (023-client-tanstack-phase3)
 
 - Go 1.24.0 + Fiber v2 (HTTP framework), GORM v2 (ORM), PostgreSQL driver, UUID library, Redis client (001-server-refactor)
 
@@ -41,9 +59,9 @@ tests/
 Go 1.24.0: Follow standard conventions
 
 ## Recent Changes
-- 014-auth-api-integration: Added TypeScript 5.9, React 19.1, React Native 0.81.5 + Expo 54, Expo Router 6, @tanstack/react-query 5.90, AsyncStorage, expo-local-authentication (new), expo-secure-store (new)
-- 013-leaderboard-controller-integration: Added Go 1.21+ + Fiber v2, GORM, Redis (go-redis/v9), DI container (internal/framework/container)
-- 012-client-data-fetching: Added TypeScript 5.9, React 19.1, React Native 0.81.5 + @tanstack/react-query@^5, @tanstack/react-query-persist-client@^5, @tanstack/query-async-storage-persister@^5, @react-native-async-storage/async-storage@2.2
+- 023-client-tanstack-phase3: Added TypeScript 5.x, React Native with Expo + TanStack Query v5, NativeWind, React Native Reusables (@shadcn)
+- 022-client-tanstack-phase2: Added TypeScript 5.x + React 19.1, React Native 0.81.5, Expo 54, TanStack Query 5.90
+- 021-client-tanstack-completion: Added TypeScript 5.x, React 19.1, React Native 0.81.5 + TanStack Query 5.90, Expo Router 6.x, NativeWind 4.2, @shopify/flash-list 2.0
 
 
 <!-- MANUAL ADDITIONS START -->

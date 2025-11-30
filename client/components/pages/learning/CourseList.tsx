@@ -1,13 +1,15 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, RefreshControl, Pressable } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { Text } from '@/components/ui';
 import { BookOpen } from 'lucide-react-native';
 import { useCourses } from '@/core/hooks/queries';
 import { useEnrollCourse } from '@/core/hooks/mutations';
-import { MutationErrorToast } from '@/components/shared';
+import { MutationErrorToast, ErrorState } from '@/components/shared';
 import { CourseCard } from './CourseCard';
 import { CourseListProps } from './course.types';
 import { useRouter } from 'expo-router';
+import { OptimizedList, type ListRenderItemInfo } from '@/core';
+import type { Course } from '@/core/types';
 
 /**
  * CourseList Component
@@ -101,53 +103,58 @@ export function CourseList({ onCoursePress }: CourseListProps) {
     );
   }
 
-  // Error state
+  // Error state - US1: Use ErrorState for inline error display (FR-003)
   if (error && courses.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center bg-background p-6">
-        <Text className="mb-4 text-center text-base text-destructive">
-          {error.message || 'Failed to load courses'}
-        </Text>
-        <Pressable className="rounded-lg bg-primary px-6 py-3" onPress={() => refetch()}>
-          <Text className="text-base font-semibold text-primary-foreground">Retry</Text>
-        </Pressable>
-      </View>
+      <ErrorState
+        title="Unable to load courses"
+        message={
+          error.message || 'Failed to load courses. Please check your connection and try again.'
+        }
+        onRetry={refetch}
+      />
     );
   }
 
+  // Render item callback for OptimizedList
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<Course>) => (
+      <CourseCard
+        course={{
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          instructor: item.instructorId,
+          duration: item.duration,
+          level: item.difficulty,
+          thumbnail: item.thumbnailUrl,
+          enrolled: false,
+          progress: undefined,
+        }}
+        onPress={handleCoursePress}
+        onEnroll={handleEnroll}
+      />
+    ),
+    [handleCoursePress, handleEnroll]
+  );
+
+  const keyExtractor = useCallback((item: Course) => item.id, []);
+
   return (
     <>
-      <FlatList
+      <OptimizedList<Course>
         data={courses}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <CourseCard
-            course={{
-              id: item.id,
-              title: item.title,
-              description: item.description,
-              instructor: item.instructorId, // Will need to fetch instructor name later
-              duration: item.duration,
-              level: item.difficulty,
-              thumbnail: item.thumbnailUrl,
-              enrolled: false, // Will integrate with enrollment status later
-              progress: undefined,
-            }}
-            onPress={handleCoursePress}
-            onEnroll={handleEnroll}
-          />
-        )}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        estimatedItemSize={280}
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
-        contentContainerClassName="p-4"
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching && !isFetchingNextPage}
-            onRefresh={() => refetch()}
-          />
-        }
+        contentContainerStyle={{ padding: 16 }}
+        refreshing={isRefetching && !isFetchingNextPage}
+        onRefresh={() => refetch()}
+        testID="courses-list"
       />
       <MutationErrorToast
         message={enrollError ?? ''}

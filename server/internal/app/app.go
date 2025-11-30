@@ -824,8 +824,13 @@ func initializeContainer(cfg *config.Config) *container.Container {
 	}
 
 	// Cache client (Redis)
+	// Wrap in PooledRedisClient for production-grade connection pooling
 	if err := c.RegisterSingleton("cache", func(c *container.Container) (interface{}, error) {
-		return cache.Client, nil
+		if cache.Client == nil {
+			return nil, fmt.Errorf("cache.Client is nil - ensure cache is initialized before container setup")
+		}
+		// Wrap existing cache.Client in PooledRedisClient
+		return cache.NewPooledRedisClientFromExisting(cache.Client), nil
 	}); err != nil {
 		log.Fatalf("Failed to register cache in container: %v", err)
 	}

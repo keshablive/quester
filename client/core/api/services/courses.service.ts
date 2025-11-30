@@ -1,4 +1,5 @@
-import { apiClient } from '../client';
+import { apiClient, ApiError } from '../client';
+import type { ServiceRequestOptions } from '../client';
 import { API_ENDPOINTS } from '../../config/env';
 
 export interface Course {
@@ -38,124 +39,100 @@ export interface CourseProgress {
 export const coursesService = {
     /**
      * Get all courses
+     * FR-001: Removed mock data fallback - errors propagate to UI
      */
-    async getCourses(page: number = 1, limit: number = 20): Promise<Course[]> {
+    async getCourses(page: number = 1, limit: number = 20, options?: ServiceRequestOptions): Promise<Course[]> {
         try {
-            return await apiClient.get(`${API_ENDPOINTS.COURSES.BASE}?page=${page}&limit=${limit}`);
+            return await apiClient.get(`${API_ENDPOINTS.COURSES.BASE}?page=${page}&limit=${limit}`, {
+                signal: options?.signal,
+            });
         } catch (error) {
-            console.warn('Failed to get courses, returning mock data:', error);
-            return [
-                {
-                    id: '1',
-                    title: 'Introduction to React Native',
-                    description: 'Learn the basics of React Native development',
-                    instructor: 'John Doe',
-                    duration: 120,
-                    level: 'beginner',
-                    enrolled: true,
-                    progress: 45,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                },
-                {
-                    id: '2',
-                    title: 'Advanced TypeScript Patterns',
-                    description: 'Master advanced TypeScript concepts',
-                    instructor: 'Jane Smith',
-                    duration: 180,
-                    level: 'advanced',
-                    enrolled: false,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                }
-            ];
+            // FR-012: Log error with context (excluding PII per Constitution II)
+            console.error('[coursesService.getCourses] Failed to fetch courses', {
+                page,
+                limit,
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+                isNetworkError: error instanceof ApiError ? error.isNetworkError : false,
+            });
+            throw error;
         }
     },
 
     /**
      * Get course by ID
+     * FR-001: Removed mock data fallback - errors propagate to UI
      */
-    async getCourse(id: string): Promise<Course> {
+    async getCourse(id: string, options?: ServiceRequestOptions): Promise<Course> {
         try {
-            return await apiClient.get(API_ENDPOINTS.COURSES.BY_ID(id));
+            return await apiClient.get(API_ENDPOINTS.COURSES.BY_ID(id), {
+                signal: options?.signal,
+            });
         } catch (error) {
-            console.warn(`Failed to get course ${id}, returning mock data:`, error);
-            return {
-                id: id,
-                title: 'Introduction to React Native',
-                description: 'Learn the basics of React Native development',
-                instructor: 'John Doe',
-                duration: 120,
-                level: 'beginner',
-                enrolled: true,
-                progress: 45,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
+            console.error('[coursesService.getCourse] Failed to fetch course', {
+                courseId: id,
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+                isNetworkError: error instanceof ApiError ? error.isNetworkError : false,
+            });
+            throw error;
         }
     },
 
     /**
      * Get course lessons
+     * FR-001: Removed mock data fallback - errors propagate to UI
      */
-    async getCourseLessons(id: string): Promise<Lesson[]> {
+    async getCourseLessons(id: string, options?: ServiceRequestOptions): Promise<Lesson[]> {
         try {
-            return await apiClient.get(API_ENDPOINTS.COURSES.LESSONS(id));
+            return await apiClient.get(API_ENDPOINTS.COURSES.LESSONS(id), {
+                signal: options?.signal,
+            });
         } catch (error) {
-            console.warn(`Failed to get lessons for course ${id}, returning mock data:`, error);
-            return [
-                {
-                    id: '1',
-                    courseId: id,
-                    title: 'Setup Environment',
-                    description: 'Setting up your development environment',
-                    order: 1,
-                    duration: 15,
-                    completed: true,
-                    videoUrl: 'https://example.com/video.mp4',
-                    content: 'Step 1: Install Node.js...'
-                },
-                {
-                    id: '2',
-                    courseId: id,
-                    title: 'Hello World',
-                    description: 'Your first React Native app',
-                    order: 2,
-                    duration: 20,
-                    completed: false,
-                    videoUrl: 'https://example.com/video2.mp4',
-                    content: 'Step 1: Create a new project...'
-                }
-            ];
+            console.error('[coursesService.getCourseLessons] Failed to fetch lessons', {
+                courseId: id,
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+                isNetworkError: error instanceof ApiError ? error.isNetworkError : false,
+            });
+            throw error;
         }
     },
 
     /**
      * Enroll in course
      */
-    async enrollCourse(id: string): Promise<void> {
+    async enrollCourse(id: string, options?: ServiceRequestOptions): Promise<void> {
         try {
-            await apiClient.post(API_ENDPOINTS.COURSES.ENROLL(id));
+            await apiClient.post(API_ENDPOINTS.COURSES.ENROLL(id), undefined, {
+                signal: options?.signal,
+            });
         } catch (error) {
-            console.warn(`Failed to enroll in course ${id}, simulating success:`, error);
-            return;
+            console.error('[coursesService.enrollCourse] Failed to enroll', {
+                courseId: id,
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+            });
+            throw error;
         }
     },
 
     /**
      * Get course progress
+     * FR-001: Removed mock data fallback - errors propagate to UI
      */
-    async getCourseProgress(id: string): Promise<CourseProgress> {
+    async getCourseProgress(id: string, options?: ServiceRequestOptions): Promise<CourseProgress> {
         try {
-            return await apiClient.get(API_ENDPOINTS.COURSES.PROGRESS(id));
+            return await apiClient.get(API_ENDPOINTS.COURSES.PROGRESS(id), {
+                signal: options?.signal,
+            });
         } catch (error) {
-            return {
+            console.error('[coursesService.getCourseProgress] Failed to fetch progress', {
                 courseId: id,
-                completedLessons: 1,
-                totalLessons: 2,
-                progress: 50,
-                lastAccessedAt: new Date().toISOString(),
-            };
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+            });
+            throw error;
         }
     },
 };
@@ -163,34 +140,38 @@ export const coursesService = {
 export const lessonsService = {
     /**
      * Get lesson by ID
+     * FR-001: Removed mock data fallback - errors propagate to UI
      */
-    async getLesson(id: string): Promise<Lesson> {
+    async getLesson(id: string, options?: ServiceRequestOptions): Promise<Lesson> {
         try {
-            return await apiClient.get(API_ENDPOINTS.LESSONS.BY_ID(id));
+            return await apiClient.get(API_ENDPOINTS.LESSONS.BY_ID(id), {
+                signal: options?.signal,
+            });
         } catch (error) {
-            return {
-                id: id,
-                courseId: '1',
-                title: 'Setup Environment',
-                description: 'Setting up your development environment',
-                order: 1,
-                duration: 15,
-                completed: true,
-                videoUrl: 'https://example.com/video.mp4',
-                content: 'Step 1: Install Node.js...'
-            };
+            console.error('[lessonsService.getLesson] Failed to fetch lesson', {
+                lessonId: id,
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+            });
+            throw error;
         }
     },
 
     /**
      * Mark lesson as complete
      */
-    async completeLesson(id: string): Promise<void> {
+    async completeLesson(id: string, options?: ServiceRequestOptions): Promise<void> {
         try {
-            return await apiClient.post(API_ENDPOINTS.LESSONS.COMPLETE(id));
+            return await apiClient.post(API_ENDPOINTS.LESSONS.COMPLETE(id), undefined, {
+                signal: options?.signal,
+            });
         } catch (error) {
-            console.warn(`Failed to complete lesson ${id}, simulating success:`, error);
-            return;
+            console.error('[lessonsService.completeLesson] Failed to complete lesson', {
+                lessonId: id,
+                errorMessage: error instanceof Error ? error.message : 'Unknown error',
+                errorStatus: error instanceof ApiError ? error.status : undefined,
+            });
+            throw error;
         }
     },
 };

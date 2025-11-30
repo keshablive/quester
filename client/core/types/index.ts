@@ -11,6 +11,8 @@ import { LucideIcon } from 'lucide-react-native';
 export * from './components';
 // Export Learning Gamification types
 export * from './learning-gamification.types';
+// Export Query types (020: TanStack Query Migration)
+export * from './query.types';
 // Note: ApiError is now exported from '@/core/api' to avoid conflicts
 
 /**
@@ -106,14 +108,31 @@ export interface AppConfig {
         welcomeSteps?: string[];
         actions?: Record<string, string>;
     };
-    /** App assets (images, icons, etc.) */
-    assets?: {
-        logo?: {
-            light: any;
-            dark: any;
-        };
-        [key: string]: any;
+    /** 
+     * App assets (images, icons, etc.)
+     * FR-011: Changed from `any` to typed interface
+     */
+    assets?: AppAssets;
+}
+
+/**
+ * Image source type for React Native
+ * FR-011: Proper type for image assets
+ */
+export type ImageSourceType = number | { uri: string };
+
+/**
+ * App assets configuration
+ * FR-011: Replaced `any` with proper types
+ */
+export interface AppAssets {
+    logo?: {
+        light: ImageSourceType;
+        dark: ImageSourceType;
     };
+    icons?: Record<string, ImageSourceType>;
+    images?: Record<string, ImageSourceType>;
+    [key: string]: unknown;
 }
 
 /**

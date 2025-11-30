@@ -42,7 +42,7 @@ function transformApiQuestToUI(apiQuest: ApiQuest): UIQuest {
       description: step.description,
       type: 'text' as const,
       order: step.order ?? index,
-      content: {},
+      content: { body: step.description || '' },
       is_required: true,
       xp_reward: 0,
       points_reward: 0,

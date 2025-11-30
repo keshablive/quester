@@ -128,9 +128,9 @@ export type RenderProp<T> = (props: T) => React.ReactNode;
 export type ComponentRef<T> = React.RefObject<T> | React.MutableRefObject<T> | null;
 
 /**
- * Form field props
+ * Base form field props (without value handling)
  */
-export interface FormFieldProps extends BaseComponentProps {
+export interface FormFieldBaseProps extends BaseComponentProps {
   /** Field name */
   name: string;
   /** Field label */
@@ -145,10 +145,17 @@ export interface FormFieldProps extends BaseComponentProps {
   error?: string;
   /** Helper text */
   helperText?: string;
-  /** Field value */
-  value?: any;
-  /** Change handler */
-  onChange?: (value: any) => void;
+}
+
+/**
+ * Form field props with typed value
+ * FR-011: Generic type parameter for type-safe form fields
+ */
+export interface FormFieldProps<T = string> extends FormFieldBaseProps {
+  /** Field value - FR-011: Changed from `any` to generic type */
+  value?: T;
+  /** Change handler - FR-011: Changed from `any` to generic type */
+  onChange?: (value: T) => void;
   /** Blur handler */
   onBlur?: () => void;
 }
@@ -175,8 +182,9 @@ export interface ModalProps extends BaseComponentProps {
 
 /**
  * Dropdown/Select option
+ * FR-011: Changed default generic from `any` to `string`
  */
-export interface SelectOption<T = any> {
+export interface SelectOption<T = string> {
   /** Option value */
   value: T;
   /** Option label */
@@ -185,8 +193,8 @@ export interface SelectOption<T = any> {
   icon?: LucideIcon;
   /** Whether option is disabled */
   disabled?: boolean;
-  /** Additional option data */
-  data?: any;
+  /** Additional option data - FR-011: Changed from `any` to generic type */
+  data?: T;
 }
 
 /**

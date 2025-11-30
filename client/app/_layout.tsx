@@ -10,7 +10,8 @@ import {
   XPNotificationProvider,
   AchievementNotificationProvider,
 } from '@/core';
-import { AuthProvider, useAuth } from '@/core/auth/AuthContext';
+import { AuthProviders } from '@/core/auth/providers';
+import { useAuth } from '@/core/auth/hooks';
 import { SplashScreen } from '@/components/ui';
 import { isProtectedRoute } from '@/core/routes';
 import { QueryProvider } from '@/core/query';
@@ -68,13 +69,13 @@ export default function RootLayout() {
   return (
     <QueryProvider>
       <ThemeProvider value={getNavigationTheme(colorScheme ?? 'light')}>
-        <AuthProvider>
+        <AuthProviders>
           <XPNotificationProvider>
             <AchievementNotificationProvider>
               <AppContent />
             </AchievementNotificationProvider>
           </XPNotificationProvider>
-        </AuthProvider>
+        </AuthProviders>
       </ThemeProvider>
     </QueryProvider>
   );

@@ -1,7 +1,21 @@
+/**
+ * Transactions Page
+ *
+ * Route file for transactions history view.
+ * Uses TanStack Query via TransactionList component with infinite scroll.
+ *
+ * Phase 3 Migration: Verified TanStack Query integration
+ * FR-010: System MUST migrate Transactions page to use TanStack Query
+ *
+ * @module app/transactions
+ */
+
 import React, { useState } from 'react';
 import { View, Modal } from 'react-native';
 import { TransactionList, TransactionDetail } from '@/components/pages/transactions';
 import { Transaction } from '@/core';
+import { OfflineIndicator } from '@/components/shared';
+import { ChunkErrorBoundary } from '@/core/routes';
 
 export default function TransactionsScreen() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -18,20 +32,20 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <View className="flex-1">
-      <TransactionList onTransactionPress={handleTransactionPress} />
+    <ChunkErrorBoundary>
+      <View className="flex-1">
+        <OfflineIndicator />
+        <TransactionList onTransactionPress={handleTransactionPress} />
 
-      {/* Transaction Detail Modal */}
-      <Modal
-        visible={showDetail}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={handleDetailClose}
-      >
-        {selectedTransaction && (
-          <TransactionDetail transactionId={selectedTransaction.id} />
-        )}
-      </Modal>
-    </View>
+        {/* Transaction Detail Modal */}
+        <Modal
+          visible={showDetail}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={handleDetailClose}>
+          {selectedTransaction && <TransactionDetail transactionId={selectedTransaction.id} />}
+        </Modal>
+      </View>
+    </ChunkErrorBoundary>
   );
 }

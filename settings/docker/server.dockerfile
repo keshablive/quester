@@ -11,17 +11,15 @@ RUN apk add --no-cache ffmpeg git make ca-certificates tzdata
 # Stage 2: Development
 # Used for local development with Air (live reload) & Delve (debugging)
 FROM base AS dev
-# Install Air for live reloading
-RUN go install github.com/air-verse/air@v1.61.0
-# Install Delve for debugging
-RUN go install github.com/go-delve/delve/cmd/dlv@latest
-
-# Add Go binaries to PATH
-ENV PATH="/root/go/bin:${PATH}"
 
 # Copy go mod/sum first for caching
 COPY server/go.mod server/go.sum ./
 RUN go mod download
+
+# Install Air for live reloading (after go mod download for better caching)
+RUN go install github.com/air-verse/air@v1.61.0
+# Install Delve for debugging
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
 # Copy source code (though in docker-compose we mount it, this is a fallback)
 COPY server/ .
@@ -30,7 +28,7 @@ COPY server/ .
 EXPOSE 8000 2345
 
 # Default command is air
-CMD ["/root/go/bin/air", "-c", ".air.toml"]
+CMD ["air", "-c", ".air.toml"]
 
 # Stage 3: Builder
 # Compiles the application for production

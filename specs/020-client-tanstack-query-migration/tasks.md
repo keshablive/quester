@@ -19,15 +19,15 @@
 
 **Purpose**: Extend existing TanStack Query infrastructure with new query keys, stale times, and types
 
-- [ ] T001 [P] Add transaction types (Transaction, TransactionFilters, TransactionsResponse) to client/core/types/query.types.ts
-- [ ] T002 [P] Add marketplace types (Property, ClassifiedAd, PropertyFilters, ClassifiedFilters) to client/core/types/query.types.ts
-- [ ] T003 [P] Add certificate types (Certificate, CertificateFilters) to client/core/types/query.types.ts
-- [ ] T004 [P] Add notification settings types (NotificationSettings, UpdateNotificationSettingsInput) to client/core/types/query.types.ts
-- [ ] T005 Add new stale times (TRANSACTIONS: 1min, MARKETPLACE: 5min, CERTIFICATES: 5min, NOTIFICATION_SETTINGS: 5min) to client/core/query/constants.ts
-- [ ] T006 Add transaction query keys factory to client/core/query/keys.ts
-- [ ] T007 Add marketplace query keys factory (properties, classifieds) to client/core/query/keys.ts
-- [ ] T008 Add certificates query keys factory to client/core/query/keys.ts
-- [ ] T009 Add notificationSettings query keys factory to client/core/query/keys.ts
+- [X] T001 [P] Add transaction types (Transaction, TransactionFilters, TransactionsResponse) to client/core/types/query.types.ts
+- [X] T002 [P] Add marketplace types (Property, ClassifiedAd, PropertyFilters, ClassifiedFilters) to client/core/types/query.types.ts
+- [X] T003 [P] Add certificate types (Certificate, CertificateFilters) to client/core/types/query.types.ts
+- [X] T004 [P] Add notification settings types (NotificationSettings, UpdateNotificationSettingsInput) to client/core/types/query.types.ts
+- [X] T005 Add new stale times (TRANSACTIONS: 1min, MARKETPLACE: 5min, CERTIFICATES: 5min, NOTIFICATION_SETTINGS: 5min) to client/core/query/constants.ts
+- [X] T006 Add transaction query keys factory to client/core/query/keys.ts
+- [X] T007 Add marketplace query keys factory (properties, classifieds) to client/core/query/keys.ts
+- [X] T008 Add certificates query keys factory to client/core/query/keys.ts
+- [X] T009 Add notificationSettings query keys factory to client/core/query/keys.ts
 
 ---
 
@@ -37,10 +37,10 @@
 
 **⚠️ CRITICAL**: User story work requires these foundational hooks to exist first
 
-- [ ] T010 Create useInfiniteScrollList generic hook utility in client/core/hooks/queries/useInfiniteScrollList.ts
-- [ ] T011 Add dev-only cache logging extension to client/core/query/cacheMonitor.ts per FR-014
-- [ ] T012 Export new types from client/core/types/index.ts
-- [ ] T013 Export query key additions from client/core/query/index.ts
+- [X] T010 Create useInfiniteScrollList generic hook utility in client/core/hooks/queries/useInfiniteScrollList.ts
+- [X] T011 Add dev-only cache logging extension to client/core/query/cacheMonitor.ts per FR-014
+- [X] T012 Export new types from client/core/types/index.ts
+- [X] T013 Export query key additions from client/core/query/index.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -54,14 +54,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Create useTransactions hook in client/core/hooks/queries/useTransactions.ts
-- [ ] T015 [P] [US1] Create useTransaction (single item) hook in client/core/hooks/queries/useTransactions.ts
-- [ ] T016 [P] [US1] Create useInfiniteTransactions hook in client/core/hooks/queries/useTransactions.ts
-- [ ] T017 [US1] Export transaction hooks from client/core/hooks/queries/index.ts
-- [ ] T018 [US1] Migrate client/app/transactions.tsx from useState/useEffect to useTransactions hook
-- [ ] T019 [US1] Migrate client/components/pages/transactions/TransactionList.tsx to use useInfiniteTransactions
-- [ ] T020 [US1] Add offline indicator component for stale data display in TransactionList.tsx
-- [ ] T021 [US1] Add pull-to-refresh support using refetch in TransactionList.tsx
+- [X] T014 [P] [US1] Create useTransactions hook in client/core/hooks/queries/useTransactions.ts
+- [X] T015 [P] [US1] Create useTransaction (single item) hook in client/core/hooks/queries/useTransactions.ts
+- [X] T016 [P] [US1] Create useInfiniteTransactions hook in client/core/hooks/queries/useTransactions.ts
+- [X] T017 [US1] Export transaction hooks from client/core/hooks/queries/index.ts
+- [X] T018 [US1] Migrate client/app/transactions.tsx from useState/useEffect to useTransactions hook
+- [X] T019 [US1] Migrate client/components/pages/transactions/TransactionList.tsx to use useInfiniteTransactions
+- [X] T020 [US1] Add offline indicator component for stale data display in TransactionList.tsx
+- [X] T021 [US1] Add pull-to-refresh support using refetch in TransactionList.tsx
 
 **Checkpoint**: User Story 1 complete - Transactions screen works with caching, offline support, and instant display
 
@@ -75,17 +75,17 @@
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Create useMarketplaceProperties hook in client/core/hooks/queries/useMarketplace.ts
-- [ ] T023 [P] [US2] Create useMarketplaceProperty (single item) hook in client/core/hooks/queries/useMarketplace.ts
-- [ ] T024 [P] [US2] Create useInfiniteMarketplaceProperties hook in client/core/hooks/queries/useMarketplace.ts
-- [ ] T025 [P] [US2] Create useMarketplaceClassifieds hook in client/core/hooks/queries/useMarketplace.ts
-- [ ] T026 [P] [US2] Create useMarketplaceClassified (single item) hook in client/core/hooks/queries/useMarketplace.ts
-- [ ] T027 [P] [US2] Create useInfiniteMarketplaceClassifieds hook in client/core/hooks/queries/useMarketplace.ts
-- [ ] T028 [US2] Export marketplace hooks from client/core/hooks/queries/index.ts
-- [ ] T029 [US2] Migrate client/app/marketplace.tsx from useState/useEffect to marketplace hooks
-- [ ] T030 [US2] Migrate client/components/pages/marketplace/MarketplaceList.tsx to use infinite query hooks
-- [ ] T031 [US2] Add offline indicator for stale marketplace data display in MarketplaceList.tsx
-- [ ] T032 [US2] Add pull-to-refresh support using refetch in MarketplaceList.tsx
+- [X] T022 [P] [US2] Create useMarketplaceProperties hook in client/core/hooks/queries/useMarketplace.ts
+- [X] T023 [P] [US2] Create useMarketplaceProperty (single item) hook in client/core/hooks/queries/useMarketplace.ts
+- [X] T024 [P] [US2] Create useInfiniteMarketplaceProperties hook in client/core/hooks/queries/useMarketplace.ts
+- [X] T025 [P] [US2] Create useMarketplaceClassifieds hook in client/core/hooks/queries/useMarketplace.ts
+- [X] T026 [P] [US2] Create useMarketplaceClassified (single item) hook in client/core/hooks/queries/useMarketplace.ts
+- [X] T027 [P] [US2] Create useInfiniteMarketplaceClassifieds hook in client/core/hooks/queries/useMarketplace.ts
+- [X] T028 [US2] Export marketplace hooks from client/core/hooks/queries/index.ts
+- [X] T029 [US2] Migrate client/app/marketplace.tsx from useState/useEffect to marketplace hooks
+- [X] T030 [US2] Migrate client/components/pages/marketplace/MarketplaceList.tsx to use infinite query hooks
+- [X] T031 [US2] Add offline indicator for stale marketplace data display in MarketplaceList.tsx
+- [X] T032 [US2] Add pull-to-refresh support using refetch in MarketplaceList.tsx
 
 **Checkpoint**: User Story 2 complete - Marketplace works with caching, offline support, and instant navigation
 
@@ -99,13 +99,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T033 [P] [US3] Create useCertificates hook in client/core/hooks/queries/useCertificates.ts
-- [ ] T034 [P] [US3] Create useCertificate (single item) hook in client/core/hooks/queries/useCertificates.ts
-- [ ] T035 [P] [US3] Create usePrefetchCertificate hook in client/core/hooks/queries/useCertificates.ts
-- [ ] T036 [US3] Export certificate hooks from client/core/hooks/queries/index.ts
-- [ ] T037 [US3] Migrate client/components/pages/learning/CertificateCard.tsx to use useCertificates and prefetch
-- [ ] T038 [US3] Add onLongPress prefetch handler to CertificateCard.tsx
-- [ ] T039 [US3] Add offline indicator for stale certificate data display
+- [X] T033 [P] [US3] Create useCertificates hook in client/core/hooks/queries/useCertificates.ts
+- [X] T034 [P] [US3] Create useCertificate (single item) hook in client/core/hooks/queries/useCertificates.ts
+- [X] T035 [P] [US3] Create usePrefetchCertificate hook in client/core/hooks/queries/useCertificates.ts
+- [X] T036 [US3] Export certificate hooks from client/core/hooks/queries/index.ts
+- [X] T037 [US3] Migrate client/components/pages/learning/CertificateCard.tsx to use useCertificates and prefetch
+- [X] T038 [US3] Add onLongPress prefetch handler to CertificateCard.tsx
+- [X] T039 [US3] Add offline indicator for stale certificate data display
 
 **Checkpoint**: User Story 3 complete - Certificates display instantly with prefetching on user intent
 
@@ -119,14 +119,14 @@
 
 ### Implementation for User Story 4
 
-- [ ] T040 [P] [US4] Create useNotificationSettings query hook in client/core/hooks/queries/useNotificationSettings.ts
-- [ ] T041 [P] [US4] Create useUpdateNotificationSettings mutation hook with optimistic update in client/core/hooks/mutations/useNotificationSettingsMutations.ts
-- [ ] T042 [US4] Export notification settings hooks from client/core/hooks/queries/index.ts
-- [ ] T043 [US4] Export notification settings mutation from client/core/hooks/mutations/index.ts
-- [ ] T044 [US4] Migrate client/app/notifications.tsx settings section to use useNotificationSettings
-- [ ] T045 [US4] Implement optimistic toggle with rollback on error in notifications.tsx
-- [ ] T046 [US4] Add toast notification for sync failures per FR-013
-- [ ] T047 [US4] Add offline queue support for notification setting mutations
+- [X] T040 [P] [US4] Create useNotificationSettings query hook in client/core/hooks/queries/useNotificationSettings.ts
+- [X] T041 [P] [US4] Create useUpdateNotificationSettings mutation hook with optimistic update in client/core/hooks/mutations/useNotificationSettingsMutations.ts
+- [X] T042 [US4] Export notification settings hooks from client/core/hooks/queries/index.ts
+- [X] T043 [US4] Export notification settings mutation from client/core/hooks/mutations/index.ts
+- [X] T044 [US4] Migrate client/app/notifications.tsx settings section to use useNotificationSettings
+- [X] T045 [US4] Implement optimistic toggle with rollback on error in notifications.tsx
+- [X] T046 [US4] Add toast notification for sync failures per FR-013
+- [X] T047 [US4] Add offline queue support for notification setting mutations
 
 **Checkpoint**: User Story 4 complete - Notification settings update instantly with proper error handling
 
@@ -140,14 +140,14 @@
 
 ### Implementation for User Story 5
 
-- [ ] T048 [P] [US5] Create useFollowers infinite query hook in client/core/hooks/queries/useSocial.ts (extend existing)
-- [ ] T049 [P] [US5] Create useFollowing infinite query hook in client/core/hooks/queries/useSocial.ts (extend existing)
-- [ ] T050 [US5] Export new social hooks from client/core/hooks/queries/index.ts
-- [ ] T051 [US5] Enhance client/components/shared/InfiniteScrollList.tsx with FlashList and useInfiniteQuery integration
-- [ ] T052 [US5] Migrate client/components/shared/FollowLists.tsx to use useFollowers/useFollowing hooks
-- [ ] T053 [US5] Add automatic page loading on scroll threshold in InfiniteScrollList.tsx
-- [ ] T054 [US5] Implement cursor-based pagination in useInfiniteScrollList to prevent duplicate/missing items per Edge Case 3
-- [ ] T055 [US5] Add per-page retry button for failed page loads in InfiniteScrollList.tsx
+- [X] T048 [P] [US5] Create useFollowers infinite query hook in client/core/hooks/queries/useSocial.ts (extend existing)
+- [X] T049 [P] [US5] Create useFollowing infinite query hook in client/core/hooks/queries/useSocial.ts (extend existing)
+- [X] T050 [US5] Export new social hooks from client/core/hooks/queries/index.ts
+- [X] T051 [US5] Enhance client/components/shared/InfiniteScrollList.tsx with FlashList and useInfiniteQuery integration
+- [X] T052 [US5] Migrate client/components/shared/FollowLists.tsx to use useFollowers/useFollowing hooks
+- [X] T053 [US5] Add automatic page loading on scroll threshold in InfiniteScrollList.tsx
+- [X] T054 [US5] Implement cursor-based pagination in useInfiniteScrollList to prevent duplicate/missing items per Edge Case 3
+- [X] T055 [US5] Add per-page retry button for failed page loads in InfiniteScrollList.tsx
 
 **Checkpoint**: User Story 5 complete - Infinite scroll works seamlessly with automatic page loading
 
@@ -157,12 +157,12 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T056 [P] Verify all hooks follow patterns in core/hooks/queries/useSocial.ts (check: return types, error handling, staleTime config)
-- [ ] T057 [P] Ensure consistent error handling across all new hooks
-- [ ] T058 [P] Update client/core/hooks/index.ts to export all new hooks
-- [ ] T059 Run quickstart.md validation steps to verify all migrations work
-- [ ] T060 [P] Add JSDoc comments to all new hook exports
-- [ ] T061 Remove deprecated useState/useEffect patterns from migrated components
+- [X] T056 [P] Verify all hooks follow patterns in core/hooks/queries/useSocial.ts (check: return types, error handling, staleTime config)
+- [X] T057 [P] Ensure consistent error handling across all new hooks
+- [X] T058 [P] Update client/core/hooks/index.ts to export all new hooks
+- [X] T059 Run quickstart.md validation steps to verify all migrations work
+- [X] T060 [P] Add JSDoc comments to all new hook exports
+- [X] T061 Remove deprecated useState/useEffect patterns from migrated components
 
 ---
 

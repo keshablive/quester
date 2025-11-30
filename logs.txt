@@ -1,0 +1,381 @@
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.61.0, built with Go go1.24.10
+
+watching .
+watching cmd
+watching cmd/encrypt-2fa-secrets
+watching cmd/generate-keys
+watching cmd/migrate
+watching cmd/server
+watching cmd/test
+watching cmd/tools
+watching configs
+watching configs/grafana
+watching docs
+watching internal
+watching internal/adapters
+watching internal/app
+watching internal/controllers
+watching internal/framework
+watching internal/framework/auth
+watching internal/framework/cache
+watching internal/framework/config
+watching internal/framework/container
+watching internal/framework/controller
+watching internal/framework/core
+watching internal/framework/database
+watching internal/framework/database/pool
+watching internal/framework/includes
+watching internal/framework/interfaces
+watching internal/framework/metrics
+watching internal/framework/middleware
+watching internal/framework/pagination
+watching internal/framework/payment
+watching internal/framework/push
+watching internal/framework/repository
+watching internal/framework/responses
+watching internal/framework/sentry
+watching internal/framework/service
+watching internal/framework/storage
+watching internal/framework/streaming
+watching internal/framework/utils
+watching internal/framework/websocket
+watching internal/migrations
+watching internal/mocks
+watching internal/models
+watching internal/repositories
+watching internal/routes
+watching internal/services
+watching tests
+watching tests/integration
+watching tests/integration/framework
+watching tests/unit
+watching tests/unit/framework
+watching tests/unit/framework/database
+watching tests/unit/framework/database/pool
+watching tests/unit/services
+!exclude tmp
+building...
+running...
+2025/11/28 19:10:00 ✓ Feature flags loaded: KMS encryption [disabled]
+2025/11/28 19:10:00 query_metrics: plugin initialized with slow_query_threshold=100ms
+2025/11/28 19:10:00 [pool/metrics] Started metrics collector (interval=5s, max_open=25, max_idle=5)
+2025/11/28 19:10:00 Database connected successfully (max_open=25, max_idle=5, max_lifetime=5m0s)
+2025/11/28 19:10:00 ✓ Database initialized
+2025/11/28 19:10:00 ✓ Cache initialized
+2025/11/28 19:10:00 ✓ Container registered: database, cache, config
+2025/11/28 19:10:00 ✓ Container registered: learning gamification repositories
+2025/11/28 19:10:00 ✓ Container registered: cacheService
+2025/11/28 19:10:00 ✓ Container registered: 9 repositories (6 P1 + 3 social gamification)
+2025/11/28 19:10:00 ✓ Container registered: socialGamificationService
+2025/11/28 19:10:00 ✓ Container registered: learningGamificationService
+2025/11/28 19:10:00 ✓ Container registered: leaderboardService (013-leaderboard-controller-integration)
+2025/11/28 19:10:00 ✓ Container registered: 6 P1 services
+2025/11/28 19:10:00 ✓ DI container initialized
+2025/11/28 19:10:00 ✓ Startup health check passed in 6.077009ms
+2025/11/28 19:10:00.150775 migrations.go:66: [Info] 📋 GORM auto-migration disabled (MIGRATION_MODE=none)
+2025/11/28 19:10:00.152831 migrations.go:67: [Info] 💡 Run SQL migrations: psql -U postgres -d quester -f migrations/XXX_migration.up.sql
+2025/11/28 19:10:00 ✓ Database migrations completed
+2025/11/28 19:10:00 ✓ Database metrics collector started
+2025/11/28 19:10:00 ✓ Token cleanup scheduler started (runs every 24 hours)
+2025/11/28 19:10:00 ✓ Monthly leaderboard reset scheduler started (runs 1st of month at 00:00 UTC)
+2025/11/28 19:10:00 ✓ Video stream retention cleanup scheduler started (runs daily at 02:00 UTC)
+2025/11/28 19:10:00 ✓ Learning streak reset scheduler started (runs daily at 03:00 UTC)
+2025/11/28 19:10:00 ✓ Daily challenge cleanup scheduler started (runs daily at 04:00 UTC)
+2025/11/28 19:10:00 [pool/metrics] Pool metrics registered
+2025/11/28 19:10:00 ✓ Metrics initialized
+2025/11/28 19:10:00 Video stream retention cleanup scheduler initialized
+2025/11/28 19:10:00 Learning streak reset scheduler initialized
+2025/11/28 19:10:00 Daily challenge cleanup scheduler initialized
+2025/11/28 19:10:00 ✓ Compression middleware enabled (level 6, min 1KB)
+2025/11/28 19:10:00 Leaderboard reset scheduler initialized
+
+2025/11/28 19:10:00 ✓ RequestID middleware enabled (008-api-response-optimization)
+2025/11/28 19:10:00 ✓ ResponseVersion middleware enabled (008-api-response-optimization)
+2025/11/28 19:10:00 ✓ Fields middleware enabled (008-api-response-optimization)
+2025/11/28 19:10:00 ✓ CacheControl middleware enabled (008-api-response-optimization)
+2025/11/28 19:10:00 ✓ ETag middleware enabled for /api/v1 (008-api-response-optimization)
+2025/11/28 19:10:00 ✓ CacheService resolved for route injection (007-api-performance-caching)2025/11/28 19:10:00 Starting token cleanup...
+2025/11/28 19:10:00 Token cleanup scheduler started (interval: 24h0m0s)
+2025/11/28 19:10:00.179892 openai_service.go:103: [Warn] OPENAI_API_KEY not set, AI verification will not work
+2025/11/28 19:10:00 ✓ Payment manager initialized (provider: stripe)
+2025/11/28 19:10:00 Token cleanup failed: failed to delete expired tokens: ERROR: relation "refresh_tokens" does not exist (SQLSTATE 42P01)
+2025/11/28 19:10:00 Warning: Badge service Redis unavailable: failed to connect to Redis: dial tcp [::1]:6379: connect: connection refused (badge endpoints will check service availability)
+2025/11/28 19:10:00 Warning: Redis not available, BadgeService will not be injected
+panic: interface conversion: interface {} is *redis.Client, not *cache.PooledRedisClient
+
+goroutine 1 [running]:
+github.com/keshablive/quester/internal/app.registerServices.func3(0xc0003cd4a0)
+	/app/internal/app/app.go:774 +0x1a6
+github.com/keshablive/quester/internal/framework/container.(*Container).resolveWithContext(0xc0003cd4a0, {0x255e3a7, 0x12}, 0xc00096edb0)
+	/app/internal/framework/container/container.go:247 +0x35a
+github.com/keshablive/quester/internal/framework/container.(*Container).Resolve(0xc0003cd4a0, {0x255e3a7, 0x12})
+	/app/internal/framework/container/container.go:130 +0x4e
+, 0xc0003cd4a0)
+	/app/internal/routes/routes.go:318 +0x2090
+github.com/keshablive/quester/internal/app.New()
+	/app/internal/app/app.go:250 +0x15fa
+main.main()
+	/app/cmd/server/main.go:15 +0x1f
+Process Exit with Code: 2
+cleaning...
+deleting /app/tmp
+see you again~
+github.com/keshablive/quester/internal/routes.Setup(0xc0008e6008
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.61.0, built with Go go1.24.10
+
+mkdir /app/tmp
+watching .
+watching cmd
+watching cmd/encrypt-2fa-secrets
+watching cmd/generate-keys
+watching cmd/migrate
+watching cmd/server
+watching cmd/test
+watching cmd/tools
+watching configs
+watching configs/grafana
+watching docs
+watching internal
+watching internal/adapters
+watching internal/app
+watching internal/controllers
+watching internal/framework
+watching internal/framework/auth
+watching internal/framework/cache
+watching internal/framework/config
+watching internal/framework/container
+watching internal/framework/controller
+watching internal/framework/core
+watching internal/framework/database
+watching internal/framework/database/pool
+watching internal/framework/includes
+watching internal/framework/interfaces
+watching internal/framework/metrics
+watching internal/framework/middleware
+watching internal/framework/pagination
+watching internal/framework/payment
+watching internal/framework/push
+watching internal/framework/repository
+watching internal/framework/responses
+watching internal/framework/sentry
+watching internal/framework/service
+watching internal/framework/storage
+watching internal/framework/streaming
+watching internal/framework/utils
+watching internal/framework/websocket
+watching internal/migrations
+watching internal/mocks
+watching internal/models
+watching internal/repositories
+watching internal/routes
+watching internal/services
+watching tests
+watching tests/integration
+watching tests/integration/framework
+watching tests/unit
+watching tests/unit/framework
+watching tests/unit/framework/database
+watching tests/unit/framework/database/pool
+watching tests/unit/services
+!exclude tmp
+building...
+running...
+2025/11/29 18:00:09 ✓ Feature flags loaded: KMS encryption [disabled]
+2025/11/29 18:00:17 Failed to create application: failed to initialize database: failed to connect to database: failed to connect to `host=postgres user=quester_user database=quester_db`: hostname resolving error (lookup postgres on 127.0.0.11:53: no such host)
+cleaning...
+deleting /app/tmp
+see you again~
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.61.0, built with Go go1.24.10
+
+mkdir /app/tmp
+watching .
+watching cmd
+watching cmd/encrypt-2fa-secrets
+watching cmd/generate-keys
+watching cmd/migrate
+watching cmd/server
+watching cmd/test
+watching cmd/tools
+watching configs
+watching configs/grafana
+watching docs
+watching internal
+watching internal/adapters
+watching internal/app
+watching internal/controllers
+watching internal/framework
+watching internal/framework/auth
+watching internal/framework/cache
+watching internal/framework/config
+watching internal/framework/container
+watching internal/framework/controller
+watching internal/framework/core
+watching internal/framework/database
+watching internal/framework/database/pool
+watching internal/framework/includes
+watching internal/framework/interfaces
+watching internal/framework/metrics
+watching internal/framework/middleware
+watching internal/framework/pagination
+watching internal/framework/payment
+watching internal/framework/push
+watching internal/framework/repository
+watching internal/framework/responses
+watching internal/framework/sentry
+watching internal/framework/service
+watching internal/framework/storage
+watching internal/framework/streaming
+watching internal/framework/utils
+watching internal/framework/websocket
+watching internal/migrations
+watching internal/mocks
+watching internal/models
+watching internal/repositories
+watching internal/routes
+watching internal/services
+watching tests
+watching tests/integration
+watching tests/integration/framework
+watching tests/unit
+watching tests/unit/framework
+watching tests/unit/framework/database
+watching tests/unit/framework/database/pool
+watching tests/unit/services
+!exclude tmp
+building...
+running...
+2025/11/29 18:04:49 ✓ Feature flags loaded: KMS encryption [disabled]
+2025/11/29 18:04:56 Failed to create application: failed to initialize database: failed to connect to database: failed to connect to `host=postgres user=quester_user database=quester_db`: hostname resolving error (lookup postgres on 127.0.0.11:53: no such host)
+cleaning...
+deleting /app/tmp
+see you again~
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.61.0, built with Go go1.24.10
+
+mkdir /app/tmp
+watching .
+watching cmd
+watching cmd/encrypt-2fa-secrets
+watching cmd/generate-keys
+watching cmd/migrate
+watching cmd/server
+watching cmd/test
+watching cmd/tools
+watching configs
+watching configs/grafana
+watching docs
+watching internal
+watching internal/adapters
+watching internal/app
+watching internal/controllers
+watching internal/framework
+watching internal/framework/auth
+watching internal/framework/cache
+watching internal/framework/config
+watching internal/framework/container
+watching internal/framework/controller
+watching internal/framework/core
+watching internal/framework/database
+watching internal/framework/database/pool
+watching internal/framework/includes
+watching internal/framework/interfaces
+watching internal/framework/metrics
+watching internal/framework/middleware
+watching internal/framework/pagination
+watching internal/framework/payment
+watching internal/framework/push
+watching internal/framework/repository
+watching internal/framework/responses
+watching internal/framework/sentry
+watching internal/framework/service
+watching internal/framework/storage
+watching internal/framework/streaming
+watching internal/framework/utils
+watching internal/framework/websocket
+watching internal/migrations
+watching internal/mocks
+watching internal/models
+watching internal/repositories
+watching internal/routes
+watching internal/services
+watching tests
+watching tests/integration
+watching tests/integration/framework
+watching tests/unit
+watching tests/unit/framework
+watching tests/unit/framework/database
+watching tests/unit/framework/database/pool
+watching tests/unit/services
+!exclude tmp
+building...
+running...
+2025/11/29 18:06:23 ✓ Feature flags loaded: KMS encryption [disabled]
+2025/11/29 18:06:23 query_metrics: plugin initialized with slow_query_threshold=100ms
+2025/11/29 18:06:23 [pool/metrics] Started metrics collector (interval=5s, max_open=25, max_idle=5)
+2025/11/29 18:06:23 Database connected successfully (max_open=25, max_idle=5, max_lifetime=5m0s)
+2025/11/29 18:06:23 ✓ Database initialized
+2025/11/29 18:06:23 ✓ Cache initialized
+2025/11/29 18:06:23 ✓ Container registered: database, cache, config
+2025/11/29 18:06:23 ✓ Container registered: learning gamification repositories
+2025/11/29 18:06:23 ✓ Container registered: cacheService
+2025/11/29 18:06:23 ✓ Container registered: 9 repositories (6 P1 + 3 social gamification)
+2025/11/29 18:06:23 ✓ Container registered: socialGamificationService
+2025/11/29 18:06:23 ✓ Container registered: learningGamificationService
+2025/11/29 18:06:23 ✓ Container registered: leaderboardService (013-leaderboard-controller-integration)
+2025/11/29 18:06:23 ✓ Container registered: 6 P1 services
+2025/11/29 18:06:23 ✓ DI container initialized
+2025/11/29 18:06:23 ✓ Startup health check passed in 5.508268ms
+2025/11/29 18:06:23.181794 migrations.go:66: [Info] 📋 GORM auto-migration disabled (MIGRATION_MODE=none)
+2025/11/29 18:06:23.186813 migrations.go:67: [Info] 💡 Run SQL migrations: psql -U postgres -d quester -f migrations/XXX_migration.up.sql
+2025/11/29 18:06:23 ✓ Database migrations completed
+2025/11/29 18:06:23 ✓ Database metrics collector started
+2025/11/29 18:06:23 ✓ Token cleanup scheduler started (runs every 24 hours)
+2025/11/29 18:06:23 ✓ Monthly leaderboard reset scheduler started (runs 1st of month at 00:00 UTC)
+2025/11/29 18:06:23 ✓ Video stream retention cleanup scheduler started (runs daily at 02:00 UTC)
+2025/11/29 18:06:23 ✓ Learning streak reset scheduler started (runs daily at 03:00 UTC)
+2025/11/29 18:06:23 ✓ Daily challenge cleanup scheduler started (runs daily at 04:00 UTC)
+2025/11/29 18:06:23 [pool/metrics] Pool metrics registered
+2025/11/29 18:06:23 ✓ Metrics initialized
+2025/11/29 18:06:23 Video stream retention cleanup scheduler initialized
+2025/11/29 18:06:23 ✓ Compression middleware enabled (level 6, min 1KB)
+2025/11/29 18:06:23 Leaderboard reset scheduler initialized
+2025/11/29 18:06:23 Learning streak reset scheduler initialized
+2025/11/29 18:06:23 Daily challenge cleanup scheduler initialized
+2025/11/29 18:06:23 Token cleanup scheduler started (interval: 24h0m0s)
+2025/11/29 18:06:23 Starting token cleanup...
+2025/11/29 18:06:23 ✓ CacheService resolved for route injection (007-api-performance-caching)
+2025/11/29 18:06:23 ✓ RequestID middleware enabled (008-api-response-optimization)
+2025/11/29 18:06:23 ✓ ResponseVersion middleware enabled (008-api-response-optimization)
+2025/11/29 18:06:23 ✓ Fields middleware enabled (008-api-response-optimization)
+2025/11/29 18:06:23 ✓ CacheControl middleware enabled (008-api-response-optimization)
+2025/11/29 18:06:23 ✓ ETag middleware enabled for /api/v1 (008-api-response-optimization)
+2025/11/29 18:06:23.202891 openai_service.go:103: [Warn] OPENAI_API_KEY not set, AI verification will not work
+2025/11/29 18:06:23 ✓ Payment manager initialized (provider: stripe)
+2025/11/29 18:06:23 Token cleanup failed: failed to delete expired tokens: ERROR: relation "refresh_tokens" does not exist (SQLSTATE 42P01)
+2025/11/29 18:06:23 Warning: Badge service Redis unavailable: failed to connect to Redis: dial tcp [::1]:6379: connect: connection refused (badge endpoints will check service availability)
+2025/11/29 18:06:23 Warning: Redis not available, BadgeService will not be injected
+panic: interface conversion: interface {} is *redis.Client, not *cache.PooledRedisClient
+
+goroutine 1 [running]:
+github.com/keshablive/quester/internal/app.registerServices.func3(0xc00019ef00)
+	/app/internal/app/app.go:774 +0x1a6
+)
+	/app/internal/framework/container/container.go:247 +0x35a
+github.com/keshablive/quester/internal/framework/container.(*Container).Resolve(0xc00019ef00, {0x255e3a7, 0x12})
+	/app/internal/framework/container/container.go:130 +0x4e
+github.com/keshablive/quester/internal/routes.Setup(0xc0007ca008, 0xc00019ef00)
+	/app/internal/routes/routes.go:318 +0x2090
+github.com/keshablive/quester/internal/app.New()
+	/app/internal/app/app.go:250 +0x15fa
+main.main()
+	/app/cmd/server/main.go:15 +0x1f

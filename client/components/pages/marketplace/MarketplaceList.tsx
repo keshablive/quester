@@ -1,119 +1,255 @@
-import React, { useState, useEffect } from 'react';
-import { View, FlatList, TextInput, ActivityIndicator, Pressable } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, TextInput, ActivityIndicator, Pressable } from 'react-native';
 import { Text } from '@/components/ui';
 import { MarketplaceCard } from './MarketplaceCard';
-import {  propertiesService, classifiedsService, Property, ClassifiedAd, PropertyFilters } from '@/core';
-import { Search, Home, Package, TrendingUp, Clock } from 'lucide-react-native';
+import {
+  classifiedsService,
+  OptimizedList,
+  type ListRenderItemInfo,
+  useInfiniteMarketplaceProperties,
+  useInfiniteMarketplaceClassifieds,
+  STALE_TIMES,
+} from '@/core';
+import { Search, Home, Package, TrendingUp, Clock, WifiOff } from 'lucide-react-native';
 import { cn } from '@/core';
+import { useQuery } from '@tanstack/react-query';
 
-import { MarketplaceListProps, MarketplaceItemType, MarketplaceItem } from './types';
+import { MarketplaceListProps, MarketplaceItem } from './types';
 
 type TabType = 'properties' | 'classifieds';
 type ViewMode = 'all' | 'recent' | 'popular' | 'my-items';
 
+// Threshold for showing offline indicator (1 hour)
+const OFFLINE_THRESHOLD_MS = 60 * 60 * 1000;
+
+/**
+ * Offline Indicator Component (FR-012)
+ * Shows when cached data may be outdated
+ */
+function OfflineIndicator({ dataUpdatedAt }: { dataUpdatedAt: number }) {
+  const isStale = Date.now() - dataUpdatedAt > OFFLINE_THRESHOLD_MS;
+
+  if (!isStale) return null;
+
+  return (
+    <View className="mx-4 mb-2 flex-row items-center gap-2 rounded-lg bg-amber-100 px-3 py-2 dark:bg-amber-900/30">
+      <WifiOff size={16} className="text-amber-600 dark:text-amber-400" />
+      <Text className="flex-1 text-sm text-amber-700 dark:text-amber-300">
+        Showing cached data. Pull down to refresh.
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * MarketplaceList Component
+ *
+ * Displays marketplace listings (properties and classifieds) with TanStack Query
+ * caching, infinite scroll, pull-to-refresh, and offline support.
+ *
+ * US2: Marketplace Listings with Caching (Feature 020)
+ */
 export function MarketplaceList({ onItemPress, initialTab = 'properties' }: MarketplaceListProps) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
-  const [items, setItems] = useState<MarketplaceItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('all');
 
-  useEffect(() => {
-    loadItems();
-  }, [activeTab, viewMode]);
+  // Properties infinite query (US2)
+  const propertiesQuery = useInfiniteMarketplaceProperties(
+    { query: appliedQuery || undefined },
+    { enabled: activeTab === 'properties' }
+  );
 
-  const loadItems = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      if (activeTab === 'properties') {
-        const filters: PropertyFilters = {
-          page: 1,
-          limit: 50,
-          query: searchQuery,
-        };
-        const response = await propertiesService.search(filters);
-        setItems(response.data);
-      } else {
-        let data: ClassifiedAd[];
-        switch (viewMode) {
-          case 'recent':
-            data = await classifiedsService.getRecent();
-            break;
-          case 'popular':
-            data = await classifiedsService.getPopular();
-            break;
-          case 'my-items':
-            data = await classifiedsService.getMyAds();
-            break;
-          default:
-            const response = await classifiedsService.search({ query: searchQuery });
-            data = response.data;
-        }
-        setItems(data);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load items');
-    } finally {
-      setLoading(false);
+  // Classifieds infinite query for "all" view mode (US2)
+  const classifiedsQuery = useInfiniteMarketplaceClassifieds(
+    { query: appliedQuery || undefined },
+    { enabled: activeTab === 'classifieds' && viewMode === 'all' }
+  );
+
+  // Special queries for classifieds view modes (recent, popular, my-items)
+  const recentClassifiedsQuery = useQuery({
+    queryKey: ['classifieds', 'recent'],
+    queryFn: () => classifiedsService.getRecent(),
+    staleTime: STALE_TIMES.MARKETPLACE,
+    enabled: activeTab === 'classifieds' && viewMode === 'recent',
+  });
+
+  const popularClassifiedsQuery = useQuery({
+    queryKey: ['classifieds', 'popular'],
+    queryFn: () => classifiedsService.getPopular(),
+    staleTime: STALE_TIMES.MARKETPLACE,
+    enabled: activeTab === 'classifieds' && viewMode === 'popular',
+  });
+
+  const myClassifiedsQuery = useQuery({
+    queryKey: ['classifieds', 'my-items'],
+    queryFn: () => classifiedsService.getMyAds(),
+    staleTime: STALE_TIMES.MARKETPLACE,
+    enabled: activeTab === 'classifieds' && viewMode === 'my-items',
+  });
+
+  // Get active query based on current tab and view mode
+  const getActiveQuery = useCallback(() => {
+    if (activeTab === 'properties') {
+      return propertiesQuery;
     }
-  };
 
-  const handleSearch = () => {
+    switch (viewMode) {
+      case 'recent':
+        return recentClassifiedsQuery;
+      case 'popular':
+        return popularClassifiedsQuery;
+      case 'my-items':
+        return myClassifiedsQuery;
+      default:
+        return classifiedsQuery;
+    }
+  }, [
+    activeTab,
+    viewMode,
+    propertiesQuery,
+    classifiedsQuery,
+    recentClassifiedsQuery,
+    popularClassifiedsQuery,
+    myClassifiedsQuery,
+  ]);
+
+  // Flatten items from infinite query pages or use simple array
+  const items = useMemo(() => {
+    const query = getActiveQuery();
+
+    if (activeTab === 'properties') {
+      return propertiesQuery.data?.pages.flatMap((p) => p.items) ?? [];
+    }
+
+    if (viewMode === 'all') {
+      return classifiedsQuery.data?.pages.flatMap((p) => p.items) ?? [];
+    }
+
+    // For special view modes (recent, popular, my-items), return simple array
+    switch (viewMode) {
+      case 'recent':
+        return recentClassifiedsQuery.data ?? [];
+      case 'popular':
+        return popularClassifiedsQuery.data ?? [];
+      case 'my-items':
+        return myClassifiedsQuery.data ?? [];
+      default:
+        return [];
+    }
+  }, [
+    activeTab,
+    viewMode,
+    propertiesQuery.data,
+    classifiedsQuery.data,
+    recentClassifiedsQuery.data,
+    popularClassifiedsQuery.data,
+    myClassifiedsQuery.data,
+  ]);
+
+  // Query state aggregation
+  const isLoading = useMemo(() => {
+    const query = getActiveQuery();
+    return query.isLoading;
+  }, [getActiveQuery]);
+
+  const isRefreshing = useMemo(() => {
+    const query = getActiveQuery();
+    return query.isRefetching && !query.isFetchingNextPage;
+  }, [getActiveQuery]);
+
+  const error = useMemo(() => {
+    const query = getActiveQuery();
+    return query.error?.message ?? null;
+  }, [getActiveQuery]);
+
+  const dataUpdatedAt = useMemo(() => {
+    const query = getActiveQuery();
+    return query.dataUpdatedAt ?? Date.now();
+  }, [getActiveQuery]);
+
+  // Handlers
+  const handleSearch = useCallback(() => {
     setViewMode('all');
-    loadItems();
-  };
+    setAppliedQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleRefresh = useCallback(() => {
+    const query = getActiveQuery();
+    query.refetch();
+  }, [getActiveQuery]);
+
+  const handleLoadMore = useCallback(() => {
+    if (
+      activeTab === 'properties' &&
+      propertiesQuery.hasNextPage &&
+      !propertiesQuery.isFetchingNextPage
+    ) {
+      propertiesQuery.fetchNextPage();
+    } else if (
+      activeTab === 'classifieds' &&
+      viewMode === 'all' &&
+      classifiedsQuery.hasNextPage &&
+      !classifiedsQuery.isFetchingNextPage
+    ) {
+      classifiedsQuery.fetchNextPage();
+    }
+    // Special view modes don't support infinite scroll
+  }, [activeTab, viewMode, propertiesQuery, classifiedsQuery]);
 
   const renderHeader = () => (
     <View className="mb-4">
-      <Text className="text-3xl font-bold text-foreground mb-4">Marketplace</Text>
-      
+      <Text className="mb-4 text-3xl font-bold text-foreground">Marketplace</Text>
+
       {/* Tab Navigation */}
-      <View className="flex-row gap-2 mb-4">
+      <View className="mb-4 flex-row gap-2">
         <Pressable
           className={cn(
-            "flex-1 flex-row items-center justify-center px-4 py-3 rounded-xl gap-2 border",
-            activeTab === 'properties' 
-              ? "bg-primary/10 border-primary/20" 
-              : "bg-card border-border"
+            'flex-1 flex-row items-center justify-center gap-2 rounded-xl border px-4 py-3',
+            activeTab === 'properties' ? 'border-primary/20 bg-primary/10' : 'border-border bg-card'
           )}
-          onPress={() => setActiveTab('properties')}
-        >
-          <Home size={20} className={activeTab === 'properties' ? "text-primary" : "text-muted-foreground"} />
-          <Text className={cn(
-            "text-base font-semibold",
-            activeTab === 'properties' ? "text-primary" : "text-muted-foreground"
-          )}>
+          onPress={() => setActiveTab('properties')}>
+          <Home
+            size={20}
+            className={activeTab === 'properties' ? 'text-primary' : 'text-muted-foreground'}
+          />
+          <Text
+            className={cn(
+              'text-base font-semibold',
+              activeTab === 'properties' ? 'text-primary' : 'text-muted-foreground'
+            )}>
             Properties
           </Text>
         </Pressable>
 
         <Pressable
           className={cn(
-            "flex-1 flex-row items-center justify-center px-4 py-3 rounded-xl gap-2 border",
-            activeTab === 'classifieds' 
-              ? "bg-primary/10 border-primary/20" 
-              : "bg-card border-border"
+            'flex-1 flex-row items-center justify-center gap-2 rounded-xl border px-4 py-3',
+            activeTab === 'classifieds'
+              ? 'border-primary/20 bg-primary/10'
+              : 'border-border bg-card'
           )}
-          onPress={() => setActiveTab('classifieds')}
-        >
-          <Package size={20} className={activeTab === 'classifieds' ? "text-primary" : "text-muted-foreground"} />
-          <Text className={cn(
-            "text-base font-semibold",
-            activeTab === 'classifieds' ? "text-primary" : "text-muted-foreground"
-          )}>
+          onPress={() => setActiveTab('classifieds')}>
+          <Package
+            size={20}
+            className={activeTab === 'classifieds' ? 'text-primary' : 'text-muted-foreground'}
+          />
+          <Text
+            className={cn(
+              'text-base font-semibold',
+              activeTab === 'classifieds' ? 'text-primary' : 'text-muted-foreground'
+            )}>
             Classifieds
           </Text>
         </Pressable>
       </View>
 
       {/* Search Bar */}
-      <View className="flex-row items-center bg-card rounded-xl px-4 mb-4 shadow-sm border border-border h-12">
-        <Search size={20} className="text-muted-foreground mr-2" />
+      <View className="mb-4 h-12 flex-row items-center rounded-xl border border-border bg-card px-4 shadow-sm">
+        <Search size={20} className="mr-2 text-muted-foreground" />
         <TextInput
-          className="flex-1 text-base text-foreground h-full"
+          className="h-full flex-1 text-base text-foreground"
           placeholder={`Search ${activeTab}...`}
           placeholderTextColor="#6B7280"
           value={searchQuery}
@@ -128,70 +264,68 @@ export function MarketplaceList({ onItemPress, initialTab = 'properties' }: Mark
         <View className="flex-row gap-2">
           <Pressable
             className={cn(
-              "flex-row items-center px-4 py-2 rounded-full gap-1.5 border",
-              viewMode === 'all' 
-                ? "bg-primary/10 border-primary/20" 
-                : "bg-card border-border"
+              'flex-row items-center gap-1.5 rounded-full border px-4 py-2',
+              viewMode === 'all' ? 'border-primary/20 bg-primary/10' : 'border-border bg-card'
             )}
-            onPress={() => setViewMode('all')}
-          >
-            <Text className={cn(
-              "text-sm font-semibold",
-              viewMode === 'all' ? "text-primary" : "text-muted-foreground"
-            )}>
+            onPress={() => setViewMode('all')}>
+            <Text
+              className={cn(
+                'text-sm font-semibold',
+                viewMode === 'all' ? 'text-primary' : 'text-muted-foreground'
+              )}>
               All
             </Text>
           </Pressable>
 
           <Pressable
             className={cn(
-              "flex-row items-center px-4 py-2 rounded-full gap-1.5 border",
-              viewMode === 'recent' 
-                ? "bg-primary/10 border-primary/20" 
-                : "bg-card border-border"
+              'flex-row items-center gap-1.5 rounded-full border px-4 py-2',
+              viewMode === 'recent' ? 'border-primary/20 bg-primary/10' : 'border-border bg-card'
             )}
-            onPress={() => setViewMode('recent')}
-          >
-            <Clock size={16} className={viewMode === 'recent' ? "text-primary" : "text-muted-foreground"} />
-            <Text className={cn(
-              "text-sm font-semibold",
-              viewMode === 'recent' ? "text-primary" : "text-muted-foreground"
-            )}>
+            onPress={() => setViewMode('recent')}>
+            <Clock
+              size={16}
+              className={viewMode === 'recent' ? 'text-primary' : 'text-muted-foreground'}
+            />
+            <Text
+              className={cn(
+                'text-sm font-semibold',
+                viewMode === 'recent' ? 'text-primary' : 'text-muted-foreground'
+              )}>
               Recent
             </Text>
           </Pressable>
 
           <Pressable
             className={cn(
-              "flex-row items-center px-4 py-2 rounded-full gap-1.5 border",
-              viewMode === 'popular' 
-                ? "bg-primary/10 border-primary/20" 
-                : "bg-card border-border"
+              'flex-row items-center gap-1.5 rounded-full border px-4 py-2',
+              viewMode === 'popular' ? 'border-primary/20 bg-primary/10' : 'border-border bg-card'
             )}
-            onPress={() => setViewMode('popular')}
-          >
-            <TrendingUp size={16} className={viewMode === 'popular' ? "text-primary" : "text-muted-foreground"} />
-            <Text className={cn(
-              "text-sm font-semibold",
-              viewMode === 'popular' ? "text-primary" : "text-muted-foreground"
-            )}>
+            onPress={() => setViewMode('popular')}>
+            <TrendingUp
+              size={16}
+              className={viewMode === 'popular' ? 'text-primary' : 'text-muted-foreground'}
+            />
+            <Text
+              className={cn(
+                'text-sm font-semibold',
+                viewMode === 'popular' ? 'text-primary' : 'text-muted-foreground'
+              )}>
               Popular
             </Text>
           </Pressable>
 
           <Pressable
             className={cn(
-              "flex-row items-center px-4 py-2 rounded-full gap-1.5 border",
-              viewMode === 'my-items' 
-                ? "bg-primary/10 border-primary/20" 
-                : "bg-card border-border"
+              'flex-row items-center gap-1.5 rounded-full border px-4 py-2',
+              viewMode === 'my-items' ? 'border-primary/20 bg-primary/10' : 'border-border bg-card'
             )}
-            onPress={() => setViewMode('my-items')}
-          >
-            <Text className={cn(
-              "text-sm font-semibold",
-              viewMode === 'my-items' ? "text-primary" : "text-muted-foreground"
-            )}>
+            onPress={() => setViewMode('my-items')}>
+            <Text
+              className={cn(
+                'text-sm font-semibold',
+                viewMode === 'my-items' ? 'text-primary' : 'text-muted-foreground'
+              )}>
               My Ads
             </Text>
           </Pressable>
@@ -201,10 +335,8 @@ export function MarketplaceList({ onItemPress, initialTab = 'properties' }: Mark
   );
 
   const renderEmpty = () => (
-    <View className="py-12 items-center">
-      <Text className="text-lg font-semibold text-foreground mb-2">
-        No {activeTab} found
-      </Text>
+    <View className="items-center py-12">
+      <Text className="mb-2 text-lg font-semibold text-foreground">No {activeTab} found</Text>
       <Text className="text-sm text-muted-foreground">
         Try adjusting your search or {activeTab === 'classifieds' ? 'view' : 'filters'}
       </Text>
@@ -212,46 +344,71 @@ export function MarketplaceList({ onItemPress, initialTab = 'properties' }: Mark
   );
 
   const renderError = () => (
-    <View className="flex-1 justify-center items-center bg-background p-6">
-      <Text className="text-base text-destructive text-center mb-4">{error}</Text>
-      <Pressable className="bg-primary px-6 py-3 rounded-lg" onPress={loadItems}>
+    <View className="flex-1 items-center justify-center bg-background p-6">
+      <Text className="mb-4 text-center text-base text-destructive">{error}</Text>
+      <Pressable className="rounded-lg bg-primary px-6 py-3" onPress={handleRefresh}>
         <Text className="text-base font-semibold text-primary-foreground">Retry</Text>
       </Pressable>
     </View>
   );
 
-  if (loading && items.length === 0) {
+  // Show loading indicator for initial load only
+  if (isLoading && items.length === 0) {
     return (
-      <View className="flex-1 justify-center items-center bg-background">
+      <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" className="text-primary" />
-        <Text className="mt-3 text-base text-muted-foreground">
-          Loading {activeTab}...
-        </Text>
+        <Text className="mt-3 text-base text-muted-foreground">Loading {activeTab}...</Text>
       </View>
     );
   }
 
+  // Show error screen only if no cached data available
   if (error && items.length === 0) {
     return renderError();
   }
 
+  // Render item callback for OptimizedList
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<MarketplaceItem>) => (
+      <MarketplaceCard
+        item={item}
+        type={activeTab === 'properties' ? 'property' : 'classified'}
+        onPress={(item) =>
+          onItemPress(item, activeTab === 'properties' ? 'property' : 'classified')
+        }
+      />
+    ),
+    [activeTab, onItemPress]
+  );
+
+  const keyExtractor = useCallback((item: MarketplaceItem) => item.id, []);
+
+  // Determine if infinite scroll is available for current view
+  const hasNextPage =
+    activeTab === 'properties'
+      ? propertiesQuery.hasNextPage
+      : viewMode === 'all'
+        ? classifiedsQuery.hasNextPage
+        : false;
+
   return (
     <View className="flex-1 bg-background">
-      <FlatList
+      {/* Offline Indicator - FR-012 */}
+      <OfflineIndicator dataUpdatedAt={dataUpdatedAt} />
+
+      <OptimizedList<MarketplaceItem>
         data={items}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <MarketplaceCard 
-            item={item} 
-            type={activeTab === 'properties' ? 'property' : 'classified'}
-            onPress={(item) => onItemPress(item, activeTab === 'properties' ? 'property' : 'classified')} 
-          />
-        )}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        estimatedItemSize={200}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={{ padding: 16 }}
-        refreshing={loading}
-        onRefresh={loadItems}
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        onEndReached={hasNextPage ? handleLoadMore : undefined}
+        onEndReachedThreshold={0.5}
+        testID="marketplace-list"
       />
     </View>
   );

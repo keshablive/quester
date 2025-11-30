@@ -10,10 +10,10 @@
 
 **Purpose**: Install dependencies and prepare project structure
 
-- [ ] T001 Install expo-image and @shopify/flash-list via `npx expo install expo-image @shopify/flash-list` in client/
-- [ ] T002 Run `npx expo doctor` to verify installation compatibility
-- [ ] T003 [P] Create performance constants file at client/core/constants/performance.ts
-- [ ] T004 [P] Create TypeScript barrel export at client/core/components/index.ts for new components
+- [X] T001 Install expo-image and @shopify/flash-list via `npx expo install expo-image @shopify/flash-list` in client/
+- [X] T002 Run `npx expo doctor` to verify installation compatibility
+- [X] T003 [P] Create performance constants file at client/core/constants/performance.ts
+- [X] T004 [P] Create TypeScript barrel export at client/core/components/index.ts for new components
 
 **Checkpoint**: Dependencies installed, project structure ready
 
@@ -23,14 +23,14 @@
 
 **Purpose**: Create wrapper components that all user stories depend on - BLOCKS all user stories
 
-- [ ] T005 Create OptimizedImage component wrapper at client/core/components/OptimizedImage.tsx
-- [ ] T006 Create OptimizedImage types at client/core/components/OptimizedImage.types.ts
-- [ ] T007 Create OptimizedList component wrapper at client/core/components/OptimizedList.tsx
-- [ ] T008 Create OptimizedList types at client/core/components/OptimizedList.types.ts
-- [ ] T009 [P] Create LazyRoute utility wrapper at client/core/routes/LazyRoute.tsx
-- [ ] T010 [P] Create LazyRoute types at client/core/routes/LazyRoute.types.ts
-- [ ] T011 [P] Create ErrorBoundary for chunk loading at client/core/components/ChunkErrorBoundary.tsx
-- [ ] T012 Export new components from client/core/index.ts
+- [X] T005 Create OptimizedImage component wrapper at client/core/components/OptimizedImage.tsx
+- [X] T006 Create OptimizedImage types at client/core/components/OptimizedImage.types.ts
+- [X] T007 Create OptimizedList component wrapper at client/core/components/OptimizedList.tsx
+- [X] T008 Create OptimizedList types at client/core/components/OptimizedList.types.ts
+- [X] T009 [P] Create LazyRoute utility wrapper at client/core/routes/LazyRoute.tsx
+- [X] T010 [P] Create LazyRoute types at client/core/routes/LazyRoute.types.ts
+- [X] T011 [P] Create ErrorBoundary for chunk loading at client/core/components/ChunkErrorBoundary.tsx
+- [X] T012 Export new components from client/core/index.ts
 
 **Checkpoint**: All foundational components ready for user story implementation
 
@@ -44,14 +44,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/CourseCard.tsx
-- [ ] T014 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/CourseDetail.tsx
-- [ ] T015 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/LearningLeaderboardWidget.tsx
-- [ ] T016 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/LearningAchievementsGrid.tsx
-- [ ] T017 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/InstructorBadgeAwardModal.tsx
-- [ ] T018 [P] [US1] Replace Image with OptimizedImage in client/components/pages/marketplace/MarketplaceCard.tsx
-- [ ] T019 [P] [US1] Replace Image with OptimizedImage in client/components/pages/marketplace/MarketplaceDetail.tsx
-- [ ] T020 [US1] Verify cache behavior by checking Network tab - no re-downloads on revisit
+- [X] T013 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/CourseCard.tsx
+- [X] T014 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/CourseDetail.tsx
+- [X] T015 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/LearningLeaderboardWidget.tsx
+- [X] T016 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/LearningAchievementsGrid.tsx
+- [X] T017 [P] [US1] Replace Image with OptimizedImage in client/components/pages/learning/InstructorBadgeAwardModal.tsx
+- [X] T018 [P] [US1] Replace Image with OptimizedImage in client/components/pages/marketplace/MarketplaceCard.tsx
+- [X] T019 [P] [US1] Replace Image with OptimizedImage in client/components/pages/marketplace/MarketplaceDetail.tsx
+- [X] T020 [US1] Verify cache behavior by checking Network tab - no re-downloads on revisit
 
 **Checkpoint**: All 7 image files migrated, image caching verified (<100ms display on revisit)
 
@@ -65,14 +65,14 @@
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Audit all FlatList usages via `grep -r "FlatList" client/components/` and document locations
-- [ ] T022 [US2] Replace FlatList with OptimizedList in client/app/achievements.tsx with estimatedItemSize={80}
-- [ ] T023 [P] [US2] Update any achievement-related list components to use OptimizedList
-- [ ] T024 [P] [US2] Update any leaderboard list components to use OptimizedList
-- [ ] T025 [P] [US2] Update any marketplace listing components to use OptimizedList
-- [ ] T026 [US2] Implement pull-to-refresh in achievements.tsx using OptimizedList refreshing/onRefresh props (FR-010)
-- [ ] T027 [US2] Implement infinite scroll pagination using onEndReached/onEndReachedThreshold props (FR-011)
-- [ ] T028 [US2] Profile scroll performance using React DevTools - verify 60fps maintained
+- [X] T021 [US2] Audit all FlatList usages via `grep -r "FlatList" client/components/` and document locations
+- [X] T022 [US2] Replace FlatList with OptimizedList in client/app/achievements.tsx with estimatedItemSize={80}
+- [X] T023 [P] [US2] Update any achievement-related list components to use OptimizedList
+- [X] T024 [P] [US2] Update any leaderboard list components to use OptimizedList
+- [X] T025 [P] [US2] Update any marketplace listing components to use OptimizedList
+- [X] T026 [US2] Implement pull-to-refresh in achievements.tsx using OptimizedList refreshing/onRefresh props (FR-010)
+- [X] T027 [US2] Implement infinite scroll pagination using onEndReached/onEndReachedThreshold props (FR-011)
+- [X] T028 [US2] Profile scroll performance using React DevTools - verify 60fps maintained
 
 **Checkpoint**: List scrolling smooth at 60fps, FlashList migration complete with pull-to-refresh and pagination
 
@@ -86,13 +86,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Measure initial bundle size via `npx expo export --platform web` (baseline)
-- [ ] T030 [US3] Create Suspense loading fallback component at client/core/components/LoadingFallback.tsx
-- [ ] T031 [P] [US3] Wrap client/app/admin.tsx with React.lazy and Suspense using ChunkErrorBoundary
-- [ ] T032 [P] [US3] Wrap client/app/analytics.tsx with React.lazy and Suspense using ChunkErrorBoundary
-- [ ] T033 [P] [US3] Wrap client/app/reports.tsx with React.lazy and Suspense using ChunkErrorBoundary
-- [ ] T034 [US3] Measure bundle size after code splitting - verify 15%+ reduction
-- [ ] T035 [US3] Test chunk load failure scenario - verify error boundary retry works
+- [X] T029 [US3] Measure initial bundle size via `npx expo export --platform web` (baseline)
+- [X] T030 [US3] Create Suspense loading fallback component at client/core/components/LoadingFallback.tsx
+- [X] T031 [P] [US3] Wrap client/app/admin.tsx with React.lazy and Suspense using ChunkErrorBoundary
+- [X] T032 [P] [US3] Wrap client/app/analytics.tsx with React.lazy and Suspense using ChunkErrorBoundary
+- [X] T033 [P] [US3] Wrap client/app/reports.tsx with React.lazy and Suspense using ChunkErrorBoundary
+- [X] T034 [US3] Measure bundle size after code splitting - verify 15%+ reduction
+- [X] T035 [US3] Test chunk load failure scenario - verify error boundary retry works
 
 **Checkpoint**: Bundle reduced by 15%+, lazy-loaded screens work with error handling
 
@@ -106,18 +106,18 @@
 
 ### Implementation for User Story 4
 
-- [ ] T036 [US4] Create contexts directory at client/core/auth/contexts/
-- [ ] T037 [US4] Create CoreAuthContext at client/core/auth/contexts/CoreAuthContext.tsx (user, tokens, signIn, signOut)
-- [ ] T038 [US4] Create TwoFactorContext at client/core/auth/contexts/TwoFactorContext.tsx (2FA state, submitCode)
-- [ ] T039 [US4] Create BiometricContext at client/core/auth/contexts/BiometricContext.tsx (biometric state, enable/disable)
-- [ ] T040 [US4] Create hooks directory at client/core/auth/hooks/
-- [ ] T041 [P] [US4] Create useCoreAuth hook at client/core/auth/hooks/useCoreAuth.ts
-- [ ] T042 [P] [US4] Create useTwoFactor hook at client/core/auth/hooks/useTwoFactor.ts
-- [ ] T043 [P] [US4] Create useBiometricAuth hook at client/core/auth/hooks/useBiometricAuth.ts
-- [ ] T044 [US4] Create AuthProviders composite at client/core/auth/providers/AuthProviders.tsx (wraps all 3 contexts)
-- [ ] T045 [US4] Update useAuth hook in client/core/auth/AuthContext.tsx to use composite pattern (backward compatible)
-- [ ] T046 [US4] Update client/app/_layout.tsx to use new AuthProviders wrapper
-- [ ] T047 [US4] Profile re-renders using React DevTools - verify 60% reduction for non-auth operations
+- [X] T036 [US4] Create contexts directory at client/core/auth/contexts/
+- [X] T037 [US4] Create CoreAuthContext at client/core/auth/contexts/CoreAuthContext.tsx (user, tokens, signIn, signOut)
+- [X] T038 [US4] Create TwoFactorContext at client/core/auth/contexts/TwoFactorContext.tsx (2FA state, submitCode)
+- [X] T039 [US4] Create BiometricContext at client/core/auth/contexts/BiometricContext.tsx (biometric state, enable/disable)
+- [X] T040 [US4] Create hooks directory at client/core/auth/hooks/
+- [X] T041 [P] [US4] Create useCoreAuth hook at client/core/auth/hooks/useCoreAuth.ts
+- [X] T042 [P] [US4] Create useTwoFactor hook at client/core/auth/hooks/useTwoFactor.ts
+- [X] T043 [P] [US4] Create useBiometricAuth hook at client/core/auth/hooks/useBiometricAuth.ts
+- [X] T044 [US4] Create AuthProviders composite at client/core/auth/providers/AuthProviders.tsx (wraps all 3 contexts)
+- [X] T045 [US4] Update useAuth hook in client/core/auth/hooks/useAuth.ts to use composite pattern (backward compatible)
+- [X] T046 [US4] Update client/app/_layout.tsx to use new AuthProviders wrapper
+- [X] T047 [US4] Profile re-renders using React DevTools - verify 60% reduction for non-auth operations
 
 **Checkpoint**: AuthContext split complete, useAuth() backward compatible, re-renders reduced by 60%
 
@@ -127,11 +127,11 @@
 
 **Purpose**: Documentation, cleanup, and validation across all user stories
 
-- [ ] T048 [P] Update client/core/index.ts with all new exports (OptimizedImage, OptimizedList, hooks)
-- [ ] T049 [P] Update client/core/auth/index.ts with new auth exports (contexts, hooks, providers)
-- [ ] T050 Run quickstart.md validation checklist - verify all items pass
-- [ ] T051 Update client/IMPORT_PATTERNS.md with new component import patterns
-- [ ] T052 Final performance verification - all 4 success criteria met (images <100ms, 60fps, 15% bundle, 60% re-render reduction)
+- [X] T048 [P] Update client/core/index.ts with all new exports (OptimizedImage, OptimizedList, hooks)
+- [X] T049 [P] Update client/core/auth/index.ts with new auth exports (contexts, hooks, providers)
+- [X] T050 Run quickstart.md validation checklist - verify all items pass
+- [X] T051 Update client/IMPORT_PATTERNS.md with new component import patterns
+- [X] T052 Final performance verification - all 4 success criteria met (images <100ms, 60fps, 15% bundle, 60% re-render reduction)
 
 ---
 

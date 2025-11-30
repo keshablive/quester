@@ -1,39 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
-import { transactionsService, Transaction } from '@/core';
-import { DollarSign, Calendar, User, CheckCircle, AlertTriangle, Package } from 'lucide-react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
+import { useTransaction, Transaction } from '@/core';
+import { OfflineIndicator, ErrorState, StaleDataIndicator } from '@/components/shared';
+import {
+  DollarSign,
+  Calendar,
+  User,
+  CheckCircle,
+  AlertTriangle,
+  Package,
+  RefreshCw,
+} from 'lucide-react-native';
+import { transactionsService } from '@/core';
 
 import { TransactionDetailProps } from './types';
 
+/**
+ * TransactionDetail Component
+ *
+ * Displays a single transaction's details with TanStack Query caching.
+ * Supports offline viewing, background refresh, and instant cache display.
+ *
+ * US1: Instant Transaction History with Offline Access
+ *
+ * @module components/pages/transactions/TransactionDetail
+ */
 export function TransactionDetail({ transactionId }: TransactionDetailProps) {
-  const [transaction, setTransaction] = useState<Transaction | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
+  // T012: Replace useState/useEffect with useTransaction hook
+  const {
+    data: transaction,
+    isLoading,
+    isRefetching,
+    error,
+    refetch,
+    dataUpdatedAt,
+  } = useTransaction(transactionId);
 
-  useEffect(() => {
-    loadTransaction();
-  }, [transactionId]);
-
-  const loadTransaction = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await transactionsService.get(transactionId);
-      setTransaction(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load transaction');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Action state (not part of TanStack Query migration - per quickstart.md notes)
+  const [actionLoading, setActionLoading] = React.useState(false);
 
   const handleConfirmDelivery = async () => {
     if (!transaction) return;
     try {
       setActionLoading(true);
-      const updated = await transactionsService.confirmDelivery(transactionId);
-      setTransaction(updated);
+      await transactionsService.confirmDelivery(transactionId);
+      // Refetch to get updated data from server
+      await refetch();
     } catch (err) {
       console.error('Failed to confirm delivery:', err);
     } finally {
@@ -45,8 +65,9 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
     if (!transaction) return;
     try {
       setActionLoading(true);
-      const updated = await transactionsService.releaseFunds(transactionId);
-      setTransaction(updated);
+      await transactionsService.releaseFunds(transactionId);
+      // Refetch to get updated data from server
+      await refetch();
     } catch (err) {
       console.error('Failed to release funds:', err);
     } finally {
@@ -58,8 +79,9 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
     if (!transaction) return;
     try {
       setActionLoading(true);
-      const updated = await transactionsService.openDispute(transactionId, 'Issue with transaction');
-      setTransaction(updated);
+      await transactionsService.openDispute(transactionId, 'Issue with transaction');
+      // Refetch to get updated data from server
+      await refetch();
     } catch (err) {
       console.error('Failed to open dispute:', err);
     } finally {
@@ -84,7 +106,8 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
     });
   };
 
-  if (loading) {
+  // T014: Loading state only on initial load (when no cached data)
+  if (isLoading && !transaction) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4F46E5" />
@@ -93,32 +116,54 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
     );
   }
 
-  if (error || !transaction) {
+  // T015: Error state with retry button using refetch
+  if (error && !transaction) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error || 'Transaction not found'}</Text>
-        <Pressable style={styles.retryButton} onPress={loadTransaction}>
-          <Text style={styles.retryText}>Retry</Text>
-        </Pressable>
-      </View>
+      <ErrorState
+        message={error.message ?? 'Failed to load transaction'}
+        onRetry={() => refetch()}
+      />
     );
   }
 
+  // Handle case where transaction doesn't exist
+  if (!transaction) {
+    return <ErrorState message="Transaction not found" onRetry={() => refetch()} />;
+  }
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#4F46E5" />
+      }>
+      {/* T013: Offline indicator (network status) */}
+      <OfflineIndicator />
+      {/* T013: Stale data indicator (cached data age) */}
+      <StaleDataIndicator dataUpdatedAt={dataUpdatedAt} />
+
+      {/* T016: Background refetch indicator */}
+      {isRefetching && (
+        <View style={styles.refetchingIndicator}>
+          <RefreshCw size={14} color="#6B7280" />
+          <Text style={styles.refetchingText}>Updating...</Text>
+        </View>
+      )}
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.amountContainer}>
           <DollarSign size={32} color="#4F46E5" />
           <Text style={styles.amount}>{formatPrice(transaction.amount, transaction.currency)}</Text>
         </View>
-        
-        <View style={[
-          styles.statusBadge,
-          transaction.status === 'completed' && styles.statusCompleted,
-          transaction.status === 'pending' && styles.statusPending,
-          transaction.status === 'failed' && styles.statusFailed,
-        ]}>
+
+        <View
+          style={[
+            styles.statusBadge,
+            transaction.status === 'completed' && styles.statusCompleted,
+            transaction.status === 'pending' && styles.statusPending,
+            transaction.status === 'failed' && styles.statusFailed,
+          ]}>
           <Text style={styles.statusText}>{transaction.status}</Text>
         </View>
       </View>
@@ -166,8 +211,7 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
             <Pressable
               style={[styles.actionButton, styles.actionPrimary]}
               onPress={handleConfirmDelivery}
-              disabled={actionLoading}
-            >
+              disabled={actionLoading}>
               <Package size={20} color="#FFFFFF" />
               <Text style={styles.actionButtonText}>Confirm Delivery</Text>
             </Pressable>
@@ -175,8 +219,7 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
             <Pressable
               style={[styles.actionButton, styles.actionSuccess]}
               onPress={handleReleaseFunds}
-              disabled={actionLoading}
-            >
+              disabled={actionLoading}>
               <CheckCircle size={20} color="#FFFFFF" />
               <Text style={styles.actionButtonText}>Release Funds</Text>
             </Pressable>
@@ -184,8 +227,7 @@ export function TransactionDetail({ transactionId }: TransactionDetailProps) {
             <Pressable
               style={[styles.actionButton, styles.actionDanger]}
               onPress={handleOpenDispute}
-              disabled={actionLoading}
-            >
+              disabled={actionLoading}>
               <AlertTriangle size={20} color="#FFFFFF" />
               <Text style={styles.actionButtonText}>Open Dispute</Text>
             </Pressable>
@@ -212,29 +254,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
   },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  refetchingIndicator: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    padding: 24,
+    justifyContent: 'center',
+    paddingVertical: 8,
+    gap: 6,
+    backgroundColor: '#F3F4F6',
   },
-  errorText: {
-    fontSize: 16,
-    color: '#EF4444',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  retryButton: {
-    backgroundColor: '#4F46E5',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  retryText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+  refetchingText: {
+    fontSize: 12,
+    color: '#6B7280',
   },
   header: {
     backgroundColor: '#FFFFFF',

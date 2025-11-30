@@ -484,3 +484,428 @@ export interface MarkNotificationReadVariables {
   notificationId?: string;
   all?: boolean;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// Transaction Types (Feature 020)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Transaction entity
+ */
+export interface Transaction {
+  id: string;
+  type: 'credit' | 'debit';
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed';
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Transaction list filters
+ */
+export interface TransactionFilters {
+  page?: number;
+  limit?: number;
+  type?: 'credit' | 'debit';
+  status?: 'pending' | 'completed' | 'failed';
+  startDate?: string;
+  endDate?: string;
+}
+
+/**
+ * Paginated transactions response
+ */
+export interface TransactionsResponse extends PaginatedResponse<Transaction> {}
+
+// ═══════════════════════════════════════════════════════════════
+// Marketplace Types (Feature 020)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Property listing entity
+ */
+export interface Property {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  type: 'sale' | 'rent';
+  images: string[];
+  location: {
+    address: string;
+    city: string;
+    coordinates?: { lat: number; lng: number };
+  };
+  features: string[];
+  ownerId: string;
+  status: 'active' | 'pending' | 'sold';
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Classified ad entity
+ */
+export interface ClassifiedAd {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  images: string[];
+  condition: 'new' | 'used' | 'refurbished';
+  sellerId: string;
+  status: 'active' | 'sold' | 'expired';
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Property list filters
+ */
+export interface PropertyFilters {
+  page?: number;
+  limit?: number;
+  query?: string;
+  type?: 'sale' | 'rent';
+  minPrice?: number;
+  maxPrice?: number;
+  city?: string;
+}
+
+/**
+ * Classified ad list filters
+ */
+export interface ClassifiedFilters {
+  page?: number;
+  limit?: number;
+  query?: string;
+  category?: string;
+  condition?: 'new' | 'used' | 'refurbished';
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+/**
+ * Union type for marketplace items
+ */
+export type MarketplaceItem = Property | ClassifiedAd;
+
+/**
+ * Marketplace item type discriminator
+ */
+export type MarketplaceItemType = 'property' | 'classified';
+
+// ═══════════════════════════════════════════════════════════════
+// Certificate Types (Feature 020)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Certificate entity
+ */
+export interface Certificate {
+  id: string;
+  courseId: string;
+  courseName: string;
+  userId: string;
+  issuedAt: string;
+  expiresAt?: string;
+  certificateUrl: string;
+  thumbnailUrl?: string;
+  skills: string[];
+  verificationCode: string;
+}
+
+/**
+ * Certificate list filters
+ */
+export interface CertificateFilters {
+  page?: number;
+  limit?: number;
+  courseId?: string;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Notification Settings Types (Feature 020)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * User notification settings (detailed version for query.types)
+ * Note: The simpler NotificationSettings interface used by the app is in notifications.service.ts
+ */
+export interface DetailedNotificationSettings {
+  id: string;
+  userId: string;
+  email: {
+    marketing: boolean;
+    courseUpdates: boolean;
+    questReminders: boolean;
+    achievements: boolean;
+  };
+  push: {
+    newMessages: boolean;
+    questReminders: boolean;
+    achievements: boolean;
+    dailyChallenges: boolean;
+  };
+  inApp: {
+    newMessages: boolean;
+    mentions: boolean;
+    achievements: boolean;
+  };
+  updatedAt: string;
+}
+
+/**
+ * Input for updating notification settings (partial updates supported)
+ */
+export interface UpdateDetailedNotificationSettingsInput {
+  email?: Partial<DetailedNotificationSettings['email']>;
+  push?: Partial<DetailedNotificationSettings['push']>;
+  inApp?: Partial<DetailedNotificationSettings['inApp']>;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Achievement Types (Feature 022 - Phase 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Achievement category
+ */
+export type AchievementCategory =
+  | 'learning'
+  | 'social'
+  | 'quest'
+  | 'engagement'
+  | 'special';
+
+/**
+ * Achievement criteria for tracking progress
+ */
+export interface AchievementCriteria {
+  type: 'count' | 'streak' | 'milestone' | 'manual';
+  target?: number;
+  current?: number;
+}
+
+/**
+ * Achievement entity
+ */
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: AchievementCategory;
+  points: number;
+  isEarned: boolean;
+  earnedAt?: string;
+  progress?: number;
+  criteria: AchievementCriteria;
+}
+
+/**
+ * Achievement list filters
+ */
+export interface AchievementFilters {
+  category?: AchievementCategory;
+  earned?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Extended Badge Types (Feature 022 - Phase 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Badge tier levels
+ */
+export type BadgeTier = 'bronze' | 'silver' | 'gold' | 'platinum';
+
+/**
+ * Extended Badge entity with tier and criteria
+ */
+export interface ExtendedBadge {
+  id: string;
+  name: string;
+  description: string;
+  tier: BadgeTier;
+  imageUrl: string;
+  criteria: string;
+  isEarned: boolean;
+  earnedAt?: string;
+  earnedCount?: number;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Admin Types (Feature 022 - Phase 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Admin dashboard statistics
+ */
+export interface AdminStats {
+  totalUsers: number;
+  activeUsers: number;
+  totalQuests: number;
+  completedQuests: number;
+  totalRevenue: number;
+  revenueThisMonth: number;
+  newUsersToday: number;
+  newUsersThisWeek: number;
+}
+
+/**
+ * Audit log entry
+ */
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  actorId: string;
+  actorEmail: string;
+  targetType: string;
+  targetId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+/**
+ * Audit log filters
+ */
+export interface AuditLogFilters {
+  action?: string;
+  actorId?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Engagement Chart Types (Feature 022 - Phase 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Time range for analytics queries
+ */
+export type TimeRange = '7d' | '30d' | '90d' | '1y';
+
+/**
+ * Engagement data point for charts
+ */
+export interface EngagementDataPoint {
+  date: string;
+  activeUsers: number;
+  questsStarted: number;
+  questsCompleted: number;
+  postsCreated: number;
+}
+
+/**
+ * Engagement chart data
+ */
+export interface EngagementData {
+  timeRange: TimeRange;
+  dataPoints: EngagementDataPoint[];
+  summary: {
+    totalActiveUsers: number;
+    avgDailyActive: number;
+    engagementRate: number;
+    peakDay: string;
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Social Feed Types (Feature 022 - Phase 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Post author info
+ */
+export interface PostAuthor {
+  id: string;
+  username: string;
+  displayName: string;
+  avatarUrl?: string;
+}
+
+/**
+ * Social post entity
+ */
+export interface SocialPost {
+  id: string;
+  authorId: string;
+  author: PostAuthor;
+  content: string;
+  mediaUrls?: string[];
+  likes: number;
+  comments: number;
+  isLiked: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+/**
+ * Create post input
+ */
+export interface CreatePostInput {
+  content: string;
+  mediaUrls?: string[];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Group Types (Feature 022 - Phase 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Group member info
+ */
+export interface GroupMember {
+  userId: string;
+  username: string;
+  displayName: string;
+  avatarUrl?: string;
+  role: 'owner' | 'admin' | 'member';
+  joinedAt: string;
+}
+
+/**
+ * Group entity
+ */
+export interface Group {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+  memberCount: number;
+  isJoined: boolean;
+  isPublic: boolean;
+  createdAt: string;
+  createdBy: string;
+  members?: GroupMember[];
+}
+
+/**
+ * Group list filters
+ */
+export interface GroupFilters {
+  search?: string;
+  joined?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+/**
+ * Create group input
+ */
+export interface CreateGroupInput {
+  name: string;
+  description: string;
+  imageUrl?: string;
+  isPublic: boolean;
+}

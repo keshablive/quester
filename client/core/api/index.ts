@@ -1,6 +1,6 @@
 // API Client
 export { apiClient, ApiError } from './client';
-export type { RequestConfig } from './client';
+export type { RequestConfig, ServiceRequestOptions } from './client';
 
 // WebSocket
 export { webSocketService, WS_MESSAGE_TYPES } from './services/websocket.service';

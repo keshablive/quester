@@ -1,76 +1,82 @@
-import React, { useState } from 'react';
+/**
+ * Quests Page
+ *
+ * Route file for quests view. Uses TanStack Query for data fetching
+ * and mutations with proper cache invalidation.
+ *
+ * Phase 3 Migration: Direct service calls replaced with TanStack Query hooks
+ * FR-005: System MUST migrate Quests page to use TanStack Query
+ * US3: Quest progress and completion with cascade invalidation
+ *
+ * @module app/quests
+ */
+
+import React, { useState, useCallback } from 'react';
 import { View, Modal } from 'react-native';
 import { QuestList, QuestDetail } from '@/components/pages/quests';
 import { Quest } from '@/core/types/quest';
-import { questService } from '@/core';
 import { useAuth } from '@/core/auth/AuthContext';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/core/query';
+import { useStartQuest, useAbandonQuest } from '@/core/hooks/mutations/useQuestMutations';
+import { useQuest } from '@/core/hooks/queries/useQuests';
+import { OfflineIndicator } from '@/components/shared';
+import { ChunkErrorBoundary } from '@/core/routes';
 
 export default function QuestsPage() {
   const { isAuthenticated } = useAuth();
-  const queryClient = useQueryClient();
-  const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
 
-  const handleQuestPress = (quest: Quest) => {
-    // Fetch full details including steps
-    questService
-      .getById(quest.id)
-      .then((fullQuest) => {
-        setSelectedQuest(fullQuest);
-      })
-      .catch((error) => {
-        console.error('Failed to fetch quest details:', error);
-        // Fallback to showing what we have
-        setSelectedQuest(quest);
-      });
-  };
+  // TanStack Query hooks for mutations
+  const startQuestMutation = useStartQuest();
+  const abandonQuestMutation = useAbandonQuest();
 
-  const handleStartQuest = async () => {
-    if (!selectedQuest) return;
-    try {
-      await questService.start(selectedQuest.id);
-      // Refresh quest details to show progress
-      const updatedQuest = await questService.getById(selectedQuest.id);
-      setSelectedQuest(updatedQuest);
-      // Invalidate quests cache to refresh list
-      queryClient.invalidateQueries({ queryKey: queryKeys.quests.all });
-    } catch (error) {
-      console.error('Failed to start quest:', error);
-    }
-  };
+  // Fetch quest details when selected
+  const { data: selectedQuest, isLoading: isLoadingDetail } = useQuest(selectedQuestId ?? '', {
+    enabled: !!selectedQuestId,
+  });
 
-  const handleAbandonQuest = async () => {
-    if (!selectedQuest) return;
-    try {
-      await questService.abandon(selectedQuest.id);
-      const updatedQuest = await questService.getById(selectedQuest.id);
-      setSelectedQuest(updatedQuest);
-      // Invalidate quests cache to refresh list
-      queryClient.invalidateQueries({ queryKey: queryKeys.quests.all });
-    } catch (error) {
-      console.error('Failed to abandon quest:', error);
-    }
-  };
+  const handleQuestPress = useCallback((quest: Quest) => {
+    setSelectedQuestId(quest.id);
+  }, []);
+
+  const handleStartQuest = useCallback(async () => {
+    if (!selectedQuestId) return;
+    startQuestMutation.mutate(selectedQuestId);
+  }, [selectedQuestId, startQuestMutation]);
+
+  const handleAbandonQuest = useCallback(async () => {
+    if (!selectedQuestId) return;
+    abandonQuestMutation.mutate(selectedQuestId, {
+      onSuccess: () => {
+        setSelectedQuestId(null);
+      },
+    });
+  }, [selectedQuestId, abandonQuestMutation]);
+
+  const handleBack = useCallback(() => {
+    setSelectedQuestId(null);
+  }, []);
 
   return (
-    <View className="flex-1 bg-background">
-      <QuestList onQuestPress={handleQuestPress} />
+    <ChunkErrorBoundary>
+      <View className="flex-1 bg-background">
+        <OfflineIndicator />
+        <QuestList onQuestPress={handleQuestPress} />
 
-      <Modal
-        visible={!!selectedQuest}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setSelectedQuest(null)}>
-        {selectedQuest && (
-          <QuestDetail
-            quest={selectedQuest}
-            onBack={() => setSelectedQuest(null)}
-            onStart={handleStartQuest}
-            onAbandon={handleAbandonQuest}
-          />
-        )}
-      </Modal>
-    </View>
+        <Modal
+          visible={!!selectedQuestId}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={handleBack}>
+          {selectedQuest && (
+            <QuestDetail
+              quest={selectedQuest}
+              onBack={handleBack}
+              onStart={handleStartQuest}
+              onAbandon={handleAbandonQuest}
+            />
+          )}
+        </Modal>
+      </View>
+    </ChunkErrorBoundary>
   );
 }

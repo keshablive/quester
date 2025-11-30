@@ -37,7 +37,8 @@ export {
   useMarkNotificationRead,
   useMarkAllNotificationsRead,
   useDeleteNotification,
-  useUpdateNotificationSettings,
+  // Note: useUpdateNotificationSettings is exported from queries/useNotificationSettings.ts
+  // with full optimistic update support
 } from './useNotificationMutations';
 
 // Message mutations (send, delete, mark read) - Feature 017
@@ -53,3 +54,34 @@ export type {
   SendGroupMessageInput,
   DeleteMessageInput,
 } from './useMessageMutations';
+
+// Social mutations (like, unlike, create post) - Feature 022 Phase 2
+export {
+  useLikePost,
+  useUnlikePost,
+  useCreatePost,
+} from './useSocialMutations';
+
+// Achievement mutations (claim) - Feature 022 Phase 2
+export { useClaimAchievement } from './useAchievementMutations';
+
+// Group mutations (join, leave, create) - Feature 022 Phase 2
+export {
+  useJoinGroup,
+  useLeaveGroup,
+  useCreateGroup,
+} from './useGroupMutations';
+
+// Marketplace mutations (purchase, contact, favorite) - Feature 023 Phase 3
+export {
+  usePurchaseItem,
+  useContactSeller,
+  useFavoriteItem,
+  useUnfavoriteItem,
+} from './useMarketplaceMutations';
+export type {
+  PurchaseInput,
+  PurchaseResponse,
+  ContactSellerInput,
+  ContactSellerResponse,
+} from './useMarketplaceMutations';

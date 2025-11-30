@@ -11,7 +11,13 @@ interface MessageItemProps {
   isGroup?: boolean;
 }
 
-export function MessageItem({ message, isLast, isGroup = false }: MessageItemProps) {
+/**
+ * MessageItem Component
+ *
+ * Displays a message preview item in a conversation list.
+ * FR-005: Wrapped with React.memo to prevent unnecessary re-renders during scroll.
+ */
+function MessageItemComponent({ message, isLast, isGroup = false }: MessageItemProps) {
   return (
     <View
       className={`flex-row items-center gap-3 p-4 ${
@@ -71,3 +77,29 @@ export function MessageItem({ message, isLast, isGroup = false }: MessageItemPro
     </View>
   );
 }
+
+/**
+ * Custom comparison function for MessageItem memoization (FR-005, FR-016)
+ * Compares only the properties that affect rendering
+ * Note: LegacyMessage doesn't have an id, so we compare all fields
+ */
+function areMessagePropsEqual(prevProps: MessageItemProps, nextProps: MessageItemProps): boolean {
+  const prevMsg = prevProps.message;
+  const nextMsg = nextProps.message;
+
+  return (
+    prevMsg.sender === nextMsg.sender &&
+    prevMsg.preview === nextMsg.preview &&
+    prevMsg.time === nextMsg.time &&
+    prevMsg.unread === nextMsg.unread &&
+    prevMsg.initials === nextMsg.initials &&
+    prevProps.isLast === nextProps.isLast &&
+    prevProps.isGroup === nextProps.isGroup
+  );
+}
+
+/**
+ * Memoized MessageItem export (FR-005)
+ * Prevents re-renders when scrolling through message list
+ */
+export const MessageItem = React.memo(MessageItemComponent, areMessagePropsEqual);

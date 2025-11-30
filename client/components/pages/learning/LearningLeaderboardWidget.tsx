@@ -6,7 +6,7 @@
  * 006-course-gamification T066
  */
 import React, { useState } from 'react';
-import { View, ScrollView, Pressable, Image } from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/ui';
 import {
   Trophy,
@@ -17,7 +17,7 @@ import {
   TrendingUp,
   User,
 } from 'lucide-react-native';
-import { cn } from '@/core';
+import { cn, OptimizedImage } from '@/core';
 import type { LearningLeaderboardEntry } from '@/core/types';
 import { useLearningLeaderboard, LeaderboardTimeframe } from '@/core/hooks/useLearningLeaderboard';
 
@@ -123,10 +123,11 @@ function LeaderboardEntry({
       <View className="ml-3 flex-1 flex-row items-center">
         {/* Avatar */}
         {entry.avatar ? (
-          <Image
-            source={{ uri: entry.avatar }}
+          <OptimizedImage
+            source={entry.avatar}
             className="h-10 w-10 rounded-full"
-            accessibilityIgnoresInvertColors
+            placeholder="avatar"
+            contentFit="cover"
           />
         ) : (
           <View className="h-10 w-10 items-center justify-center rounded-full bg-muted">

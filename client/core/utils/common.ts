@@ -87,21 +87,22 @@ export function sleep(ms: number): Promise<void> {
  * @param func - Function to debounce
  * @param wait - Wait time in milliseconds
  * @returns Debounced function
+ * FR-011: Fixed generic types from `any[]` to `unknown[]`
  * 
  * @example
  * ```tsx
- * const debouncedSearch = debounce((query) => {
+ * const debouncedSearch = debounce((query: string) => {
  *   console.log('Searching:', query);
  * }, 300);
  * ```
  */
-export function debounce<T extends (...args: any[]) => any>(
-    func: T,
+export function debounce<TArgs extends unknown[], TReturn>(
+    func: (...args: TArgs) => TReturn,
     wait: number
-): (...args: Parameters<T>) => void {
+): (...args: TArgs) => void {
     let timeout: ReturnType<typeof setTimeout> | null = null;
 
-    return function executedFunction(...args: Parameters<T>) {
+    return function executedFunction(...args: TArgs): void {
         const later = () => {
             timeout = null;
             func(...args);
@@ -118,6 +119,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * @param func - Function to throttle
  * @param limit - Time limit in milliseconds
  * @returns Throttled function
+ * FR-011: Fixed generic types from `any[]` to `unknown[]`
  * 
  * @example
  * ```tsx
@@ -126,13 +128,13 @@ export function debounce<T extends (...args: any[]) => any>(
  * }, 100);
  * ```
  */
-export function throttle<T extends (...args: any[]) => any>(
-    func: T,
+export function throttle<TArgs extends unknown[], TReturn>(
+    func: (...args: TArgs) => TReturn,
     limit: number
-): (...args: Parameters<T>) => void {
+): (...args: TArgs) => void {
     let inThrottle: boolean;
 
-    return function executedFunction(...args: Parameters<T>) {
+    return function executedFunction(...args: TArgs): void {
         if (!inThrottle) {
             func(...args);
             inThrottle = true;

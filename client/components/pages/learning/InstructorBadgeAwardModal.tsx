@@ -6,7 +6,7 @@
  * 006-course-gamification T087
  */
 import React, { useState, useEffect } from 'react';
-import { View, Modal, ScrollView, Pressable, TextInput, Image } from 'react-native';
+import { View, Modal, ScrollView, Pressable, TextInput } from 'react-native';
 import { Text } from '@/components/ui';
 import {
   Award,
@@ -21,7 +21,7 @@ import {
   CheckCircle,
   ChevronRight,
 } from 'lucide-react-native';
-import { cn } from '@/core';
+import { cn, OptimizedImage } from '@/core';
 import { useInstructorBadgeAward } from '@/core/hooks/useInstructorBadgeAward';
 
 /**
@@ -147,7 +147,12 @@ function StudentCard({
         selected ? 'border-primary bg-primary/5' : 'border-border bg-card'
       )}>
       {student.avatar ? (
-        <Image source={{ uri: student.avatar }} className="h-10 w-10 rounded-full" />
+        <OptimizedImage
+          source={student.avatar}
+          className="h-10 w-10 rounded-full"
+          placeholder="avatar"
+          contentFit="cover"
+        />
       ) : (
         <View className="h-10 w-10 items-center justify-center rounded-full bg-muted">
           <User size={20} className="text-muted-foreground" />

@@ -127,8 +127,9 @@ export function handleApiError(error: unknown): string {
   }
 
   // Handle error objects with message property
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    return String((error as any).message);
+  // FR-011: Use type guard instead of `any` cast
+  if (isErrorWithMessage(error)) {
+    return error.message;
   }
 
   // Handle string errors
@@ -138,6 +139,19 @@ export function handleApiError(error: unknown): string {
 
   // Fallback for unknown errors
   return 'An unexpected error occurred. Please try again.';
+}
+
+/**
+ * Type guard to check if an object has a message property
+ * FR-011: Replace `any` type casts with proper type guards
+ */
+function isErrorWithMessage(error: unknown): error is { message: string } {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as { message: unknown }).message === 'string'
+  );
 }
 
 /**
@@ -176,13 +190,14 @@ export function getErrorMessageForStatus(statusCode: number): string {
  * 
  * @param error - Error to log
  * @param context - Additional context
+ * FR-011: Changed context type from `Record<string, any>` to `Record<string, unknown>`
  * 
  * @example
  * ```tsx
  * logError(error, { userId: '123', action: 'fetchProfile' });
  * ```
  */
-export function logError(error: unknown, context?: Record<string, any>): void {
+export function logError(error: unknown, context?: Record<string, unknown>): void {
   if (__DEV__) {
     console.error('Error:', error);
     if (context) {

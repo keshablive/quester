@@ -2,4 +2,4 @@
 export { StreamList } from './StreamList';
 export { CreateStream } from './CreateStream';
 export { StreamPlayer } from './StreamPlayer';
-export type { Stream } from './types';
+export type { CreateStreamProps, StreamListProps, StreamPlayerProps } from './types';

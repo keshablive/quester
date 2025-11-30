@@ -1,5 +1,19 @@
 import { RouteConfig } from './types';
 
+// Lazy loading utilities
+export {
+  ChunkErrorBoundary,
+  LoadingFallback,
+  withLazyLoading,
+} from './LazyRoute';
+
+export type {
+  LazyRouteConfig,
+  ChunkLoadingState,
+  ChunkErrorBoundaryProps,
+  ChunkErrorFallbackProps,
+} from './LazyRoute';
+
 export const ROUTES = {
     HOME: 'index',
     DASHBOARD: 'dashboard',

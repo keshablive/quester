@@ -33,8 +33,6 @@ services:
       - .env
     volumes:
       - ./server:/app
-      # Mount migrations to ensure they are available if run from inside container
-      - ./server/internal/migrations:/app/internal/migrations
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,8 +41,6 @@ services:
     networks:
       - quester_network
     restart: unless-stopped
-    # Override command to ensure air uses the config file
-    command: air -c .air.toml
 
   # ==============================================
   # Infrastructure Services

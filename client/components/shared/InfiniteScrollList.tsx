@@ -162,6 +162,8 @@ export function InfiniteScrollList<TItem>(props: InfiniteScrollListProps<TItem>)
   const fetchNextPage = queryResult?.fetchNextPage;
   const refetch = queryResult?.refetch;
   const isRefetching = isQueryMode ? queryResult?.isRefetching : manualIsRefreshing;
+  // Check if fetching next page failed (has error but already has some data)
+  const isFetchNextPageError = isQueryMode && isError && items.length > 0;
 
   // Flatten pages into single array (query mode) or use manual data
   const items = React.useMemo(() => {
@@ -202,11 +204,14 @@ export function InfiniteScrollList<TItem>(props: InfiniteScrollListProps<TItem>)
     return <ErrorComponent error={error} retry={refetch} />;
   }
 
-  // Footer with loading indicator
+  // Footer with loading indicator or retry button for failed page loads
   const renderFooter = () => {
     return (
       <View>
         {isFetchingNextPage && <LoadingMoreComponent />}
+        {isFetchNextPageError && error && fetchNextPage && (
+          <PageRetryButton error={error} retry={fetchNextPage} />
+        )}
         {ListFooterComponent &&
           (typeof ListFooterComponent === 'function' ? (
             <ListFooterComponent />
@@ -268,6 +273,20 @@ function DefaultLoadingMore() {
 }
 
 /**
+ * Per-page retry button for failed page loads (T055)
+ */
+function PageRetryButton({ error, retry }: { error: ApiError; retry: () => void }) {
+  return (
+    <View style={styles.pageRetryContainer}>
+      <Text style={styles.pageRetryText}>{error.message || 'Failed to load more'}</Text>
+      <Text style={styles.pageRetryButton} onPress={retry}>
+        Tap to retry
+      </Text>
+    </View>
+  );
+}
+
+/**
  * Default error component
  */
 function DefaultError({ error, retry }: { error: ApiError; retry: () => void }) {
@@ -303,6 +322,26 @@ const styles = StyleSheet.create({
   loadingMoreContainer: {
     paddingVertical: 20,
     alignItems: 'center',
+  },
+  pageRetryContainer: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    backgroundColor: '#FEF2F2',
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+  },
+  pageRetryText: {
+    fontSize: 14,
+    color: '#991B1B',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  pageRetryButton: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6366F1',
   },
   errorContainer: {
     flex: 1,
