@@ -2,137 +2,173 @@
 
 ## Overview
 
-- **Total Tasks**: 62
-- **Phases**: 5
-- **Estimated Duration**: 10 working days
+- **Total Tasks**: 78
+- **Phases**: 6 (Phase 0-5)
+- **Estimated Duration**: 12 working days
 
-## Phase 1: Repository Interface Extraction (T001-T018)
+---
+
+## ⚠️ Phase 0: Codebase Restoration (T001-T007) - PREREQUISITE
+
+The active server codebase is severely incomplete. Full codebase must be restored from backup before DI refactoring can proceed.
+
+### Restoration Tasks
+
+- [ ] T001 [B] Backup current `server/internal/` state (commit or stash any changes)
+- [ ] T002 [B] Restore `internal/services/` (56 files from `settings/backups/server/internal/services/`)
+- [ ] T003 [B] Restore `internal/controllers/` (35 files from `settings/backups/server/internal/controllers/`)
+- [ ] T004 [B] Restore `internal/repositories/` (25 files from `settings/backups/server/internal/repositories/`)
+- [ ] T005 [B] Restore `internal/models/` from backup
+- [ ] T006 [B] Restore missing `internal/framework/` subdirectories (14 folders: auth, cache, config, core, database, middleware, interfaces, metrics, pagination, push, responses, sentry, streaming, utils)
+- [ ] T007 [B][R] Verify server compiles: `go build ./cmd/server/...`
+
+---
+
+## Phase 1: Repository Interface Extraction (T008-T025)
 
 ### Setup & Foundation
-- [ ] T001 Create `internal/framework/interfaces/repositories.go` with common repository types
-- [ ] T002 Define `TransactionManager` interface for database transactions
-- [ ] T003 Define `CacheClient` interface abstracting Redis operations
+
+- [ ] T008 [B] Create `internal/framework/interfaces/repositories.go` with common repository types
+- [ ] T009 [P] Define `TransactionManager` interface for database transactions
+- [ ] T010 [P] Define `CacheClient` interface abstracting Redis operations
 
 ### P1 Repository Interfaces
-- [ ] T004 Extract `PropertyRepository` interface (CRUD + tenant-scoped queries)
-- [ ] T005 Extract `QuestRepository` interface (existing interface, verify completeness)
-- [ ] T006 Extract `UserRepository` interface (CRUD + FindByEmail, IncrementLoginStreak)
-- [ ] T007 Extract `TransactionRepository` interface (CRUD + FindByPaymentID, GetByStatus)
-- [ ] T008 Extract `BadgeRepository` interface (CRUD + FindEligible, FindByUser)
-- [ ] T009 Extract `NotificationRepository` interface (CRUD + BulkCreate, FindByUser)
+
+- [ ] T011 [P] Extract `PropertyRepository` interface (CRUD + tenant-scoped queries)
+- [ ] T012 [P] Extract `QuestRepository` interface (existing interface, verify completeness)
+- [ ] T013 [P] Extract `UserRepository` interface (CRUD + FindByEmail, IncrementLoginStreak)
+- [ ] T014 [P] Extract `TransactionRepository` interface (CRUD + FindByPaymentID, GetByStatus)
+- [ ] T015 [P] Extract `BadgeRepository` interface (CRUD + FindEligible, FindByUser)
+- [ ] T016 [P] Extract `NotificationRepository` interface (CRUD + BulkCreate, FindByUser)
 
 ### Supporting Repository Interfaces
-- [ ] T010 Extract `AuditLogRepository` interface (Create, Query, LogTenantViolation)
-- [ ] T011 Extract `TwoFactorRepository` interface (CRUD + backup codes, trusted devices)
-- [ ] T012 Extract `BackupCodeRepository` interface (CRUD + MarkUsed)
-- [ ] T013 Extract `TrustedDeviceRepository` interface (CRUD + FindByUser)
-- [ ] T014 Extract `EncryptionKeyRepository` interface (CRUD + GetActive, Rotate)
-- [ ] T015 Extract `RefreshTokenRepository` interface (CRUD + Revoke, RevokeAll)
+
+- [ ] T017 [P] Extract `AuditLogRepository` interface (Create, Query, LogTenantViolation)
+- [ ] T018 [P] Extract `TwoFactorRepository` interface (CRUD + backup codes, trusted devices)
+- [ ] T019 [P] Extract `BackupCodeRepository` interface (CRUD + MarkUsed)
+- [ ] T020 [P] Extract `TrustedDeviceRepository` interface (CRUD + FindByUser)
+- [ ] T021 [P] Extract `EncryptionKeyRepository` interface (CRUD + GetActive, Rotate)
+- [ ] T022 [P] Extract `RefreshTokenRepository` interface (CRUD + Revoke, RevokeAll)
 
 ### Verification
-- [ ] T016 Verify all interfaces compile independently (`go build ./internal/framework/interfaces/...`)
-- [ ] T017 Verify existing repositories satisfy new interfaces (compile-time check)
-- [ ] T018 Document interface contracts in `docs/REPOSITORY_PATTERNS.md`
+
+- [ ] T023 [B] Verify all interfaces compile independently (`go build ./internal/framework/interfaces/...`)
+- [ ] T024 [B] Verify existing repositories satisfy new interfaces (compile-time check)
+- [ ] T025 [R] Document interface contracts in `docs/REPOSITORY_PATTERNS.md`
 
 ---
 
-## Phase 2: P1 Service DI Refactoring (T019-T036)
+## Phase 2: P1 Service DI Refactoring (T026-T043)
 
 ### PropertyService Refactoring
-- [ ] T019 Update `PropertyService` struct to use `interfaces.PropertyRepository`
-- [ ] T020 Create `NewPropertyServiceV2(repo, ocrService, aiService)` constructor
-- [ ] T021 Deprecate old `NewPropertyService(db, ...)` with migration comment
-- [ ] T022 Register `PropertyService` in DI container `registerServices()`
+
+- [ ] T026 [B] Update `PropertyService` struct to use `interfaces.PropertyRepository`
+- [ ] T027 [P] Create `NewPropertyServiceV2(repo, ocrService, aiService)` constructor
+- [ ] T028 [P] Deprecate old `NewPropertyService(db, ...)` with migration comment
+- [ ] T029 [P] Register `PropertyService` in DI container `registerServices()`
 
 ### QuestService Refactoring
-- [ ] T023 Update `QuestService` struct to remove `*gorm.DB` field
-- [ ] T024 Create `NewQuestServiceV2(questRepo, userRepo, badgeService, notifService)` constructor
-- [ ] T025 Deprecate old `NewQuestService(db, ...)` with migration comment
-- [ ] T026 Update `QuestService` registration in DI container
+
+- [ ] T030 [B] Update `QuestService` struct to remove `*gorm.DB` field
+- [ ] T031 [P] Create `NewQuestServiceV2(questRepo, userRepo, badgeService, notifService)` constructor
+- [ ] T032 [P] Deprecate old `NewQuestService(db, ...)` with migration comment
+- [ ] T033 [P] Update `QuestService` registration in DI container
 
 ### UserService Refactoring
-- [ ] T027 Update `UserService` struct to remove `*gorm.DB` field
-- [ ] T028 Inject `TransactionManager` for XP transaction handling
-- [ ] T029 Create `NewUserServiceV2(userRepo, leaderboardService, txManager)` constructor
-- [ ] T030 Deprecate old `NewUserService(...)` with migration comment
+
+- [ ] T034 [B] Update `UserService` struct to remove `*gorm.DB` field
+- [ ] T035 [P] Inject `TransactionManager` for XP transaction handling
+- [ ] T036 [P] Create `NewUserServiceV2(userRepo, leaderboardService, txManager)` constructor
+- [ ] T037 [P] Deprecate old `NewUserService(...)` with migration comment
 
 ### TransactionService Refactoring
-- [ ] T031 Define `TransactionServiceConfig` struct with all dependencies
-- [ ] T032 Update `TransactionService` struct to use config pattern
-- [ ] T033 Create `NewTransactionServiceWithConfig(cfg TransactionServiceConfig)` constructor
-- [ ] T034 Inject `TransactionManager` for payment processing
+
+- [ ] T038 [B] Define `TransactionServiceConfig` struct with all dependencies
+- [ ] T039 [P] Update `TransactionService` struct to use config pattern
+- [ ] T040 [P] Create `NewTransactionServiceWithConfig(cfg TransactionServiceConfig)` constructor
+- [ ] T041 [P] Inject `TransactionManager` for payment processing
 
 ### BadgeService & NotificationService
-- [ ] T035 Verify `BadgeService` already uses repository (confirm DI pattern)
-- [ ] T036 Update `NotificationService` to use `interfaces.NotificationRepository`
+
+- [ ] T042 [P] Verify `BadgeService` already uses repository (confirm DI pattern)
+- [ ] T043 [P] Update `NotificationService` to use `interfaces.NotificationRepository`
 
 ---
 
-## Phase 3: Global State Elimination (T037-T052)
+## Phase 3: Global State Elimination (T044-T061)
 
 ### AuditLogService (6 calls)
-- [ ] T037 Inject `AuditLogRepository` via constructor
-- [ ] T038 Replace `database.DB` calls in `LogAction()` method
-- [ ] T039 Replace `database.DB` calls in `LogTenantViolation()` method
-- [ ] T040 Replace `database.DB` calls in `QueryLogs()` method
+
+- [ ] T044 [B] Inject `AuditLogRepository` via constructor
+- [ ] T045 [P] Replace `database.DB` calls in `LogAction()` method
+- [ ] T046 [P] Replace `database.DB` calls in `LogTenantViolation()` method
+- [ ] T047 [P] Replace `database.DB` calls in `QueryLogs()` method
 
 ### AuthService (11 calls)
-- [ ] T041 Identify all `database.DB` access points in `auth_service.go`
-- [ ] T042 Inject required repositories via constructor
-- [ ] T043 Replace legacy initialization paths with injected dependencies
-- [ ] T044 Update `routes.go` to pass injected AuthService
+
+- [ ] T048 [B] Identify all `database.DB` access points in `auth_service.go`
+- [ ] T049 [P] Inject required repositories via constructor
+- [ ] T050 [P] Replace legacy initialization paths with injected dependencies
+- [ ] T051 [P] Update `routes.go` to pass injected AuthService
 
 ### TwoFactorService (22 calls) - Highest Priority
-- [ ] T045 Inject `TwoFactorRepository`, `BackupCodeRepository`, `TrustedDeviceRepository`
-- [ ] T046 Replace `database.DB` calls in 2FA CRUD operations (lines 70-170)
-- [ ] T047 Replace `database.DB` calls in backup code operations (lines 200-300)
-- [ ] T048 Replace `database.DB` calls in trusted device operations (lines 375-450)
-- [ ] T049 Verify KMS integration still works after refactoring
+
+- [ ] T052 [B] Inject `TwoFactorRepository`, `BackupCodeRepository`, `TrustedDeviceRepository`
+- [ ] T053 [P] Replace `database.DB` calls in 2FA CRUD operations (lines 70-170)
+- [ ] T054 [P] Replace `database.DB` calls in backup code operations (lines 200-300)
+- [ ] T055 [P] Replace `database.DB` calls in trusted device operations (lines 375-450)
+- [ ] T056 [P] Verify KMS integration still works after refactoring
 
 ### KMSService (4 calls)
-- [ ] T050 Inject `EncryptionKeyRepository` via constructor
-- [ ] T051 Replace `database.DB` calls in key management methods
-- [ ] T052 Test key rotation flow after refactoring
+
+- [ ] T057 [B] Inject `EncryptionKeyRepository` via constructor
+- [ ] T058 [P] Replace `database.DB` calls in key management methods
+- [ ] T059 [P] Test key rotation flow after refactoring
 
 ### BlacklistService (3 calls)
-- [ ] T053 Inject `CacheClient` interface via constructor
-- [ ] T054 Replace `cache.Client` calls with injected dependency
+
+- [ ] T060 [P] Inject `CacheClient` interface via constructor
+- [ ] T061 [P] Replace `cache.Client` calls with injected dependency
 
 ---
 
-## Phase 4: Config Struct Pattern (T055-T060)
+## Phase 4: Config Struct Pattern (T062-T067)
 
 ### SocialService (7 params → 1 config)
-- [ ] T055 Define `SocialServiceConfig` struct with all 7 dependencies
-- [ ] T056 Add validation method `SocialServiceConfig.Validate() error`
-- [ ] T057 Create `NewSocialServiceWithConfig(cfg SocialServiceConfig)` constructor
-- [ ] T058 Update `routes.go` to use config-based constructor
+
+- [ ] T062 [B] Define `SocialServiceConfig` struct with all 7 dependencies
+- [ ] T063 [P] Add validation method `SocialServiceConfig.Validate() error`
+- [ ] T064 [P] Create `NewSocialServiceWithConfig(cfg SocialServiceConfig)` constructor
+- [ ] T065 [P] Update `routes.go` to use config-based constructor
 
 ### MarketplaceService (5 params → 1 config)
-- [ ] T059 Define `MarketplaceServiceConfig` struct
-- [ ] T060 Create `NewMarketplaceServiceWithConfig(cfg MarketplaceServiceConfig)` constructor
+
+- [ ] T066 [B] Define `MarketplaceServiceConfig` struct
+- [ ] T067 [P] Create `NewMarketplaceServiceWithConfig(cfg MarketplaceServiceConfig)` constructor
 
 ---
 
-## Phase 5: Mock Generation & Unit Tests (T061-T072)
+## Phase 5: Mock Generation & Unit Tests (T068-T078)
 
 ### Mock Generation
-- [ ] T061 Create `.mockery.yaml` configuration for all 15 interfaces
-- [ ] T062 Run `mockery --all` to generate mocks in `internal/mocks/`
-- [ ] T063 Verify mocks compile and match interface signatures
+
+- [ ] T068 [B] Create `.mockery.yaml` configuration for all 15 interfaces
+- [ ] T069 [B] Run `mockery --all` to generate mocks in `internal/mocks/`
+- [ ] T070 [B] Verify mocks compile and match interface signatures
 
 ### Unit Tests for P1 Services
-- [ ] T064 Create `property_service_test.go` with mock repository tests
-- [ ] T065 Create `quest_service_test.go` with mock repository tests
-- [ ] T066 Create `user_service_test.go` with mock repository tests
-- [ ] T067 Create `transaction_service_test.go` with mock repository tests
-- [ ] T068 Create `notification_service_test.go` with mock repository tests
-- [ ] T069 Create `badge_service_test.go` with mock repository tests
+
+- [ ] T071 [P] Create `property_service_test.go` with mock repository tests
+- [ ] T072 [P] Create `quest_service_test.go` with mock repository tests
+- [ ] T073 [P] Create `user_service_test.go` with mock repository tests
+- [ ] T074 [P] Create `transaction_service_test.go` with mock repository tests
+- [ ] T075 [P] Create `notification_service_test.go` with mock repository tests
+- [ ] T076 [P] Create `badge_service_test.go` with mock repository tests
 
 ### Verification & Documentation
-- [ ] T070 Run `go test ./internal/services/... -cover` and verify ≥80% coverage
-- [ ] T071 Run integration tests to verify no regressions
-- [ ] T072 Update `docs/ARCHITECTURE.md` with DI patterns
+
+- [ ] T077 [B] Run `go test ./internal/services/... -cover` and verify ≥80% coverage
+- [ ] T078 [R] Run integration tests and update `docs/ARCHITECTURE.md` with DI patterns
 
 ---
 
@@ -141,7 +177,9 @@
 ### Phase Dependencies
 
 ```
-Phase 1 (Interfaces) 
+Phase 0 (Restoration) - MUST COMPLETE FIRST
+    ↓
+Phase 1 (Interfaces)
     ↓
 Phase 2 (P1 Services) ←→ Phase 3 (Global State)
     ↓                         ↓
@@ -153,25 +191,32 @@ Phase 2 (P1 Services) ←→ Phase 3 (Global State)
 ### Task Dependencies Within Phases
 
 ```
+Phase 0:
+T001 → T002-T006 (backup first, then restore in any order)
+T007 after all restoration (compilation gate)
+
 Phase 1:
-T001 → T002, T003 (foundation first)
-T004-T015 can run in parallel
-T016-T018 after all interfaces
+T008 → T009-T022 (foundation first)
+T009-T022 can run in parallel
+T023-T025 after all interfaces
 
 Phase 2:
-T019-T022 (PropertyService) → T023-T026 (QuestService) → T027-T030 (UserService)
-T031-T034 (TransactionService) can parallel with above
-T035-T036 can parallel
+T026-T029 (PropertyService) → T030-T033 (QuestService) → T034-T037 (UserService)
+T038-T041 (TransactionService) can parallel with above
+T042-T043 can parallel
 
 Phase 3:
-T037-T040 (AuditLog) → T041-T044 (Auth) → T045-T049 (TwoFactor)
-T050-T052 (KMS) can parallel with TwoFactor
-T053-T054 (Blacklist) can parallel
+T044-T047 (AuditLog) → T048-T051 (Auth) → T052-T056 (TwoFactor)
+T057-T059 (KMS) can parallel with TwoFactor
+T060-T061 (Blacklist) can parallel
+
+Phase 4:
+T062-T065 (SocialService) → T066-T067 (MarketplaceService)
 
 Phase 5:
-T061-T063 first (mock generation)
-T064-T069 in parallel (unit tests)
-T070-T072 last (verification)
+T068-T070 first (mock generation)
+T071-T076 in parallel (unit tests)
+T077-T078 last (verification)
 ```
 
 ---

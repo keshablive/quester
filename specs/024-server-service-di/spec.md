@@ -4,9 +4,20 @@
 
 Complete the dependency injection (DI) refactoring for the server's service layer to eliminate tight coupling to `*gorm.DB`, remove global state access (`database.DB`, `cache.Client`), and standardize constructor patterns. This enables proper unit testing with mocks, improves code maintainability, and follows clean architecture principles.
 
+## ⚠️ Prerequisite: Codebase Restoration
+
+**CRITICAL**: The active server codebase (`server/internal/`) is severely incomplete:
+- Only 3 of 56 services exist
+- Only 1 of 35 controllers exist
+- Repositories folder is missing entirely
+- Framework is missing 14 of 16 subdirectories
+- **The codebase cannot compile in its current state**
+
+The full codebase exists in `settings/backups/server/internal/` and must be restored before proceeding.
+
 ## Problem Statement
 
-The current server codebase has 20 services that accept `*gorm.DB` directly in constructors, 5 services that access the global `database.DB` singleton in methods, and 3 services with constructor parameter explosion (5+ parameters). This tight coupling:
+The full server codebase (in backup) has ~25 services that accept `*gorm.DB` directly in constructors, ~10 services that access the global `database.DB` singleton in methods, and 3 services with constructor parameter explosion (5+ parameters). This tight coupling:
 
 1. **Prevents effective unit testing** - Cannot mock database interactions without integration tests
 2. **Creates hidden dependencies** - Global state access makes dependency graph unclear
@@ -14,6 +25,19 @@ The current server codebase has 20 services that accept `*gorm.DB` directly in c
 4. **Increases refactoring risk** - Changes to database layer ripple through service layer
 
 ## User Stories
+
+### US0: Codebase Restoration (PREREQUISITE)
+**As a** backend developer  
+**I want** the full server codebase restored from backup  
+**So that** I have a compilable codebase to refactor
+
+**Acceptance Criteria:**
+- [ ] All 56 services restored to `internal/services/`
+- [ ] All 35 controllers restored to `internal/controllers/`
+- [ ] All 25 repositories restored to `internal/repositories/`
+- [ ] All 16 framework subdirectories restored
+- [ ] Server compiles successfully (`go build ./...`)
+- [ ] Existing tests pass
 
 ### US1: Repository Interface Extraction
 **As a** backend developer  
