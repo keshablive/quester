@@ -1,233 +1,191 @@
-# Plan: Server Service Layer DI Completion
+# Implementation Plan: Server Service Layer DI Completion
 
-## Implementation Phases
+**Branch**: `024-server-service-di` | **Date**: 2025-12-01 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/024-server-service-di/spec.md`
 
-### ⚠️ Phase 0: Codebase Restoration (PREREQUISITE)
-**Duration**: 0.5 days  
-**Tasks**: T001-T007  
-**Risk**: High (blocking)
+## Summary
 
-**Critical Discovery**: The active server codebase (`server/internal/`) is severely incomplete with only 3 services and 1 controller. The full codebase exists in `settings/backups/server/internal/`.
+Complete dependency injection refactoring for the server's service layer to eliminate `*gorm.DB` coupling, remove global state (`database.DB`, `cache.Client`), and standardize constructor patterns. This enables unit testing with mocks and follows clean architecture.
 
-**Restoration Steps**:
-1. Backup any uncommitted changes
-2. Restore 56 services from backup
-3. Restore 35 controllers from backup
-4. Restore 25 repositories from backup
-5. Restore missing framework directories
-6. Verify compilation
+**Critical Prerequisite**: Restore full codebase from `settings/backups/server/internal/` before any refactoring.
 
-**Key Deliverables**:
-- Complete server codebase restored
-- `go build ./cmd/server/...` passes
+## Technical Context
 
----
+**Language/Version**: Go 1.24.0  
+**Primary Dependencies**: Fiber v2, GORM, Redis (go-redis/v9), testify/mock, mockery  
+**Storage**: PostgreSQL (GORM ORM), Redis (cache/sessions)  
+**Testing**: go test, testify/mock, mockery for code generation  
+**Target Platform**: Linux server (Docker container)  
+**Project Type**: Single Go module with layered architecture  
+**Performance Goals**: DI resolution <1ms, unit tests <5s total  
+**Constraints**: Zero API breaking changes, 100% backward compatibility  
+**Scale/Scope**: 57 services, 36 controllers, 25 repositories, 15 interfaces to extract
 
-### Phase 1: Repository Interface Extraction
-**Duration**: 2 days  
-**Tasks**: T008-T025  
-**Risk**: Low
+## Constitution Check
 
-Extract repository interfaces to `internal/framework/interfaces/`. This is a non-breaking change - existing code continues to work while interfaces are added.
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-**Key Deliverables**:
-- 15 repository interfaces
-- TransactionManager interface
-- CacheClient interface
-- Documentation updates
+| Principle | Status | Notes |
+|-----------|--------|-------|
+| Clean Architecture | ✅ PASS | Services depend on interfaces, not implementations |
+| Test-First | ⚠️ PARTIAL | Mocks generated, but tests written after refactoring |
+| Fail-Fast | ✅ PASS | DI container crashes on missing dependency |
+| Backward Compatibility | ✅ PASS | V2 constructors alongside deprecated V1 |
 
-### Phase 2: P1 Service DI Refactoring
-**Duration**: 3 days  
-**Tasks**: T026-T043  
-**Risk**: Medium
+**Violations Requiring Justification**: Test-First is partially followed - tests are created alongside refactoring rather than strictly before, due to needing working interfaces first.
 
-Refactor the 6 highest-priority services to use repository interfaces. Create V2 constructors while keeping old ones for backward compatibility.
+## Project Structure
 
-**Services**:
-
-1. PropertyService
-2. QuestService
-3. UserService
-4. TransactionService
-5. BadgeService (verify existing pattern)
-6. NotificationService
-
-### Phase 3: Global State Elimination
-**Duration**: 2 days  
-**Tasks**: T044-T061  
-**Risk**: High (especially TwoFactorService)
-
-Remove all `database.DB` and `cache.Client` global access from services. This is the most critical phase due to security implications (2FA, auth).
-
-**Services**:
-
-1. AuditLogService (6 calls)
-2. AuthService (11 calls)
-3. TwoFactorService (22 calls) ⚠️
-4. KMSService (4 calls)
-5. BlacklistService (3 calls)
-
-### Phase 4: Config Struct Pattern
-**Duration**: 1 day  
-**Tasks**: T062-T067  
-**Risk**: Low
-
-Apply config struct pattern to services with parameter explosion (5+ params).
-
-**Services**:
-
-1. SocialService (7 → 1 param)
-2. MarketplaceService (5 → 1 param)
-
-### Phase 5: Mock Generation & Unit Tests
-**Duration**: 2 days  
-**Tasks**: T068-T078  
-**Risk**: Low
-
-Generate mocks and create unit tests for all P1 services.
-
-**Deliverables**:
-
-- Mockery configuration
-- 15 mock implementations
-- 6 service test files
-- ≥80% coverage
-
----
-
-## Execution Strategy
-
-### Daily Breakdown
-
-| Day | Phase | Tasks | Focus |
-|-----|-------|-------|-------|
-| 0.5 | 0 | T001-T007 | **Codebase restoration from backup** |
-| 1 | 1 | T008-T016 | Core interfaces |
-| 2 | 1 | T017-T025 | Supporting interfaces, verification |
-| 3 | 2 | T026-T033 | Property, Quest services |
-| 4 | 2 | T034-T041 | User, Transaction services |
-| 5 | 2 | T042-T043 | Badge, Notification services |
-| 6 | 3 | T044-T051 | AuditLog, Auth services |
-| 7 | 3 | T052-T061 | TwoFactor, KMS, Blacklist |
-| 8 | 4 | T062-T067 | Config structs |
-| 9 | 5 | T068-T074 | Mocks, tests (1-4) |
-| 10 | 5 | T075-T078 | Tests (5-6), verification |
-
-### Parallel Work Opportunities
+### Documentation (this feature)
 
 ```text
-Phase 0: T002-T006 (restore dirs) can run in parallel after T001
-Phase 1: T011-T022 (interfaces) can all run in parallel
-Phase 2: T026-T029 || T038-T041 (different services)
-Phase 3: T057-T059 || T060-T061 (KMS || Blacklist)
-Phase 5: T071-T076 (all test files) can run in parallel
+specs/024-server-service-di/
+├── plan.md              # This file
+├── spec.md              # Feature specification
+├── research.md          # Phase 0 output (consolidated from R2, R3)
+├── data-model.md        # Phase 1 output (interface definitions)
+├── quickstart.md        # Phase 1 output (developer guide)
+├── tasks.md             # Task breakdown (78 tasks across 6 phases)
+└── contracts/           # Phase 1 output (API contracts - N/A for this spec)
 ```
 
-### Critical Path
+### Source Code (repository root)
 
 ```text
-T001-T007 (restore) → T008 (foundation) → T013 (UserRepo) → T034 (UserService) → T048 (AuthService) → T077 (tests)
+server/
+├── internal/
+│   ├── app/
+│   │   └── app.go                    # DI container initialization
+│   │
+│   ├── framework/                    # Infrastructure layer
+│   │   ├── interfaces/               # ← NEW: Repository interfaces
+│   │   │   ├── repository.go         # Base repository interface
+│   │   │   ├── transaction.go        # TransactionManager interface
+│   │   │   ├── cache.go              # CacheClient interface
+│   │   │   ├── property_repository.go
+│   │   │   ├── quest_repository.go
+│   │   │   ├── user_repository.go
+│   │   │   ├── transaction_repository.go
+│   │   │   ├── badge_repository.go
+│   │   │   ├── notification_repository.go
+│   │   │   └── ... (9 more)
+│   │   ├── container/
+│   │   │   └── container.go          # Existing DI container
+│   │   ├── database/
+│   │   ├── cache/
+│   │   └── ... (14 more dirs)
+│   │
+│   ├── services/                     # Business logic layer
+│   │   ├── property_service.go       # ← REFACTOR: Interface injection
+│   │   ├── quest_service.go          # ← REFACTOR: Interface injection
+│   │   ├── user_service.go           # ← REFACTOR: Remove global state
+│   │   ├── transaction_service.go    # ← REFACTOR: Config struct
+│   │   ├── badge_service.go          # ← VERIFY: Already uses repo
+│   │   ├── notification_service.go   # ← REFACTOR: Interface injection
+│   │   ├── audit_log_service.go      # ← REFACTOR: Remove database.DB
+│   │   ├── auth_service.go           # ← REFACTOR: Remove database.DB
+│   │   ├── two_factor_service.go     # ← REFACTOR: Remove database.DB (22 calls)
+│   │   ├── kms_service.go            # ← REFACTOR: Remove database.DB
+│   │   ├── blacklist_service.go      # ← REFACTOR: Remove cache.Client
+│   │   ├── social_service.go         # ← REFACTOR: Config struct
+│   │   ├── marketplace_service.go    # ← REFACTOR: Config struct
+│   │   └── ... (44 more services)
+│   │
+│   ├── repositories/                 # Data access layer
+│   │   ├── property_repository.go
+│   │   ├── quest_repository.go
+│   │   └── ... (23 more repositories)
+│   │
+│   ├── controllers/                  # HTTP handlers
+│   │   └── ... (36 controllers)
+│   │
+│   ├── models/                       # Domain models
+│   │   └── ...
+│   │
+│   └── mocks/                        # ← NEW: Generated mocks
+│       ├── property_repository_mock.go
+│       ├── quest_repository_mock.go
+│       └── ... (15 mocks)
+│
+└── tests/
+    ├── unit/
+    │   └── services/                 # ← NEW: Service unit tests
+    │       ├── property_service_test.go
+    │       ├── quest_service_test.go
+    │       └── ... (6 P1 service tests)
+    └── integration/
+        └── ...
 ```
 
-This path touches the authentication critical path and should be prioritized.
+**Structure Decision**: Single Go module with layered architecture (framework → repositories → services → controllers). Interfaces extracted to `framework/interfaces/` to maintain framework independence from application layer.
 
----
+## Complexity Tracking
 
-## Risk Mitigation
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| Test-First partial | Interfaces must exist before mocks can be generated | Writing tests against non-existent interfaces is not possible |
+| V2 constructors | Backward compatibility required | Breaking change would disrupt existing consumers |
 
-### TwoFactorService (Highest Risk)
+## Phase Execution Summary
 
-**Risk**: 22 global DB calls in security-critical 2FA flow
+| Phase | Focus | Tasks | Duration | Output |
+|-------|-------|-------|----------|--------|
+| 0 | Codebase Restoration | T001-T007 | 0.5 days | Compilable server |
+| 1 | Interface Extraction | T008-T025 | 2 days | 15 interfaces in `framework/interfaces/` |
+| 2 | P1 Service DI | T026-T043 | 3 days | 6 services refactored |
+| 3 | Global State Removal | T044-T061 | 2 days | 0 global state accesses |
+| 4 | Config Structs | T062-T067 | 1 day | 3 config structs |
+| 5 | Mocks & Tests | T068-T078 | 2 days | 80% coverage |
 
-**Mitigation**:
-1. Create comprehensive integration tests BEFORE refactoring
-2. Refactor one method at a time
-3. Test each method after refactoring
-4. Feature flag for rollback capability
-5. Security review before merge
-
-### Transaction Handling
-
-**Risk**: Payment processing requires ACID transactions
-
-**Mitigation**:
-1. TransactionManager pattern proven in other services
-2. Unit tests verify commit/rollback behavior
-3. Integration tests with real transactions
-4. Staged rollout to non-production first
-
-### Breaking Changes
-
-**Risk**: External callers depend on old constructors
-
-**Mitigation**:
-1. Deprecate, don't remove old constructors
-2. Clear migration documentation
-3. Removal in separate future spec
-
----
+**Total**: 78 tasks, 10.5 working days
 
 ## Validation Gates
 
 ### After Phase 0 (Codebase Restoration)
 
-- [ ] `server/internal/services/` has 56+ files
-- [ ] `server/internal/controllers/` has 35+ files
-- [ ] `server/internal/repositories/` has 25+ files
+- [ ] `server/internal/services/` has 57 files
+- [ ] `server/internal/controllers/` has 36 files
+- [ ] `server/internal/repositories/` has 25 files
 - [ ] `go build ./cmd/server/...` succeeds
 
-### After Phase 1
+### After Phase 1 (Interface Extraction)
 
 - [ ] `go build ./internal/framework/interfaces/...` succeeds
-- [ ] Existing repositories satisfy interfaces (compile check)
+- [ ] All interfaces follow `context.Context` first pattern
+- [ ] Existing repositories satisfy new interfaces (compile check)
 
-### After Phase 2
+### After Phase 2 (P1 Service DI)
 
 - [ ] `go build ./internal/services/...` succeeds
-- [ ] DI container registers all P1 services
+- [ ] DI container registers all 6 P1 services
 - [ ] Server starts without errors
 
-### After Phase 3
+### After Phase 3 (Global State Removal)
+
 - [ ] `grep -r "database\.DB" ./internal/services/` returns 0 matches
 - [ ] `grep -r "cache\.Client" ./internal/services/` returns 0 matches
 - [ ] Integration tests pass
 
-### After Phase 4
-- [ ] Config struct validation works
-- [ ] Services with config structs initialize correctly
+### After Phase 5 (Mocks & Tests)
 
-### After Phase 5
 - [ ] `go test ./internal/services/... -cover` shows ≥80%
-- [ ] All unit tests pass
+- [ ] All unit tests pass in <5 seconds
 - [ ] All integration tests pass
 
----
+## Risk Mitigation
 
-## Rollback Plan
+| Risk | Mitigation |
+|------|------------|
+| TwoFactorService (22 calls) | Refactor one method at a time, test each, security review |
+| Breaking existing functionality | Per-service incremental migration with integration tests |
+| Performance regression | Benchmark critical paths before/after |
 
-### If Issues in Production
+## Next Steps
 
-1. **Immediate**: Revert to previous deployment
-2. **Short-term**: Feature flag to use old constructors
-3. **Investigation**: Compare behavior with/without new DI
-
-### Per-Phase Rollback
-
-- **Phase 1**: No rollback needed (additive only)
-- **Phase 2**: Keep old constructors, revert DI registration
-- **Phase 3**: Revert individual service files
-- **Phase 4**: Revert to multiple-param constructors
-- **Phase 5**: No rollback needed (tests only)
+1. Execute Phase 0: `rsync -av settings/backups/server/internal/ server/internal/`
+2. Verify compilation: `go build ./cmd/server/...`
+3. Proceed with Phase 1 interface extraction
 
 ---
 
-## Success Metrics
-
-| Metric | Before | After | Target |
-|--------|--------|-------|--------|
-| Services with `*gorm.DB` | 20 | 0 | 0 |
-| Global DB accesses | 45 | 0 | 0 |
-| Global cache accesses | 3 | 0 | 0 |
-| Services in DI container | 3 | 9+ | All P1 |
-| P1 service test coverage | ~20% | ≥80% | ≥80% |
-| Unit test execution | N/A | <5s | <5s |
+*Generated by `/speckit.plan` on 2025-12-01*
