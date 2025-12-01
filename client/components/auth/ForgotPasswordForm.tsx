@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useAuth } from '../../core/auth/AuthContext';
+import { useAuth } from '@/core/auth/AuthContext';
 
 interface ForgotPasswordFormProps {
   /** Callback when user wants to go back to login */

@@ -22,9 +22,9 @@ import {
   OptimizedList,
   type ListRenderItemInfo,
   cn,
+  useClaimAchievement,
 } from '@/core';
 import { OfflineIndicator, StaleDataIndicator, ErrorState } from '@/components/shared';
-import { useClaimAchievement } from '../../../core/hooks/mutations/useAchievementMutations';
 
 // ============================================================================
 // Types

@@ -8,7 +8,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useAuth } from '../../core/auth/AuthContext';
+import { useAuth } from '@/core/auth/AuthContext';
 
 interface TwoFactorInputProps {
   /** Callback when 2FA is cancelled */

@@ -21,7 +21,7 @@ import {
   type ListRenderItem,
 } from 'react-native';
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
-import type { PaginatedResponse, ApiError } from '../../core/types/query.types';
+import type { PaginatedResponse, ApiError } from '@/core/types/query.types';
 
 /**
  * Base props for InfiniteScrollList
