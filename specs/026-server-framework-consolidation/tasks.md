@@ -49,9 +49,9 @@
 - [X] T008 [US1] Remove duplicate `RefreshResponse` from `server/internal/services/refresh_token_service.go`
 - [X] T009 [US1] Remove duplicate declarations from `server/internal/services/auth_service.go` (keep imports to auth_types.go)
 - [X] T010 [US1] [US7] Run `go build ./internal/services/...` in `server/` - verify zero errors (NOTE: controllers have separate duplicates to fix in Phase 5)
-- [ ] T011 Create git tag `post-phase-2-duplicates-fixed`
+- [X] T011 Create git tag `post-phase-2-duplicates-fixed`
 
-**Checkpoint**: Server builds successfully. Phase 3+ can proceed.
+**Checkpoint**: Services package builds successfully. Phase 3+ can proceed.
 
 ---
 

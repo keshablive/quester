@@ -3,34 +3,13 @@
 package controllers
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/services"
 )
-
-// CheckBlacklistResponse represents the response for blacklist check
-type CheckBlacklistResponse struct {
-	Success bool `json:"success"`
-	Data    struct {
-		IsBlacklisted bool   `json:"is_blacklisted"`
-		TokenHash     string `json:"token_hash,omitempty"`
-		CheckedAt     string `json:"checked_at"`
-	} `json:"data"`
-}
-
-// CleanupBlacklistResponse represents the response for cleanup operation
-type CleanupBlacklistResponse struct {
-	Success bool `json:"success"`
-	Data    struct {
-		Message       string `json:"message"`
-		TokensCleaned int    `json:"tokens_cleaned"`
-		CleanedAt     string `json:"cleaned_at"`
-	} `json:"data"`
-}
 
 // CheckBlacklistStatus handles GET /api/v1/auth/blacklist/check
 // T111: Check if a token is blacklisted
@@ -62,8 +41,8 @@ func CheckBlacklistStatus(c *fiber.Ctx) error {
 	tokenHash := hashToken(token)
 
 	// Check blacklist
-	blacklistService := services.NewBlacklistService()
-	isBlacklisted := blacklistService.IsBlacklisted(tokenHash)
+	blacklistService := services.NewBlacklistService(cache.Client)
+	isBlacklisted := blacklistService.IsBlacklistedSimple(tokenHash)
 
 	// Return status
 	response := CheckBlacklistResponse{
@@ -91,7 +70,7 @@ func CleanupBlacklist(c *fiber.Ctx) error {
 	}
 
 	// Perform cleanup
-	blacklistService := services.NewBlacklistService()
+	blacklistService := services.NewBlacklistService(cache.Client)
 	count, err := blacklistService.CleanupExpiredTokens()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -110,11 +89,4 @@ func CleanupBlacklist(c *fiber.Ctx) error {
 	response.Data.CleanedAt = time.Now().UTC().Format(time.RFC3339)
 
 	return c.Status(fiber.StatusOK).JSON(response)
-}
-
-// hashToken creates a SHA256 hash of the token for blacklist storage
-// Helper function shared with auth middleware
-func hashToken(token string) string {
-	hash := sha256.Sum256([]byte(token))
-	return hex.EncodeToString(hash[:])
 }

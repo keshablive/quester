@@ -6,28 +6,11 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/repositories"
 	"github.com/keshablive/quester/internal/services"
 )
-
-// TokenResponse represents a single token in the response
-type TokenResponse struct {
-	ID        string `json:"id"`
-	CreatedAt string `json:"created_at"`
-	ExpiresAt string `json:"expires_at"`
-}
-
-// ViewActiveTokensResponse represents the response for viewing active tokens
-type ViewActiveTokensResponse struct {
-	Success bool `json:"success"`
-	Data    struct {
-		Tokens []TokenResponse `json:"tokens"`
-		Total  int64           `json:"total"`
-		Limit  int             `json:"limit"`
-		Offset int             `json:"offset"`
-	} `json:"data"`
-}
 
 // ViewActiveTokens handles GET /api/v1/auth/tokens (T086, FR-032)
 // Returns user's active (non-expired, non-revoked) refresh tokens
@@ -61,7 +44,8 @@ func ViewActiveTokens(c *fiber.Ctx) error {
 	// Initialize service
 	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
 	userRepo := repositories.NewUserRepository(database.DB)
-	tokenService := services.NewRefreshTokenService(tokenRepo, userRepo)
+	blacklistService := services.NewBlacklistService(cache.Client)
+	tokenService := services.NewRefreshTokenService(tokenRepo, userRepo, blacklistService)
 
 	// Get active tokens
 	ctx := context.Background()
