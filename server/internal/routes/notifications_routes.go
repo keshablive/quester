@@ -5,12 +5,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupNotificationsRoutes sets up notifications routes
-func SetupNotificationsRoutes(app *fiber.App, notificationsController *controllers.NotificationsController) {
+func SetupNotificationsRoutes(app *fiber.App, notificationsController *controller.NotificationsController) {
 	notifications := app.Group("/api/v1/notifications")
 	notifications.Use(middleware.FiberAuthMiddleware())
 

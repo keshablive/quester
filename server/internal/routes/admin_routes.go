@@ -4,13 +4,13 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/models"
 )
 
 // SetupAdminRoutes sets up admin routes
-func SetupAdminRoutes(router fiber.Router, kmsController *controllers.KMSController) {
+func SetupAdminRoutes(router fiber.Router, kmsController *controller.KMSController) {
 	// Admin routes (Feature #003 - T218-T220: KMS Management)
 	admin := router.Group("/admin")
 	admin.Use(middleware.FiberAuthMiddleware())

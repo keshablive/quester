@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupPropertyRoutes sets up property routes
-func SetupPropertyRoutes(router fiber.Router, propertyController *controllers.PropertyController) {
+func SetupPropertyRoutes(router fiber.Router, propertyController *controller.PropertyController) {
 	// Property routes (Feature #002 - T183-T186)
 	properties := router.Group("/properties")
 	properties.Use(middleware.FiberAuthMiddleware())

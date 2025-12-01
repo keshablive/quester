@@ -3,12 +3,12 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupFollowRoutes registers follow-related routes
-func SetupFollowRoutes(api fiber.Router, followCtrl *controllers.FollowController) {
+func SetupFollowRoutes(api fiber.Router, followCtrl *controller.FollowController) {
 	// Follow routes - all require authentication
 	follow := api.Group("/users/:userId")
 	follow.Use(middleware.Auth())

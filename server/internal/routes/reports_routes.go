@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	fwmiddleware "github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/framework/service"
 )
@@ -13,8 +13,8 @@ import (
 // SetupReportsRoutes registers report and dashboard routes
 func SetupReportsRoutes(app *fiber.App, reportService *service.ReportService, dashboardService *service.DashboardService, authMiddleware fiber.Handler) {
 	// Create controllers
-	reportController := controllers.NewReportController(reportService)
-	dashboardController := controllers.NewDashboardController(dashboardService)
+	reportController := controller.NewReportController(reportService)
+	dashboardController := controller.NewDashboardController(dashboardService)
 
 	// Reports routes group
 	reports := app.Group("/api/reports")

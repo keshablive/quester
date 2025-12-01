@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/auth"
-	"github.com/keshablive/quester/internal/framework/controller"
+	"github.com/keshablive/quester/internal/framework/contextkeys"
 )
 
 // TenantViolationLogger is an interface for logging tenant isolation violations
@@ -87,9 +87,9 @@ func FiberAuthMiddleware() fiber.Handler {
 		}
 
 		// Store claims in Fiber context using controller constants for consistency
-		c.Locals(controller.FiberUserIDKey, userID)
-		c.Locals(controller.FiberTenantIDKey, tenantID)
-		c.Locals(controller.FiberRoleKey, role) // Store as string for flexibility
+		c.Locals(contextkeys.UserIDKey, userID)
+		c.Locals(contextkeys.TenantIDKey, tenantID)
+		c.Locals(contextkeys.RoleKey, role) // Store as string for flexibility
 
 		// Continue to next handler
 		return c.Next()
@@ -102,7 +102,7 @@ func FiberAuthMiddleware() fiber.Handler {
 func FiberRoleMiddlewareString(requiredRole string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract role from Fiber context (set by FiberAuthMiddleware)
-		role, ok := c.Locals(controller.FiberRoleKey).(string)
+		role, ok := c.Locals(contextkeys.RoleKey).(string)
 		if !ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":   "unauthorized",
@@ -130,19 +130,19 @@ func FiberRoleMiddlewareString(requiredRole string) fiber.Handler {
 
 // GetUserIDFromFiberContext extracts the user ID from Fiber context
 func GetUserIDFromFiberContext(c *fiber.Ctx) (uuid.UUID, bool) {
-	userID, ok := c.Locals(controller.FiberUserIDKey).(uuid.UUID)
+	userID, ok := c.Locals(contextkeys.UserIDKey).(uuid.UUID)
 	return userID, ok
 }
 
 // GetTenantIDFromFiberContext extracts the tenant ID from Fiber context
 func GetTenantIDFromFiberContext(c *fiber.Ctx) (uuid.UUID, bool) {
-	tenantID, ok := c.Locals(controller.FiberTenantIDKey).(uuid.UUID)
+	tenantID, ok := c.Locals(contextkeys.TenantIDKey).(uuid.UUID)
 	return tenantID, ok
 }
 
 // GetRoleFromFiberContext extracts the role string from Fiber context
 func GetRoleFromFiberContext(c *fiber.Ctx) (string, bool) {
-	role, ok := c.Locals(controller.FiberRoleKey).(string)
+	role, ok := c.Locals(contextkeys.RoleKey).(string)
 	return role, ok
 }
 
@@ -153,7 +153,7 @@ func GetRoleFromFiberContext(c *fiber.Ctx) (string, bool) {
 func FiberTenantIsolationMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract role from context (set by FiberAuthMiddleware)
-		role, ok := c.Locals(controller.FiberRoleKey).(string)
+		role, ok := c.Locals(contextkeys.RoleKey).(string)
 		if !ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":   "unauthorized",
@@ -167,7 +167,7 @@ func FiberTenantIsolationMiddleware() fiber.Handler {
 		}
 
 		// Extract tenant_id from JWT claims (set by FiberAuthMiddleware)
-		userTenantID, ok := c.Locals(controller.FiberTenantIDKey).(uuid.UUID)
+		userTenantID, ok := c.Locals(contextkeys.TenantIDKey).(uuid.UUID)
 		if !ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":   "unauthorized",

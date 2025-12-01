@@ -5,12 +5,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupMessagesRoutes sets up messages routes
-func SetupMessagesRoutes(app *fiber.App, messagesController *controllers.MessagesController, groupsController *controllers.GroupsController) {
+func SetupMessagesRoutes(app *fiber.App, messagesController *controller.MessagesController, groupsController *controller.GroupsController) {
 	messages := app.Group("/api/v1/messages")
 	messages.Use(middleware.FiberAuthMiddleware())
 

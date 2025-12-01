@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/config"
 	"github.com/keshablive/quester/internal/framework/container"
@@ -220,29 +220,29 @@ func Setup(app *fiber.App, cont *container.Container) {
 	socialService.SetGamificationService(socialGamifService)
 
 	// Initialize Controllers
-	propertyController := controllers.NewPropertyController(propertyService)
-	classifiedAdController := controllers.NewClassifiedAdController(classifiedAdService)
-	videoController := controllers.NewVideoStreamingController(db, videoStreamingService, dvrService)
-	certificateController := controllers.NewCertificateController(certificateService)
-	badgeController := controllers.NewBadgeController(db)
-	achievementController := controllers.NewAchievementController(db)
-	questController := controllers.NewQuestController(questService)
-	courseController := controllers.NewCourseController(db)
-	lessonController := controllers.NewLessonController(db)
-	enrollmentController := controllers.NewEnrollmentController(db)
-	twoFactorController := controllers.NewTwoFactorController(twoFactorService, userRepo)
-	authController := controllers.NewAuthController(authService, twoFactorService)
-	transactionController := controllers.NewTransactionController(transactionService, cfg)
-	socialController := controllers.NewSocialController(socialService)
-	socialGamifController := controllers.NewSocialGamificationController(socialGamifService) // 005-social-feed-gamification T027
-	analyticsController := controllers.NewAnalyticsController(analyticsService)
-	messagesController := controllers.NewMessagesController(messagingService, wsHandler, redisManager, typingIndicator)
-	groupsController := controllers.NewGroupsController(messagingService)
-	notificationsController := controllers.NewNotificationsController(notificationService, fcmService)
+	propertyController := controller.NewPropertyController(propertyService)
+	classifiedAdController := controller.NewClassifiedAdController(classifiedAdService)
+	videoController := controller.NewVideoStreamingController(db, videoStreamingService, dvrService)
+	certificateController := controller.NewCertificateController(certificateService)
+	badgeController := controller.NewBadgeController(db)
+	achievementController := controller.NewAchievementController(db)
+	questController := controller.NewQuestController(questService)
+	courseController := controller.NewCourseController(db)
+	lessonController := controller.NewLessonController(db)
+	enrollmentController := controller.NewEnrollmentController(db)
+	twoFactorController := controller.NewTwoFactorController(twoFactorService, userRepo)
+	authController := controller.NewAuthController(authService, twoFactorService)
+	transactionController := controller.NewTransactionController(transactionService, cfg)
+	socialController := controller.NewSocialController(socialService)
+	socialGamifController := controller.NewSocialGamificationController(socialGamifService) // 005-social-feed-gamification T027
+	analyticsController := controller.NewAnalyticsController(analyticsService)
+	messagesController := controller.NewMessagesController(messagingService, wsHandler, redisManager, typingIndicator)
+	groupsController := controller.NewGroupsController(messagingService)
+	notificationsController := controller.NewNotificationsController(notificationService, fcmService)
 
 	// Learning Gamification Service (006-course-gamification T024)
 	// Resolve from container where it was registered in app.go
-	var learningGamifController *controllers.LearningGamificationController
+	var learningGamifController *controller.LearningGamificationController
 	if learningGamifSvc, err := cont.Resolve("learningGamificationService"); err == nil {
 		if learningGamifService, ok := learningGamifSvc.(*service.LearningGamificationService); ok && learningGamifService != nil {
 			// Inject optional dependencies
@@ -252,12 +252,12 @@ func Setup(app *fiber.App, cont *container.Container) {
 			if notificationService != nil {
 				learningGamifService.SetNotificationService(notificationService)
 			}
-			learningGamifController = controllers.NewLearningGamificationController(learningGamifService)
+			learningGamifController = controller.NewLearningGamificationController(learningGamifService)
 		}
 	}
 
 	// KMS Controller (Admin)
-	kmsController, err := controllers.NewKMSController()
+	kmsController, err := controller.NewKMSController()
 	if err != nil {
 		kmsController = nil
 	}
@@ -268,11 +268,11 @@ func Setup(app *fiber.App, cont *container.Container) {
 
 	// Auth Routes
 	// Note: AuthController is not initialized in the original file, assuming it uses static methods or needs init
-	// Looking at original routes.go, controllers.Signup/Login are used directly.
-	// But SetupAuthRoutes expects *controllers.AuthController.
-	// Wait, original routes.go used `controllers.Signup`, `controllers.Login`.
+	// Looking at original routes.go, controller.Signup/Login are used directly.
+	// But SetupAuthRoutes expects *controller.AuthController.
+	// Wait, original routes.go used `controller.Signup`, `controller.Login`.
 	// These look like functions, not methods on a controller struct.
-	// My SetupAuthRoutes expects `*controllers.AuthController`.
+	// My SetupAuthRoutes expects `*controller.AuthController`.
 	// I need to check if `AuthController` exists or if I should change `SetupAuthRoutes` to use functions.
 	// Auth routes - using AuthController
 	SetupAuthRoutes(v1, authController, twoFactorController)
@@ -314,10 +314,10 @@ func Setup(app *fiber.App, cont *container.Container) {
 
 	// Leaderboard Controller (013-leaderboard-controller-integration T007)
 	// Resolve LeaderboardService from container and create controller
-	var leaderboardController *controllers.LeaderboardController
+	var leaderboardController *controller.LeaderboardController
 	if leaderboardSvc, err := cont.Resolve("leaderboardService"); err == nil {
 		if leaderboardService, ok := leaderboardSvc.(*service.LeaderboardService); ok && leaderboardService != nil {
-			leaderboardController = controllers.NewLeaderboardController(leaderboardService)
+			leaderboardController = controller.NewLeaderboardController(leaderboardService)
 			log.Println("✓ LeaderboardController initialized (013-leaderboard-controller-integration)")
 		}
 	}
@@ -337,7 +337,7 @@ func Setup(app *fiber.App, cont *container.Container) {
 	SetupNotificationsRoutes(app, notificationsController)
 
 	// WebSocket Routes
-	websocketController := controllers.NewWebSocketController(wsHandler, redisManager, typingIndicator, messagingService, notificationService)
+	websocketController := controller.NewWebSocketController(wsHandler, redisManager, typingIndicator, messagingService, notificationService)
 	SetupWebSocketRoutes(app, websocketController)
 
 	// Register event handlers

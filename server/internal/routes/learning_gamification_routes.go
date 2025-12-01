@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
@@ -11,7 +11,7 @@ import (
 // Implements 006-course-gamification XP, progress, streaks, challenges, and levels
 func SetupLearningGamificationRoutes(
 	api fiber.Router,
-	gamifCtrl *controllers.LearningGamificationController,
+	gamifCtrl *controller.LearningGamificationController,
 ) {
 	// Learning gamification routes (all require auth)
 	learning := api.Group("/learning")

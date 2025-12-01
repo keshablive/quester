@@ -2,11 +2,11 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 )
 
 // SetupLMSRoutes sets up LMS routes (Courses, Lessons, Enrollments)
-func SetupLMSRoutes(app *fiber.App, courseController *controllers.CourseController, lessonController *controllers.LessonController, enrollmentController *controllers.EnrollmentController) {
+func SetupLMSRoutes(app *fiber.App, courseController *controller.CourseController, lessonController *controller.LessonController, enrollmentController *controller.EnrollmentController) {
 	// Initialize Course controller (Core LMS)
 	courseController.RegisterRoutes(app) // Registers /api/v1/courses routes
 

@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/models"
 )
@@ -15,7 +15,7 @@ import (
 // T022: Register POST /api/v1/admin/leaderboards/invalidate route
 func SetupLeaderboardRoutes(
 	api fiber.Router,
-	leaderboardController *controllers.LeaderboardController,
+	leaderboardController *controller.LeaderboardController,
 ) {
 	// Skip if controller is nil
 	if leaderboardController == nil {

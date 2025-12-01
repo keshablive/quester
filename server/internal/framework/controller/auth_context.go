@@ -5,6 +5,7 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/keshablive/quester/internal/framework/contextkeys"
 )
 
 // AuthContext contains validated user identity extracted from JWT claims.
@@ -29,11 +30,12 @@ type AuthContext struct {
 
 // Fiber context keys for storing authenticated user data
 // These match the keys used by FiberAuthMiddleware
+// Re-exported from contextkeys package for backward compatibility
 const (
-	FiberUserIDKey   = "user_id"
-	FiberTenantIDKey = "tenant_id"
-	FiberRoleKey     = "role"
-	FiberEmailKey    = "email"
+	FiberUserIDKey   = contextkeys.UserIDKey
+	FiberTenantIDKey = contextkeys.TenantIDKey
+	FiberRoleKey     = contextkeys.RoleKey
+	FiberEmailKey    = contextkeys.EmailKey
 )
 
 // GetAuthContext extracts and validates auth context from Fiber context.
@@ -45,7 +47,7 @@ const (
 //
 // Example:
 //
-//	auth, err := controller.GetAuthContext(c)
+//	auth, err := GetAuthContext(c)
 //	if err != nil {
 //	    return responses.Unauthorized(c, err.Error())
 //	}

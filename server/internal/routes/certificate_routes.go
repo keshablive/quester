@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupCertificateRoutes sets up certificate routes
-func SetupCertificateRoutes(router fiber.Router, certificateController *controllers.CertificateController) {
+func SetupCertificateRoutes(router fiber.Router, certificateController *controller.CertificateController) {
 	// Certificate routes (Feature #003 FR-003: T612-T614)
 	certificates := router.Group("/certificates")
 	certificates.Use(middleware.FiberAuthMiddleware())

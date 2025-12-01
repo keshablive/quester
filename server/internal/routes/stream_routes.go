@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupStreamRoutes sets up video streaming and recording routes
-func SetupStreamRoutes(router fiber.Router, videoController *controllers.VideoStreamingController) {
+func SetupStreamRoutes(router fiber.Router, videoController *controller.VideoStreamingController) {
 	// Video Streaming routes (Feature #003 Phase 2 - T506, T507)
 	streams := router.Group("/streams")
 

@@ -5,14 +5,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupSocialRoutes registers social feature routes (posts, likes, comments, follows)
 func SetupSocialRoutes(
 	api fiber.Router,
-	socialCtrl *controllers.SocialController,
+	socialCtrl *controller.SocialController,
 ) {
 	// Post routes
 	posts := api.Group("/posts")

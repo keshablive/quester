@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
@@ -11,7 +11,7 @@ import (
 // Implements FR-003 for XP feedback endpoints (005-social-feed-gamification T028)
 func SetupSocialGamificationRoutes(
 	api fiber.Router,
-	gamifCtrl *controllers.SocialGamificationController,
+	gamifCtrl *controller.SocialGamificationController,
 ) {
 	// Social gamification routes (all require auth)
 	social := api.Group("/social")

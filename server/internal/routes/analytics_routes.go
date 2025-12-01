@@ -5,12 +5,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	fwmiddleware "github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupAnalyticsRoutes sets up analytics routes
-func SetupAnalyticsRoutes(v1 fiber.Router, analyticsController *controllers.AnalyticsController) {
+func SetupAnalyticsRoutes(v1 fiber.Router, analyticsController *controller.AnalyticsController) {
 	// Analytics routes group
 	analytics := v1.Group("/analytics")
 

@@ -4,13 +4,13 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/models"
 )
 
 // SetupAuthRoutes sets up authentication routes
-func SetupAuthRoutes(router fiber.Router, authController *controllers.AuthController, twoFactorController *controllers.TwoFactorController) {
+func SetupAuthRoutes(router fiber.Router, authController *controller.AuthController, twoFactorController *controller.TwoFactorController) {
 	// Auth routes - T111, T112 (FR-001: BlacklistService Integration)
 	auth := router.Group("/auth")
 

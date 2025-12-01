@@ -2,11 +2,11 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 )
 
 // SetupGamificationRoutes sets up gamification routes (Badges, Achievements, Quests)
-func SetupGamificationRoutes(app *fiber.App, badgeController *controllers.BadgeController, achievementController *controllers.AchievementController, questController *controllers.QuestController) {
+func SetupGamificationRoutes(app *fiber.App, badgeController *controller.BadgeController, achievementController *controller.AchievementController, questController *controller.QuestController) {
 	// Initialize Badge controller (Gamification features)
 	badgeController.RegisterRoutes(app) // Registers /api/v1/badges routes
 

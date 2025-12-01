@@ -4,13 +4,13 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/models"
 )
 
 // SetupTransactionRoutes sets up transaction and webhook routes
-func SetupTransactionRoutes(router fiber.Router, app *fiber.App, transactionController *controllers.TransactionController) {
+func SetupTransactionRoutes(router fiber.Router, app *fiber.App, transactionController *controller.TransactionController) {
 	// Transaction routes
 	transactions := router.Group("/transactions")
 	transactions.Use(middleware.FiberAuthMiddleware())

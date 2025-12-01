@@ -4,12 +4,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupWebSocketRoutes sets up WebSocket routes
-func SetupWebSocketRoutes(app *fiber.App, wsController *controllers.WebSocketController) {
+func SetupWebSocketRoutes(app *fiber.App, wsController *controller.WebSocketController) {
 	// WebSocket upgrade endpoint (protected by auth)
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {

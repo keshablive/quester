@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/keshablive/quester/internal/controllers"
+	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 )
 
 // SetupClassifiedRoutes sets up classified ad routes
-func SetupClassifiedRoutes(router fiber.Router, classifiedAdController *controllers.ClassifiedAdController) {
+func SetupClassifiedRoutes(router fiber.Router, classifiedAdController *controller.ClassifiedAdController) {
 	// Classified Ad routes (Feature #002 - T185-T186)
 	classifieds := router.Group("/classifieds")
 	classifieds.Use(middleware.FiberAuthMiddleware())
