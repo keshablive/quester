@@ -22,7 +22,7 @@ import (
 	sentryPkg "github.com/keshablive/quester/internal/framework/sentry"
 	"github.com/keshablive/quester/internal/migrations"
 	"github.com/keshablive/quester/internal/framework/repository"
-	"github.com/keshablive/quester/internal/routes"
+	"github.com/keshablive/quester/internal/framework/routes"
 	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
