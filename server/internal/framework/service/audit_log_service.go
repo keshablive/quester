@@ -8,17 +8,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // AuditLogService handles security audit logging
 type AuditLogService struct {
-	repo *repositories.AuditLogRepository
+	repo *repository.AuditLogRepository
 }
 
 // NewAuditLogService creates a new audit log service instance
 // T094: Now accepts AuditLogRepository for dependency injection
-func NewAuditLogService(repo *repositories.AuditLogRepository) *AuditLogService {
+func NewAuditLogService(repo *repository.AuditLogRepository) *AuditLogService {
 	return &AuditLogService{repo: repo}
 }
 

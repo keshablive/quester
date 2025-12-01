@@ -21,7 +21,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/middleware"
 	sentryPkg "github.com/keshablive/quester/internal/framework/sentry"
 	"github.com/keshablive/quester/internal/migrations"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/keshablive/quester/internal/routes"
 	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -34,7 +34,7 @@ type TenantViolationLoggerAdapter struct{}
 // LogViolation logs a tenant isolation violation using the app's audit service
 func (t *TenantViolationLoggerAdapter) LogViolation(ctx context.Context, userID, userTenantID, resourceTenantID uuid.UUID, resourceType string, resourceID uuid.UUID, action, ip, userAgent string) {
 	// Create repository and service (safe for concurrent use)
-	auditRepo := repositories.NewAuditLogRepository(database.DB)
+	auditRepo := repository.NewAuditLogRepository(database.DB)
 	auditSvc := service.NewAuditLogService(auditRepo)
 
 	// Fire-and-forget audit logging
@@ -473,11 +473,11 @@ func startStreakResetScheduler(ctx context.Context) {
 				// Create service instance to call ResetExpiredStreaks
 				db := database.DB
 				if db != nil {
-					streakRepo := repositories.NewLearningStreakRepository(db)
-					xpRepo := repositories.NewLearningXPRepository(db)
-					levelRepo := repositories.NewLearningLevelRepository(db)
-					challengeRepo := repositories.NewLearningChallengeRepository(db)
-					userRepo := repositories.NewUserRepository(db)
+					streakRepo := repository.NewLearningStreakRepository(db)
+					xpRepo := repository.NewLearningXPRepository(db)
+					levelRepo := repository.NewLearningLevelRepository(db)
+					challengeRepo := repository.NewLearningChallengeRepository(db)
+					userRepo := repository.NewUserRepository(db)
 
 					svc := service.NewLearningGamificationService(
 						xpRepo,
@@ -526,11 +526,11 @@ func startChallengeCleanupScheduler(ctx context.Context) {
 				// Create service instance to call ExpireOldChallenges
 				db := database.DB
 				if db != nil {
-					streakRepo := repositories.NewLearningStreakRepository(db)
-					xpRepo := repositories.NewLearningXPRepository(db)
-					levelRepo := repositories.NewLearningLevelRepository(db)
-					challengeRepo := repositories.NewLearningChallengeRepository(db)
-					userRepo := repositories.NewUserRepository(db)
+					streakRepo := repository.NewLearningStreakRepository(db)
+					xpRepo := repository.NewLearningXPRepository(db)
+					levelRepo := repository.NewLearningLevelRepository(db)
+					challengeRepo := repository.NewLearningChallengeRepository(db)
+					userRepo := repository.NewUserRepository(db)
 
 					svc := service.NewLearningGamificationService(
 						xpRepo,
@@ -567,86 +567,86 @@ func registerRepositories(c *container.Container) {
 
 	// T047: PropertyRepository
 	if err := c.RegisterSingleton("propertyRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewPropertyRepository(db), nil
+		return repository.NewPropertyRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register propertyRepository: %v", err)
 	}
 
 	// T048: QuestRepository
 	if err := c.RegisterSingleton("questRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewQuestRepository(db), nil
+		return repository.NewQuestRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register questRepository: %v", err)
 	}
 
 	// T049: UserRepository
 	if err := c.RegisterSingleton("userRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewUserRepository(db), nil
+		return repository.NewUserRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register userRepository: %v", err)
 	}
 
 	// T050: TransactionRepository
 	if err := c.RegisterSingleton("transactionRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewTransactionRepository(db), nil
+		return repository.NewTransactionRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register transactionRepository: %v", err)
 	}
 
 	// T051: BadgeRepository
 	if err := c.RegisterSingleton("badgeRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewBadgeRepository(db), nil
+		return repository.NewBadgeRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register badgeRepository: %v", err)
 	}
 
 	// T052: LeaderboardRepository
 	if err := c.RegisterSingleton("leaderboardRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewLeaderboardRepository(db), nil
+		return repository.NewLeaderboardRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register leaderboardRepository: %v", err)
 	}
 
 	// Social Gamification Repositories (005-social-feed-gamification)
 	if err := c.RegisterSingleton("socialXPRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewSocialXPRepository(db), nil
+		return repository.NewSocialXPRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register socialXPRepository: %v", err)
 	}
 
 	if err := c.RegisterSingleton("dailyChallengeRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewDailyChallengeRepository(db), nil
+		return repository.NewDailyChallengeRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register dailyChallengeRepository: %v", err)
 	}
 
 	if err := c.RegisterSingleton("contentMilestoneRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewContentMilestoneRepository(db), nil
+		return repository.NewContentMilestoneRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register contentMilestoneRepository: %v", err)
 	}
 
 	// Learning Gamification Repositories (006-course-gamification T024)
 	if err := c.RegisterSingleton("learningXPRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewLearningXPRepository(db), nil
+		return repository.NewLearningXPRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register learningXPRepository: %v", err)
 	}
 
 	if err := c.RegisterSingleton("learningStreakRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewLearningStreakRepository(db), nil
+		return repository.NewLearningStreakRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register learningStreakRepository: %v", err)
 	}
 
 	if err := c.RegisterSingleton("learningLevelRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewLearningLevelRepository(db), nil
+		return repository.NewLearningLevelRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register learningLevelRepository: %v", err)
 	}
 
 	if err := c.RegisterSingleton("learningChallengeRepository", func(c *container.Container) (interface{}, error) {
-		return repositories.NewLearningChallengeRepository(db), nil
+		return repository.NewLearningChallengeRepository(db), nil
 	}); err != nil {
 		log.Fatalf("Failed to register learningChallengeRepository: %v", err)
 	}
@@ -709,10 +709,10 @@ func registerServices(c *container.Container) {
 		}
 
 		svc := service.NewSocialGamificationService(
-			socialXPRepo.(*repositories.SocialXPRepository),
-			dailyChallengeRepo.(*repositories.DailyChallengeRepository),
-			contentMilestoneRepo.(*repositories.ContentMilestoneRepository),
-			userRepo.(*repositories.UserRepository),
+			socialXPRepo.(*repository.SocialXPRepository),
+			dailyChallengeRepo.(*repository.DailyChallengeRepository),
+			contentMilestoneRepo.(*repository.ContentMilestoneRepository),
+			userRepo.(*repository.UserRepository),
 		)
 		// Inject optional dependencies
 		if queueService != nil {
@@ -748,11 +748,11 @@ func registerServices(c *container.Container) {
 		}
 
 		svc := service.NewLearningGamificationService(
-			learningXPRepo.(*repositories.LearningXPRepository),
-			learningStreakRepo.(*repositories.LearningStreakRepository),
-			learningLevelRepo.(*repositories.LearningLevelRepository),
-			learningChallengeRepo.(*repositories.LearningChallengeRepository),
-			userRepo.(*repositories.UserRepository),
+			learningXPRepo.(*repository.LearningXPRepository),
+			learningStreakRepo.(*repository.LearningStreakRepository),
+			learningLevelRepo.(*repository.LearningLevelRepository),
+			learningChallengeRepo.(*repository.LearningChallengeRepository),
+			userRepo.(*repository.UserRepository),
 		)
 		// Inject optional dependencies
 		if queueService != nil {
@@ -779,9 +779,9 @@ func registerServices(c *container.Container) {
 			database.DB,
 			nil, // logger - will use default from BaseService
 			redisCache,
-			leaderboardRepo.(*repositories.LeaderboardRepository), // implements interfaces.LeaderboardRepository
-			leaderboardRepo.(*repositories.LeaderboardRepository), // for custom methods like BulkUpsert
-			userRepo.(*repositories.UserRepository),
+			leaderboardRepo.(*repository.LeaderboardRepository), // implements interfaces.LeaderboardRepository
+			leaderboardRepo.(*repository.LeaderboardRepository), // for custom methods like BulkUpsert
+			userRepo.(*repository.UserRepository),
 		), nil
 	}); err != nil {
 		log.Fatalf("Failed to register leaderboardService: %v", err)

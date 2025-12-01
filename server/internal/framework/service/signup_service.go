@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // Signup creates a new user account with validation
@@ -35,7 +35,7 @@ func Signup(ctx context.Context, tenantID uuid.UUID, request *SignupRequest) (*S
 	}
 
 	// Initialize user repository
-	userRepo := repositories.NewUserRepository(database.DB)
+	userRepo := repository.NewUserRepository(database.DB)
 
 	// Check for duplicate email in tenant
 	existingUser, err := userRepo.FindByEmail(ctx, tenantID, strings.ToLower(strings.TrimSpace(request.Email)))

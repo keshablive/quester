@@ -10,16 +10,16 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // AnalyticsService handles analytics business logic
 type AnalyticsService struct {
-	repo *repositories.AnalyticsRepository
+	repo *repository.AnalyticsRepository
 }
 
 // NewAnalyticsService creates a new analytics service
-func NewAnalyticsService(repo *repositories.AnalyticsRepository) *AnalyticsService {
+func NewAnalyticsService(repo *repository.AnalyticsRepository) *AnalyticsService {
 	return &AnalyticsService{repo: repo}
 }
 

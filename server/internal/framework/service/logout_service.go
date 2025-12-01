@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // LogoutService handles logout operations
@@ -77,7 +77,7 @@ func (s *LogoutService) LogoutAll(ctx context.Context, userID uuid.UUID) (int, e
 // This matches the pattern used by Login and RefreshAccessToken for easy controller integration
 func Logout(ctx context.Context, refreshTokenString string) error {
 	// Initialize repository
-	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
+	tokenRepo := repository.NewRefreshTokenRepository(database.DB)
 
 	// Initialize blacklist service with global cache
 	blacklistService := NewBlacklistService(cache.Client)
@@ -92,7 +92,7 @@ func Logout(ctx context.Context, refreshTokenString string) error {
 // LogoutAll is a convenience function that creates service instances and performs logout all
 func LogoutAll(ctx context.Context, userID uuid.UUID) (int, error) {
 	// Initialize repository
-	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
+	tokenRepo := repository.NewRefreshTokenRepository(database.DB)
 
 	// Initialize blacklist service with global cache
 	blacklistService := NewBlacklistService(cache.Client)

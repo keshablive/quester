@@ -156,7 +156,7 @@ func GetTxFromContext(ctx context.Context) *gorm.DB {
 }
 
 // GetDBOrTx returns the transaction from context if present, otherwise returns the provided DB.
-// This is a convenience function for repositories.
+// This is a convenience function for repository.
 //
 // Example:
 //

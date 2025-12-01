@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -23,13 +23,13 @@ const (
 // LearningGamificationService handles learning XP awards and tracking (T023)
 // Implements FR-001 through FR-025 for course gamification
 type LearningGamificationService struct {
-	xpRepo          *repositories.LearningXPRepository
-	streakRepo      *repositories.LearningStreakRepository
-	levelRepo       *repositories.LearningLevelRepository
-	challengeRepo   *repositories.LearningChallengeRepository
-	userRepo        *repositories.UserRepository
-	achievementRepo *repositories.AchievementRepository
-	badgeRepo       *repositories.BadgeRepository
+	xpRepo          *repository.LearningXPRepository
+	streakRepo      *repository.LearningStreakRepository
+	levelRepo       *repository.LearningLevelRepository
+	challengeRepo   *repository.LearningChallengeRepository
+	userRepo        *repository.UserRepository
+	achievementRepo *repository.AchievementRepository
+	badgeRepo       *repository.BadgeRepository
 
 	// Optional services (set via setters to avoid circular dependencies)
 	queueService        *QueueService
@@ -42,11 +42,11 @@ type LearningGamificationService struct {
 
 // NewLearningGamificationService creates a new learning gamification service
 func NewLearningGamificationService(
-	xpRepo *repositories.LearningXPRepository,
-	streakRepo *repositories.LearningStreakRepository,
-	levelRepo *repositories.LearningLevelRepository,
-	challengeRepo *repositories.LearningChallengeRepository,
-	userRepo *repositories.UserRepository,
+	xpRepo *repository.LearningXPRepository,
+	streakRepo *repository.LearningStreakRepository,
+	levelRepo *repository.LearningLevelRepository,
+	challengeRepo *repository.LearningChallengeRepository,
+	userRepo *repository.UserRepository,
 ) *LearningGamificationService {
 	return &LearningGamificationService{
 		xpRepo:        xpRepo,
@@ -58,12 +58,12 @@ func NewLearningGamificationService(
 }
 
 // SetAchievementRepo sets the achievement repository for learning achievements
-func (s *LearningGamificationService) SetAchievementRepo(ar *repositories.AchievementRepository) {
+func (s *LearningGamificationService) SetAchievementRepo(ar *repository.AchievementRepository) {
 	s.achievementRepo = ar
 }
 
 // SetBadgeRepo sets the badge repository for instructor badge awards
-func (s *LearningGamificationService) SetBadgeRepo(br *repositories.BadgeRepository) {
+func (s *LearningGamificationService) SetBadgeRepo(br *repository.BadgeRepository) {
 	s.badgeRepo = br
 }
 
@@ -744,7 +744,7 @@ func (s *LearningGamificationService) CheckLearningAchievements(ctx context.Cont
 
 	// Get learning badges (category = 'learning')
 	// Using FindAllPaginated to filter by category
-	learningBadges, _, err := s.badgeRepo.FindAllPaginated(ctx, tenantID, repositories.BadgeFilters{
+	learningBadges, _, err := s.badgeRepo.FindAllPaginated(ctx, tenantID, repository.BadgeFilters{
 		Category: "learning",
 		Page:     1,
 		Limit:    100,
@@ -814,7 +814,7 @@ func (s *LearningGamificationService) GetUserLearningAchievements(ctx context.Co
 	}
 
 	// Get all learning badges
-	learningBadges, _, err := s.badgeRepo.FindAllPaginated(ctx, tenantID, repositories.BadgeFilters{
+	learningBadges, _, err := s.badgeRepo.FindAllPaginated(ctx, tenantID, repository.BadgeFilters{
 		Category: "learning",
 		Page:     1,
 		Limit:    100,

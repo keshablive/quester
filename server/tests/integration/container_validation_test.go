@@ -4,7 +4,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -20,42 +20,42 @@ func TestRepositoryConstructors_NilValidation(t *testing.T) {
 		{
 			name: "PropertyRepository panics on nil DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewPropertyRepository(db)
+				return repository.NewPropertyRepository(db)
 			},
 			repoName: "PropertyRepository",
 		},
 		{
 			name: "QuestRepository panics on nil DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewQuestRepository(db)
+				return repository.NewQuestRepository(db)
 			},
 			repoName: "QuestRepository",
 		},
 		{
 			name: "UserRepository panics on nil DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewUserRepository(db)
+				return repository.NewUserRepository(db)
 			},
 			repoName: "UserRepository",
 		},
 		{
 			name: "TransactionRepository panics on nil DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewTransactionRepository(db)
+				return repository.NewTransactionRepository(db)
 			},
 			repoName: "TransactionRepository",
 		},
 		{
 			name: "BadgeRepository panics on nil DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewBadgeRepository(db)
+				return repository.NewBadgeRepository(db)
 			},
 			repoName: "BadgeRepository",
 		},
 		{
 			name: "LeaderboardRepository panics on nil DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewLeaderboardRepository(db)
+				return repository.NewLeaderboardRepository(db)
 			},
 			repoName: "LeaderboardRepository",
 		},
@@ -98,37 +98,37 @@ func TestRepositoryConstructors_ValidDB(t *testing.T) {
 		{
 			name: "PropertyRepository accepts valid DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewPropertyRepository(db)
+				return repository.NewPropertyRepository(db)
 			},
 		},
 		{
 			name: "QuestRepository accepts valid DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewQuestRepository(db)
+				return repository.NewQuestRepository(db)
 			},
 		},
 		{
 			name: "UserRepository accepts valid DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewUserRepository(db)
+				return repository.NewUserRepository(db)
 			},
 		},
 		{
 			name: "TransactionRepository accepts valid DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewTransactionRepository(db)
+				return repository.NewTransactionRepository(db)
 			},
 		},
 		{
 			name: "BadgeRepository accepts valid DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewBadgeRepository(db)
+				return repository.NewBadgeRepository(db)
 			},
 		},
 		{
 			name: "LeaderboardRepository accepts valid DB",
 			constructor: func(db *gorm.DB) interface{} {
-				return repositories.NewLeaderboardRepository(db)
+				return repository.NewLeaderboardRepository(db)
 			},
 		},
 	}

@@ -10,14 +10,14 @@ import (
 	"github.com/keshablive/quester/internal/framework/core"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/framework/storage"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"gorm.io/gorm"
 )
 
 // UserController handles user profile operations
 type UserController struct {
 	db       *gorm.DB
-	userRepo *repositories.UserRepository
+	userRepo *repository.UserRepository
 	s3Client *storage.S3Client
 }
 
@@ -25,7 +25,7 @@ type UserController struct {
 func NewUserController(db *gorm.DB, s3Client *storage.S3Client) *UserController {
 	return &UserController{
 		db:       db,
-		userRepo: repositories.NewUserRepository(db),
+		userRepo: repository.NewUserRepository(db),
 		s3Client: s3Client,
 	}
 }

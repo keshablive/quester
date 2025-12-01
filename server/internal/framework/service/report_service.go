@@ -9,17 +9,17 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // ReportService handles report business logic
 type ReportService struct {
-	repo          *repositories.ReportRepository
-	analyticsRepo *repositories.AnalyticsRepository
+	repo          *repository.ReportRepository
+	analyticsRepo *repository.AnalyticsRepository
 }
 
 // NewReportService creates a new report service
-func NewReportService(repo *repositories.ReportRepository, analyticsRepo *repositories.AnalyticsRepository) *ReportService {
+func NewReportService(repo *repository.ReportRepository, analyticsRepo *repository.AnalyticsRepository) *ReportService {
 	return &ReportService{
 		repo:          repo,
 		analyticsRepo: analyticsRepo,

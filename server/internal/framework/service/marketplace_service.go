@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/utils"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 
 	"gorm.io/gorm"
 )
@@ -17,21 +17,21 @@ import (
 // MarketplaceService handles marketplace business logic
 type MarketplaceService struct {
 	db              *gorm.DB
-	marketplaceRepo *repositories.MarketplaceListingRepository
-	userRepo        *repositories.UserRepository
-	courseRepo      *repositories.CourseRepository
+	marketplaceRepo *repository.MarketplaceListingRepository
+	userRepo        *repository.UserRepository
+	courseRepo      *repository.CourseRepository
 	// questRepo: Disabled until QuestRepository is integrated (Phase 3)
-	badgeRepo *repositories.BadgeRepository
+	badgeRepo *repository.BadgeRepository
 }
 
 // NewMarketplaceService creates a new marketplace service
 func NewMarketplaceService(
 	db *gorm.DB,
-	marketplaceRepo *repositories.MarketplaceListingRepository,
-	userRepo *repositories.UserRepository,
-	courseRepo *repositories.CourseRepository,
+	marketplaceRepo *repository.MarketplaceListingRepository,
+	userRepo *repository.UserRepository,
+	courseRepo *repository.CourseRepository,
 	// questRepo: Disabled until QuestRepository is integrated (Phase 3)
-	badgeRepo *repositories.BadgeRepository,
+	badgeRepo *repository.BadgeRepository,
 ) *MarketplaceService {
 	return &MarketplaceService{
 		db:              db,

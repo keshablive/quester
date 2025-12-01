@@ -8,17 +8,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // SocialGamificationService handles social XP awards and tracking
 // Implements FR-001 through FR-013 for social feed gamification
 type SocialGamificationService struct {
-	socialXPRepo         *repositories.SocialXPRepository
-	dailyChallengeRepo   *repositories.DailyChallengeRepository
-	contentMilestoneRepo *repositories.ContentMilestoneRepository
-	userRepo             *repositories.UserRepository
-	achievementRepo      *repositories.AchievementRepository
+	socialXPRepo         *repository.SocialXPRepository
+	dailyChallengeRepo   *repository.DailyChallengeRepository
+	contentMilestoneRepo *repository.ContentMilestoneRepository
+	userRepo             *repository.UserRepository
+	achievementRepo      *repository.AchievementRepository
 	leaderboardService   *LeaderboardService // T055: For social leaderboard updates
 	queueService         *QueueService
 	notificationService  *NotificationService
@@ -26,10 +26,10 @@ type SocialGamificationService struct {
 
 // NewSocialGamificationService creates a new social gamification service
 func NewSocialGamificationService(
-	socialXPRepo *repositories.SocialXPRepository,
-	dailyChallengeRepo *repositories.DailyChallengeRepository,
-	contentMilestoneRepo *repositories.ContentMilestoneRepository,
-	userRepo *repositories.UserRepository,
+	socialXPRepo *repository.SocialXPRepository,
+	dailyChallengeRepo *repository.DailyChallengeRepository,
+	contentMilestoneRepo *repository.ContentMilestoneRepository,
+	userRepo *repository.UserRepository,
 ) *SocialGamificationService {
 	return &SocialGamificationService{
 		socialXPRepo:         socialXPRepo,
@@ -40,7 +40,7 @@ func NewSocialGamificationService(
 }
 
 // SetAchievementRepo sets the achievement repository for social achievements
-func (s *SocialGamificationService) SetAchievementRepo(ar *repositories.AchievementRepository) {
+func (s *SocialGamificationService) SetAchievementRepo(ar *repository.AchievementRepository) {
 	s.achievementRepo = ar
 }
 

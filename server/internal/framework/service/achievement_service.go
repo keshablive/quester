@@ -8,15 +8,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"gorm.io/gorm"
 )
 
 // AchievementService handles achievement business logic
 type AchievementService struct {
 	BaseService
-	achievementRepo *repositories.AchievementRepository
-	userRepo        *repositories.UserRepository
+	achievementRepo *repository.AchievementRepository
+	userRepo        *repository.UserRepository
 	badgeService    *BadgeService
 	notificationSvc *NotificationService
 }
@@ -25,8 +25,8 @@ type AchievementService struct {
 func NewAchievementService(db *gorm.DB, logger *slog.Logger, redisClient *cache.PooledRedisClient) *AchievementService {
 	return &AchievementService{
 		BaseService:     NewBaseService(db, logger, redisClient, nil),
-		achievementRepo: repositories.NewAchievementRepository(db),
-		userRepo:        repositories.NewUserRepository(db),
+		achievementRepo: repository.NewAchievementRepository(db),
+		userRepo:        repository.NewUserRepository(db),
 	}
 }
 

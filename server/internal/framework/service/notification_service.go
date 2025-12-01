@@ -10,15 +10,15 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // NotificationService handles notification business logic
 type NotificationService struct {
-	notificationRepo         *repositories.NotificationRepository
-	notificationSettingsRepo *repositories.NotificationSettingsRepository
-	fcmTokenRepo             *repositories.FCMTokenRepository
-	userRepo                 *repositories.UserRepository
+	notificationRepo         *repository.NotificationRepository
+	notificationSettingsRepo *repository.NotificationSettingsRepository
+	fcmTokenRepo             *repository.FCMTokenRepository
+	userRepo                 *repository.UserRepository
 	db                       *gorm.DB
 }
 
@@ -26,10 +26,10 @@ type NotificationService struct {
 // T110: Initializes repositories for dependency injection (eliminates direct DB usage)
 func NewNotificationService(db *gorm.DB) *NotificationService {
 	return &NotificationService{
-		notificationRepo:         repositories.NewNotificationRepository(db),
-		notificationSettingsRepo: repositories.NewNotificationSettingsRepository(db),
-		fcmTokenRepo:             repositories.NewFCMTokenRepository(db),
-		userRepo:                 repositories.NewUserRepository(db),
+		notificationRepo:         repository.NewNotificationRepository(db),
+		notificationSettingsRepo: repository.NewNotificationSettingsRepository(db),
+		fcmTokenRepo:             repository.NewFCMTokenRepository(db),
+		userRepo:                 repository.NewUserRepository(db),
 		db:                       db,
 	}
 }

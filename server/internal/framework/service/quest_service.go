@@ -11,7 +11,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/interfaces"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"gorm.io/gorm" // Only for error types (gorm.ErrRecordNotFound)
 )
 
@@ -19,14 +19,14 @@ import (
 type QuestService struct {
 	BaseService
 	questRepo           interfaces.QuestRepository
-	userRepo            *repositories.UserRepository // Phase 10: Migrate to interfaces.UserRepository when full interface is implemented
+	userRepo            *repository.UserRepository // Phase 10: Migrate to interfaces.UserRepository when full interface is implemented
 	badgeService        *BadgeService
 	notificationService *NotificationService
 	cacheService        *CacheService // 007-api-performance-caching T017
 }
 
 // NewQuestService creates a new quest service
-func NewQuestService(db *gorm.DB, logger *slog.Logger, redisClient *cache.PooledRedisClient, questRepo interfaces.QuestRepository, userRepo *repositories.UserRepository, badgeService *BadgeService, notificationService *NotificationService) *QuestService {
+func NewQuestService(db *gorm.DB, logger *slog.Logger, redisClient *cache.PooledRedisClient, questRepo interfaces.QuestRepository, userRepo *repository.UserRepository, badgeService *BadgeService, notificationService *NotificationService) *QuestService {
 	return &QuestService{
 		BaseService:         NewBaseService(db, logger, redisClient, nil),
 		questRepo:           questRepo,
@@ -37,7 +37,7 @@ func NewQuestService(db *gorm.DB, logger *slog.Logger, redisClient *cache.Pooled
 }
 
 // NewQuestServiceWithCache creates a new quest service with caching support (007-api-performance-caching T017)
-func NewQuestServiceWithCache(db *gorm.DB, logger *slog.Logger, redisClient *cache.PooledRedisClient, questRepo interfaces.QuestRepository, userRepo *repositories.UserRepository, badgeService *BadgeService, notificationService *NotificationService, cacheService *CacheService) *QuestService {
+func NewQuestServiceWithCache(db *gorm.DB, logger *slog.Logger, redisClient *cache.PooledRedisClient, questRepo interfaces.QuestRepository, userRepo *repository.UserRepository, badgeService *BadgeService, notificationService *NotificationService, cacheService *CacheService) *QuestService {
 	return &QuestService{
 		BaseService:         NewBaseService(db, logger, redisClient, nil),
 		questRepo:           questRepo,
@@ -200,7 +200,7 @@ func (s *QuestService) Complete(ctx context.Context, tenantID int64, userID uuid
 	user, err := s.userRepo.FindByID(ctx, userID)
 	if err != nil {
 		// Non-critical - use placeholder stats if user fetch fails
-		userStats := repositories.UserStats{
+		userStats := repository.UserStats{
 			TotalXP:          100,
 			QuestsCompleted:  1,
 			CoursesCompleted: 0,
@@ -215,7 +215,7 @@ func (s *QuestService) Complete(ctx context.Context, tenantID int64, userID uuid
 	// Note: Using 0 as placeholder until EnrollmentRepository is integrated
 	coursesCompleted := 0
 
-	userStats := repositories.UserStats{
+	userStats := repository.UserStats{
 		TotalXP:          user.XP,
 		QuestsCompleted:  1, // Incremented for this completion
 		CoursesCompleted: coursesCompleted,

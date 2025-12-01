@@ -24,7 +24,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/config"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"gorm.io/gorm"
 )
 
@@ -34,11 +34,11 @@ type KMSService struct {
 	config      *config.KMSConfig
 	dekCache    *DEKCache
 	auditLogger *KMSAuditLogger
-	repo        *repositories.EncryptionKeyRepository
+	repo        *repository.EncryptionKeyRepository
 }
 
 // NewKMSService creates a new KMS service
-func NewKMSService(cfg *config.KMSConfig, repo *repositories.EncryptionKeyRepository) (*KMSService, error) {
+func NewKMSService(cfg *config.KMSConfig, repo *repository.EncryptionKeyRepository) (*KMSService, error) {
 	client, err := NewKMSClient(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create KMS client: %w", err)

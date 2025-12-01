@@ -8,20 +8,20 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // FollowService handles follow-related business logic
 type FollowService struct {
-	followRepo   *repositories.FollowRepository
-	activityRepo *repositories.ActivityRepository
+	followRepo   *repository.FollowRepository
+	activityRepo *repository.ActivityRepository
 	notifService *NotificationService
 }
 
 // NewFollowService creates a new FollowService
 func NewFollowService(
-	followRepo *repositories.FollowRepository,
-	activityRepo *repositories.ActivityRepository,
+	followRepo *repository.FollowRepository,
+	activityRepo *repository.ActivityRepository,
 	notifService *NotificationService,
 ) *FollowService {
 	return &FollowService{

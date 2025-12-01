@@ -10,7 +10,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/interfaces"
 	"github.com/keshablive/quester/internal/framework/payment"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 
 	"gorm.io/gorm"
 )
@@ -19,8 +19,8 @@ import (
 type TransactionService struct {
 	db                  *gorm.DB // Retained for Phase 5 - escrow state transitions via model methods
 	transactionRepo     interfaces.TransactionRepository
-	marketplaceRepo     *repositories.MarketplaceListingRepository
-	userRepo            *repositories.UserRepository
+	marketplaceRepo     *repository.MarketplaceListingRepository
+	userRepo            *repository.UserRepository
 	paymentManager      *payment.PaymentManager
 	notificationService *NotificationService
 }
@@ -30,8 +30,8 @@ type TransactionService struct {
 func NewTransactionService(
 	transactionRepo interfaces.TransactionRepository,
 	db *gorm.DB,
-	marketplaceRepo *repositories.MarketplaceListingRepository,
-	userRepo *repositories.UserRepository,
+	marketplaceRepo *repository.MarketplaceListingRepository,
+	userRepo *repository.UserRepository,
 	paymentManager *payment.PaymentManager,
 	notificationService *NotificationService,
 ) *TransactionService {

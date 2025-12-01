@@ -10,17 +10,17 @@ import (
 	"google.golang.org/api/option"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // FCMService handles Firebase Cloud Messaging push notifications
 type FCMService struct {
 	client       *messaging.Client
-	fcmTokenRepo *repositories.FCMTokenRepository
+	fcmTokenRepo *repository.FCMTokenRepository
 }
 
 // NewFCMService creates a new FCM service
-func NewFCMService(credentialsPath string, fcmTokenRepo *repositories.FCMTokenRepository) (*FCMService, error) {
+func NewFCMService(credentialsPath string, fcmTokenRepo *repository.FCMTokenRepository) (*FCMService, error) {
 	opt := option.WithCredentialsFile(credentialsPath)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {

@@ -17,12 +17,12 @@ import (
 // Usage:
 //
 //	type BadgeRepository struct {
-//	    *repository.GenericRepository[*models.Badge]
+//	    *GenericRepository[*models.Badge]
 //	}
 //
 //	func NewBadgeRepository(db *gorm.DB) *BadgeRepository {
 //	    return &BadgeRepository{
-//	        GenericRepository: repository.NewGenericRepository[*models.Badge](db),
+//	        GenericRepository: NewGenericRepository[*models.Badge](db),
 //	    }
 //	}
 type GenericRepository[T TenantModel] struct {

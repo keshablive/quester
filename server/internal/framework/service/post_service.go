@@ -8,21 +8,21 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // PostService handles post-related business logic
 type PostService struct {
-	postRepo     *repositories.PostRepository
-	activityRepo *repositories.ActivityRepository
-	followRepo   *repositories.FollowRepository
+	postRepo     *repository.PostRepository
+	activityRepo *repository.ActivityRepository
+	followRepo   *repository.FollowRepository
 }
 
 // NewPostService creates a new PostService
 func NewPostService(
-	postRepo *repositories.PostRepository,
-	activityRepo *repositories.ActivityRepository,
-	followRepo *repositories.FollowRepository,
+	postRepo *repository.PostRepository,
+	activityRepo *repository.ActivityRepository,
+	followRepo *repository.FollowRepository,
 ) *PostService {
 	return &PostService{
 		postRepo:     postRepo,

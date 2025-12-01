@@ -10,7 +10,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
@@ -39,7 +39,7 @@ func NewBadgeController(db *gorm.DB) *BadgeController {
 	log.Println("✓ Notification service initialized")
 
 	// Initialize badge repository and service
-	badgeRepo := repositories.NewBadgeRepository(db)
+	badgeRepo := repository.NewBadgeRepository(db)
 	badgeService := service.NewBadgeService(db, nil, badgeRepo, badgeRepo, redisClient, notificationService)
 
 	log.Println("✓ Badge service initialized with Redis caching and notifications")

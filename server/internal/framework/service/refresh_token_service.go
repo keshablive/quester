@@ -12,7 +12,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // RefreshTokenService handles token refresh operations
@@ -120,8 +120,8 @@ func (s *RefreshTokenService) GetActiveTokens(ctx context.Context, userID string
 // This matches the pattern used by Login for easy controller integration
 func RefreshAccessTokenFunc(ctx context.Context, refreshTokenString string) (*RefreshResponse, error) {
 	// Initialize repositories
-	userRepo := repositories.NewUserRepository(database.DB)
-	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
+	userRepo := repository.NewUserRepository(database.DB)
+	tokenRepo := repository.NewRefreshTokenRepository(database.DB)
 
 	// Initialize blacklist service with global cache
 	blacklistService := NewBlacklistService(cache.Client)

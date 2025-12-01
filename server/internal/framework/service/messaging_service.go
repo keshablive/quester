@@ -10,25 +10,25 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // MessagingService handles messaging business logic
 type MessagingService struct {
-	messageRepo     *repositories.MessageRepository
-	groupRepo       *repositories.GroupRepository
-	groupMemberRepo *repositories.GroupMemberRepository
-	userRepo        *repositories.UserRepository
+	messageRepo     *repository.MessageRepository
+	groupRepo       *repository.GroupRepository
+	groupMemberRepo *repository.GroupMemberRepository
+	userRepo        *repository.UserRepository
 	db              *gorm.DB
 }
 
 // NewMessagingService creates a new messaging service
 func NewMessagingService(db *gorm.DB) *MessagingService {
 	return &MessagingService{
-		messageRepo:     repositories.NewMessageRepository(db),
-		groupRepo:       repositories.NewGroupRepository(db),
-		groupMemberRepo: repositories.NewGroupMemberRepository(db),
-		userRepo:        repositories.NewUserRepository(db),
+		messageRepo:     repository.NewMessageRepository(db),
+		groupRepo:       repository.NewGroupRepository(db),
+		groupMemberRepo: repository.NewGroupMemberRepository(db),
+		userRepo:        repository.NewUserRepository(db),
 		db:              db,
 	}
 }

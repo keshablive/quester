@@ -15,7 +15,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/config"
 	fwconfig "github.com/keshablive/quester/internal/framework/config" // T223: For FeatureFlags
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
@@ -35,15 +35,15 @@ var (
 type TwoFactorService struct {
 	kmsService        *KMSService
 	cfg               *fwconfig.Config
-	twoFactorRepo     *repositories.TwoFactorRepository
-	backupCodeRepo    *repositories.BackupCodeRepository
-	trustedDeviceRepo *repositories.TrustedDeviceRepository
-	authAuditLogRepo  *repositories.AuthAuditLogRepository
+	twoFactorRepo     *repository.TwoFactorRepository
+	backupCodeRepo    *repository.BackupCodeRepository
+	trustedDeviceRepo *repository.TrustedDeviceRepository
+	authAuditLogRepo  *repository.AuthAuditLogRepository
 }
 
 // NewTwoFactorService creates a new TwoFactorService
 // T223: Now accepts Config to use FeatureFlags for KMS encryption enablement
-func NewTwoFactorService(cfg *fwconfig.Config, twoFactorRepo *repositories.TwoFactorRepository, backupCodeRepo *repositories.BackupCodeRepository, trustedDeviceRepo *repositories.TrustedDeviceRepository, authAuditLogRepo *repositories.AuthAuditLogRepository, encKeyRepo *repositories.EncryptionKeyRepository) *TwoFactorService {
+func NewTwoFactorService(cfg *fwconfig.Config, twoFactorRepo *repository.TwoFactorRepository, backupCodeRepo *repository.BackupCodeRepository, trustedDeviceRepo *repository.TrustedDeviceRepository, authAuditLogRepo *repository.AuthAuditLogRepository, encKeyRepo *repository.EncryptionKeyRepository) *TwoFactorService {
 	// Initialize KMS service
 	kmsConfig, err := config.LoadKMSConfig()
 	if err != nil {

@@ -12,7 +12,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/payment"
 	"github.com/keshablive/quester/internal/framework/websocket"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
@@ -76,31 +76,31 @@ func Setup(app *fiber.App, cont *container.Container) {
 	// will be implemented in Phase 5 when all service dependencies are containerized.
 
 	// Initialize Repositories
-	transactionRepo := repositories.NewTransactionRepository(db)
-	marketplaceRepo := repositories.NewMarketplaceListingRepository(db)
-	userRepo := repositories.NewUserRepository(db)
-	notificationRepo := repositories.NewNotificationRepository(db)
-	notificationSettingsRepo := repositories.NewNotificationSettingsRepository(db)
-	fcmTokenRepo := repositories.NewFCMTokenRepository(db)
-	badgeRepo := repositories.NewBadgeRepository(db)
-	likeRepo := repositories.NewLikeRepository(db)
-	commentRepo := repositories.NewCommentRepository(db)
-	postRepo := repositories.NewPostRepository(db)
-	activityRepo := repositories.NewActivityRepository(db)
-	followRepo := repositories.NewFollowRepository(db)
-	analyticsRepo := repositories.NewAnalyticsRepository(db)
+	transactionRepo := repository.NewTransactionRepository(db)
+	marketplaceRepo := repository.NewMarketplaceListingRepository(db)
+	userRepo := repository.NewUserRepository(db)
+	notificationRepo := repository.NewNotificationRepository(db)
+	notificationSettingsRepo := repository.NewNotificationSettingsRepository(db)
+	fcmTokenRepo := repository.NewFCMTokenRepository(db)
+	badgeRepo := repository.NewBadgeRepository(db)
+	likeRepo := repository.NewLikeRepository(db)
+	commentRepo := repository.NewCommentRepository(db)
+	postRepo := repository.NewPostRepository(db)
+	activityRepo := repository.NewActivityRepository(db)
+	followRepo := repository.NewFollowRepository(db)
+	analyticsRepo := repository.NewAnalyticsRepository(db)
 
 	// Initialize Services
 	notificationService := service.NewNotificationService(db)
 	ocrService := service.NewOCRService()
 	openAIService := service.NewOpenAIService()
-	propertyRepo := repositories.NewPropertyRepository(db)
+	propertyRepo := repository.NewPropertyRepository(db)
 	propertyService := service.NewPropertyService(propertyRepo, db, ocrService, openAIService)
 	classifiedAdService := service.NewClassifiedAdService(db)
 	videoStreamingService := service.NewVideoStreamingService(db, nil) // Redis TBD
 	certificateService := service.NewCertificateService(db)
 	badgeService := service.NewBadgeService(db, nil, badgeRepo, badgeRepo, nil, notificationService) // logger=nil, Redis=nil (TBD)
-	questRepo := repositories.NewQuestRepository(db)
+	questRepo := repository.NewQuestRepository(db)
 	// 007-api-performance-caching T036: Inject CacheService into QuestService
 	var questService *service.QuestService
 	if cacheService != nil {
@@ -110,15 +110,15 @@ func Setup(app *fiber.App, cont *container.Container) {
 	}
 
 	// Two-Factor Service with repositories
-	twoFactorRepo := repositories.NewTwoFactorRepository(db)
-	backupCodeRepo := repositories.NewBackupCodeRepository(db)
-	trustedDeviceRepo := repositories.NewTrustedDeviceRepository(db)
-	authAuditLogRepo := repositories.NewAuthAuditLogRepository(db)
-	encKeyRepo := repositories.NewEncryptionKeyRepository(db)
+	twoFactorRepo := repository.NewTwoFactorRepository(db)
+	backupCodeRepo := repository.NewBackupCodeRepository(db)
+	trustedDeviceRepo := repository.NewTrustedDeviceRepository(db)
+	authAuditLogRepo := repository.NewAuthAuditLogRepository(db)
+	encKeyRepo := repository.NewEncryptionKeyRepository(db)
 	twoFactorService := service.NewTwoFactorService(cfg, twoFactorRepo, backupCodeRepo, trustedDeviceRepo, authAuditLogRepo, encKeyRepo)
 
 	// Auth Service and Controller
-	refreshTokenRepo := repositories.NewRefreshTokenRepository(db)
+	refreshTokenRepo := repository.NewRefreshTokenRepository(db)
 	blacklistService := service.NewBlacklistService(cache.Client)
 	authService := service.NewAuthService(userRepo, refreshTokenRepo, blacklistService)
 
@@ -192,9 +192,9 @@ func Setup(app *fiber.App, cont *container.Container) {
 
 	// Social Gamification Service (005-social-feed-gamification)
 	// Must be after redisClient initialization
-	socialXPRepo := repositories.NewSocialXPRepository(db)
-	dailyChallengeRepo := repositories.NewDailyChallengeRepository(db)
-	contentMilestoneRepo := repositories.NewContentMilestoneRepository(db)
+	socialXPRepo := repository.NewSocialXPRepository(db)
+	dailyChallengeRepo := repository.NewDailyChallengeRepository(db)
+	contentMilestoneRepo := repository.NewContentMilestoneRepository(db)
 
 	// Initialize queue service for async XP processing (FR-013)
 	var queueService *service.QueueService

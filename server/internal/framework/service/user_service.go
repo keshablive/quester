@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ import (
 
 // UserService handles user-related business logic
 type UserService struct {
-	userRepo           *repositories.UserRepository
+	userRepo           *repository.UserRepository
 	leaderboardService *LeaderboardService
 	db                 *gorm.DB
 	cacheService       *CacheService // 007-api-performance-caching T022
@@ -24,7 +24,7 @@ type UserService struct {
 
 // NewUserService creates a new user service
 func NewUserService(
-	userRepo *repositories.UserRepository,
+	userRepo *repository.UserRepository,
 	leaderboardService *LeaderboardService,
 	db *gorm.DB,
 ) *UserService {
@@ -37,7 +37,7 @@ func NewUserService(
 
 // NewUserServiceWithCache creates a new user service with caching support (007-api-performance-caching T022)
 func NewUserServiceWithCache(
-	userRepo *repositories.UserRepository,
+	userRepo *repository.UserRepository,
 	leaderboardService *LeaderboardService,
 	db *gorm.DB,
 	cacheService *CacheService,

@@ -11,17 +11,17 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // DashboardService handles dashboard business logic
 type DashboardService struct {
-	repo          *repositories.DashboardRepository
-	analyticsRepo *repositories.AnalyticsRepository
+	repo          *repository.DashboardRepository
+	analyticsRepo *repository.AnalyticsRepository
 }
 
 // NewDashboardService creates a new dashboard service
-func NewDashboardService(repo *repositories.DashboardRepository, analyticsRepo *repositories.AnalyticsRepository) *DashboardService {
+func NewDashboardService(repo *repository.DashboardRepository, analyticsRepo *repository.AnalyticsRepository) *DashboardService {
 	return &DashboardService{
 		repo:          repo,
 		analyticsRepo: analyticsRepo,

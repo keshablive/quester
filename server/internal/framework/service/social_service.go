@@ -10,29 +10,29 @@ import (
 
 	"github.com/keshablive/quester/internal/framework/utils"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // SocialService handles social interaction business logic (likes, comments, shares, follows)
 type SocialService struct {
-	likeRepo     *repositories.LikeRepository
-	commentRepo  *repositories.CommentRepository
-	postRepo     *repositories.PostRepository
-	activityRepo *repositories.ActivityRepository
-	userRepo     *repositories.UserRepository
-	followRepo   *repositories.FollowRepository
+	likeRepo     *repository.LikeRepository
+	commentRepo  *repository.CommentRepository
+	postRepo     *repository.PostRepository
+	activityRepo *repository.ActivityRepository
+	userRepo     *repository.UserRepository
+	followRepo   *repository.FollowRepository
 	notifService *NotificationService
 	gamifService *SocialGamificationService // Social gamification for XP awards (005-social-feed-gamification)
 }
 
 // NewSocialService creates a new SocialService
 func NewSocialService(
-	likeRepo *repositories.LikeRepository,
-	commentRepo *repositories.CommentRepository,
-	postRepo *repositories.PostRepository,
-	activityRepo *repositories.ActivityRepository,
-	userRepo *repositories.UserRepository,
-	followRepo *repositories.FollowRepository,
+	likeRepo *repository.LikeRepository,
+	commentRepo *repository.CommentRepository,
+	postRepo *repository.PostRepository,
+	activityRepo *repository.ActivityRepository,
+	userRepo *repository.UserRepository,
+	followRepo *repository.FollowRepository,
 	notifService *NotificationService,
 ) *SocialService {
 	return &SocialService{

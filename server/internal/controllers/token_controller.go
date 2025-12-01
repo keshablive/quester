@@ -9,7 +9,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/framework/service"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // ViewActiveTokens handles GET /api/v1/auth/tokens (T086, FR-032)
@@ -42,8 +42,8 @@ func ViewActiveTokens(c *fiber.Ctx) error {
 	}
 
 	// Initialize service
-	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
-	userRepo := repositories.NewUserRepository(database.DB)
+	tokenRepo := repository.NewRefreshTokenRepository(database.DB)
+	userRepo := repository.NewUserRepository(database.DB)
 	blacklistService := service.NewBlacklistService(cache.Client)
 	tokenService := service.NewRefreshTokenService(tokenRepo, userRepo, blacklistService)
 

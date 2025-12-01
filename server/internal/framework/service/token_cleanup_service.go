@@ -7,17 +7,17 @@ import (
 	"time"
 
 	"github.com/keshablive/quester/internal/framework/metrics"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"gorm.io/gorm"
 )
 
 // TokenCleanupService handles periodic cleanup of expired refresh tokens
 type TokenCleanupService struct {
-	refreshTokenRepo *repositories.RefreshTokenRepository
+	refreshTokenRepo *repository.RefreshTokenRepository
 }
 
 // NewTokenCleanupService creates a new token cleanup service
-func NewTokenCleanupService(refreshTokenRepo *repositories.RefreshTokenRepository) *TokenCleanupService {
+func NewTokenCleanupService(refreshTokenRepo *repository.RefreshTokenRepository) *TokenCleanupService {
 	return &TokenCleanupService{
 		refreshTokenRepo: refreshTokenRepo,
 	}
@@ -77,7 +77,7 @@ func (s *TokenCleanupService) runCleanup(ctx context.Context) {
 
 // Convenience function to create and start cleanup scheduler
 func StartTokenCleanup(ctx context.Context, db *gorm.DB, interval time.Duration) {
-	refreshTokenRepo := repositories.NewRefreshTokenRepository(db)
+	refreshTokenRepo := repository.NewRefreshTokenRepository(db)
 	service := NewTokenCleanupService(refreshTokenRepo)
 	service.StartCleanupScheduler(ctx, interval)
 }

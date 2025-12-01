@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/auth"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/keshablive/quester/internal/framework/service"
 )
 
@@ -17,12 +17,12 @@ import (
 type TwoFactorController struct {
 	service         *service.TwoFactorService
 	passwordService *auth.PasswordService
-	userRepo        *repositories.UserRepository
+	userRepo        *repository.UserRepository
 }
 
 // NewTwoFactorController creates a new two-factor controller
 // T106: Now accepts UserRepository to eliminate global database access
-func NewTwoFactorController(service *service.TwoFactorService, userRepo *repositories.UserRepository) *TwoFactorController {
+func NewTwoFactorController(service *service.TwoFactorService, userRepo *repository.UserRepository) *TwoFactorController {
 	return &TwoFactorController{
 		service:         service,
 		passwordService: auth.NewPasswordService(),

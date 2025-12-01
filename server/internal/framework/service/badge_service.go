@@ -10,7 +10,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/interfaces"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"gorm.io/gorm"
 )
 
@@ -18,13 +18,13 @@ import (
 type BadgeService struct {
 	BaseService
 	badgeRepo           interfaces.BadgeRepository
-	badgeRepoImpl       *repositories.BadgeRepository // Retained for Phase 5 - complex queries (FindEligible, UserBadge operations)
+	badgeRepoImpl       *repository.BadgeRepository // Retained for Phase 5 - complex queries (FindEligible, UserBadge operations)
 	notificationService *NotificationService
 }
 
 // NewBadgeService creates a new badge service
 // Note: badgeRepoImpl parameter retained for Phase 5 complex queries - will be removed when QueryBuilder pattern implemented
-func NewBadgeService(db *gorm.DB, logger *slog.Logger, badgeRepo interfaces.BadgeRepository, badgeRepoImpl *repositories.BadgeRepository, redisClient *cache.PooledRedisClient, notificationService *NotificationService) *BadgeService {
+func NewBadgeService(db *gorm.DB, logger *slog.Logger, badgeRepo interfaces.BadgeRepository, badgeRepoImpl *repository.BadgeRepository, redisClient *cache.PooledRedisClient, notificationService *NotificationService) *BadgeService {
 	return &BadgeService{
 		BaseService:         NewBaseService(db, logger, redisClient, nil),
 		badgeRepo:           badgeRepo,
@@ -35,7 +35,7 @@ func NewBadgeService(db *gorm.DB, logger *slog.Logger, badgeRepo interfaces.Badg
 
 // CheckEligibility checks if user is eligible for any badges and awards them
 // Called after significant user actions (quest completion, XP gain, etc.)
-func (s *BadgeService) CheckEligibility(ctx context.Context, tenantID, userID uuid.UUID, userStats repositories.UserStats) error {
+func (s *BadgeService) CheckEligibility(ctx context.Context, tenantID, userID uuid.UUID, userStats repository.UserStats) error {
 	// Check Redis cache first (15min TTL)
 	cacheKey := fmt.Sprintf("badge:eligible:%s", userID.String())
 	cached, err := s.GetCache().Get(ctx, cacheKey)
@@ -250,7 +250,7 @@ func (s *BadgeService) RevokeBadge(ctx context.Context, tenantID, userBadgeID, a
 }
 
 // GetBadges retrieves badges with filtering
-func (s *BadgeService) GetBadges(ctx context.Context, tenantID uuid.UUID, filters repositories.BadgeFilters) ([]models.Badge, int64, error) {
+func (s *BadgeService) GetBadges(ctx context.Context, tenantID uuid.UUID, filters repository.BadgeFilters) ([]models.Badge, int64, error) {
 	return s.badgeRepoImpl.FindAllPaginated(ctx, tenantID, filters)
 }
 

@@ -10,7 +10,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/interfaces"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -22,8 +22,8 @@ import (
 type LeaderboardService struct {
 	BaseService
 	leaderboardRepo     interfaces.LeaderboardRepository
-	leaderboardRepoImpl *repositories.LeaderboardRepository // For custom methods like BulkUpsert
-	userRepo            *repositories.UserRepository
+	leaderboardRepoImpl *repository.LeaderboardRepository // For custom methods like BulkUpsert
+	userRepo            *repository.UserRepository
 }
 
 // NewLeaderboardService creates a new leaderboard service
@@ -32,8 +32,8 @@ func NewLeaderboardService(
 	logger *slog.Logger,
 	redisClient *cache.PooledRedisClient,
 	leaderboardRepo interfaces.LeaderboardRepository,
-	leaderboardRepoImpl *repositories.LeaderboardRepository,
-	userRepo *repositories.UserRepository,
+	leaderboardRepoImpl *repository.LeaderboardRepository,
+	userRepo *repository.UserRepository,
 ) *LeaderboardService {
 	return &LeaderboardService{
 		BaseService:         NewBaseService(db, logger, redisClient, nil),

@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // LoginService handles user authentication
@@ -137,8 +137,8 @@ func (s *LoginService) updateLoginStreak(user *models.User) {
 // This matches the pattern used by Signup for easy controller integration
 func LoginFunc(ctx context.Context, tenantID uuid.UUID, email, password string) (*LoginResponse, error) {
 	// Initialize repositories
-	userRepo := repositories.NewUserRepository(database.DB)
-	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
+	userRepo := repository.NewUserRepository(database.DB)
+	tokenRepo := repository.NewRefreshTokenRepository(database.DB)
 
 	// Create login service
 	loginService := NewLoginService(userRepo, tokenRepo)

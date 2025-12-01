@@ -11,7 +11,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
@@ -35,7 +35,7 @@ func NewAchievementController(db *gorm.DB) *AchievementController {
 	redisConfig.URL = "redis://localhost:6379/0"
 	redisClient, err := cache.NewPooledRedisClient(redisConfig)
 	if err == nil {
-		badgeRepo := repositories.NewBadgeRepository(db)
+		badgeRepo := repository.NewBadgeRepository(db)
 		// Create a notification service for badge awards
 		notificationService := service.NewNotificationService(db)
 		badgeService := service.NewBadgeService(db, nil, badgeRepo, badgeRepo, redisClient, notificationService)

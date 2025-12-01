@@ -61,73 +61,73 @@
 
 **Independent Test**: `go build ./...` passes; all services importable from `internal/framework/service`
 
-- [ ] T012 Create git tag `pre-phase-3`
-- [ ] T013 [P] [US2] Move `server/internal/services/achievement_service.go` → `server/internal/framework/service/`
-- [ ] T014 [P] [US2] Move `server/internal/services/analytics_service.go` → `server/internal/framework/service/`
-- [ ] T015 [P] [US2] Move `server/internal/services/assessment_service.go` → `server/internal/framework/service/`
-- [ ] T016 [P] [US2] Move `server/internal/services/audit_log_service.go` → `server/internal/framework/service/`
-- [ ] T017 [P] [US2] Move `server/internal/services/auth_service.go` → `server/internal/framework/service/`
-- [ ] T018 [P] [US2] Move `server/internal/services/auth_types.go` → `server/internal/framework/service/`
-- [ ] T019 [P] [US2] Move `server/internal/services/badge_service.go` → `server/internal/framework/service/`
-- [ ] T020 [P] [US2] Move `server/internal/services/bandwidth_estimator.go` → `server/internal/framework/service/`
-- [ ] T021 [P] [US2] Move `server/internal/services/blacklist_service.go` → `server/internal/framework/service/`
-- [ ] T022 [P] [US2] Move `server/internal/services/cache_service.go` → `server/internal/framework/service/`
-- [ ] T023 [P] [US2] Move `server/internal/services/certificate_generator.go` → `server/internal/framework/service/`
-- [ ] T024 [P] [US2] Move `server/internal/services/certificate_service.go` → `server/internal/framework/service/`
-- [ ] T025 [P] [US2] Move `server/internal/services/classified_ad_service.go` → `server/internal/framework/service/`
-- [ ] T026 [P] [US2] Move `server/internal/services/course_service.go` → `server/internal/framework/service/`
-- [ ] T027 [P] [US2] Move `server/internal/services/cron_service.go` → `server/internal/framework/service/`
-- [ ] T028 [P] [US2] Move `server/internal/services/dashboard_service.go` → `server/internal/framework/service/`
-- [ ] T029 [P] [US2] Move `server/internal/services/dvr_service.go` → `server/internal/framework/service/`
-- [ ] T030 [P] [US2] Move `server/internal/services/enrollment_service.go` → `server/internal/framework/service/`
-- [ ] T031 [P] [US2] Move `server/internal/services/fcm_service.go` → `server/internal/framework/service/`
-- [ ] T032 [P] [US2] Move `server/internal/services/ffmpeg_service.go` → `server/internal/framework/service/`
-- [ ] T033 [P] [US2] Move `server/internal/services/follow_service.go` → `server/internal/framework/service/`
-- [ ] T034 [P] [US2] Move `server/internal/services/gamification_service.go` → `server/internal/framework/service/`
-- [ ] T035 [P] [US2] Move `server/internal/services/interaction_service.go` → `server/internal/framework/service/`
-- [ ] T036 [P] [US2] Move `server/internal/services/jwt_service.go` → `server/internal/framework/service/`
-- [ ] T037 [P] [US2] Move `server/internal/services/kms_client.go` → `server/internal/framework/service/`
-- [ ] T038 [P] [US2] Move `server/internal/services/kms_service.go` → `server/internal/framework/service/`
-- [ ] T039 [P] [US2] Move `server/internal/services/leaderboard_service.go` → `server/internal/framework/service/`
-- [ ] T040 [P] [US2] Move `server/internal/services/learning_gamification_service.go` → `server/internal/framework/service/`
-- [ ] T041 [P] [US2] Move `server/internal/services/lesson_service.go` → `server/internal/framework/service/`
-- [ ] T042 [P] [US2] Move `server/internal/services/login_service.go` → `server/internal/framework/service/`
-- [ ] T043 [P] [US2] Move `server/internal/services/logout_service.go` → `server/internal/framework/service/`
-- [ ] T044 [P] [US2] Move `server/internal/services/marketplace_service.go` → `server/internal/framework/service/`
-- [ ] T045 [P] [US2] Move `server/internal/services/messaging_service.go` → `server/internal/framework/service/`
-- [ ] T046 [P] [US2] Move `server/internal/services/moderation_client.go` → `server/internal/framework/service/`
-- [ ] T047 [P] [US2] Move `server/internal/services/moderation_service.go` → `server/internal/framework/service/`
-- [ ] T048 [P] [US2] Move `server/internal/services/notification_batcher.go` → `server/internal/framework/service/`
-- [ ] T049 [P] [US2] Move `server/internal/services/notification_service.go` → `server/internal/framework/service/`
-- [ ] T050 [P] [US2] Move `server/internal/services/ocr_service.go` → `server/internal/framework/service/`
-- [ ] T051 [P] [US2] Move `server/internal/services/openai_service.go` → `server/internal/framework/service/`
-- [ ] T052 [P] [US2] Move `server/internal/services/password_service.go` → `server/internal/framework/service/`
-- [ ] T053 [P] [US2] Move `server/internal/services/post_service.go` → `server/internal/framework/service/`
-- [ ] T054 [P] [US2] Move `server/internal/services/property_service.go` → `server/internal/framework/service/`
-- [ ] T055 [P] [US2] Move `server/internal/services/quest_progress_service.go` → `server/internal/framework/service/`
-- [ ] T056 [P] [US2] Move `server/internal/services/quest_service.go` → `server/internal/framework/service/`
-- [ ] T057 [P] [US2] Move `server/internal/services/queue_service.go` → `server/internal/framework/service/`
-- [ ] T058 [P] [US2] Move `server/internal/services/refresh_token_service.go` → `server/internal/framework/service/`
-- [ ] T059 [P] [US2] Move `server/internal/services/report_service.go` → `server/internal/framework/service/`
-- [ ] T060 [P] [US2] Move `server/internal/services/retry_service.go` → `server/internal/framework/service/`
-- [ ] T061 [P] [US2] Move `server/internal/services/rtmp_service.go` → `server/internal/framework/service/`
-- [ ] T062 [P] [US2] Move `server/internal/services/search_service.go` → `server/internal/framework/service/`
-- [ ] T063 [P] [US2] Move `server/internal/services/signup_service.go` → `server/internal/framework/service/`
-- [ ] T064 [P] [US2] Move `server/internal/services/social_gamification_service.go` → `server/internal/framework/service/`
-- [ ] T065 [P] [US2] Move `server/internal/services/social_service.go` → `server/internal/framework/service/`
-- [ ] T066 [P] [US2] Move `server/internal/services/token_cleanup_service.go` → `server/internal/framework/service/`
-- [ ] T067 [P] [US2] Move `server/internal/services/transaction_service.go` → `server/internal/framework/service/`
-- [ ] T068 [P] [US2] Move `server/internal/services/transcoding_service.go` → `server/internal/framework/service/`
-- [ ] T069 [P] [US2] Move `server/internal/services/two_factor_service.go` → `server/internal/framework/service/`
-- [ ] T070 [P] [US2] Move `server/internal/services/user_service.go` → `server/internal/framework/service/`
-- [ ] T071 [P] [US2] Move `server/internal/services/video_stream_service.go` → `server/internal/framework/service/`
-- [ ] T072 [US2] [US7] Update all imports from `internal/services` → `internal/framework/service` across codebase
-- [ ] T073 [US2] Create `server/internal/framework/service/index.go` with package exports (facade pattern per Q5)
-- [ ] T074 [US2] [US7] Run `go build ./...` in `server/` - verify zero errors
-- [ ] T074a [US2] Verify services embed `BaseService`: `grep -l "BaseService" server/internal/framework/service/*.go | wc -l` (FR-004)
-- [ ] T074b [US2] Spot-check 5 services for `BaseService` field: `achievement_service.go`, `auth_service.go`, `user_service.go`, `quest_service.go`, `notification_service.go`
-- [ ] T075 [US2] Delete empty `server/internal/services/` directory
-- [ ] T076 Create git tag `post-phase-3-services`
+- [X] T012 Create git tag `pre-phase-3`
+- [X] T013 [P] [US2] Move `server/internal/services/achievement_service.go` → `server/internal/framework/service/`
+- [X] T014 [P] [US2] Move `server/internal/services/analytics_service.go` → `server/internal/framework/service/`
+- [X] T015 [P] [US2] Move `server/internal/services/assessment_service.go` → `server/internal/framework/service/`
+- [X] T016 [P] [US2] Move `server/internal/services/audit_log_service.go` → `server/internal/framework/service/`
+- [X] T017 [P] [US2] Move `server/internal/services/auth_service.go` → `server/internal/framework/service/`
+- [X] T018 [P] [US2] Move `server/internal/services/auth_types.go` → `server/internal/framework/service/`
+- [X] T019 [P] [US2] Move `server/internal/services/badge_service.go` → `server/internal/framework/service/`
+- [X] T020 [P] [US2] Move `server/internal/services/bandwidth_estimator.go` → `server/internal/framework/service/`
+- [X] T021 [P] [US2] Move `server/internal/services/blacklist_service.go` → `server/internal/framework/service/`
+- [X] T022 [P] [US2] Move `server/internal/services/cache_service.go` → `server/internal/framework/service/`
+- [X] T023 [P] [US2] Move `server/internal/services/certificate_generator.go` → `server/internal/framework/service/`
+- [X] T024 [P] [US2] Move `server/internal/services/certificate_service.go` → `server/internal/framework/service/`
+- [X] T025 [P] [US2] Move `server/internal/services/classified_ad_service.go` → `server/internal/framework/service/`
+- [X] T026 [P] [US2] Move `server/internal/services/course_service.go` → `server/internal/framework/service/`
+- [X] T027 [P] [US2] Move `server/internal/services/cron_service.go` → `server/internal/framework/service/`
+- [X] T028 [P] [US2] Move `server/internal/services/dashboard_service.go` → `server/internal/framework/service/`
+- [X] T029 [P] [US2] Move `server/internal/services/dvr_service.go` → `server/internal/framework/service/`
+- [X] T030 [P] [US2] Move `server/internal/services/enrollment_service.go` → `server/internal/framework/service/`
+- [X] T031 [P] [US2] Move `server/internal/services/fcm_service.go` → `server/internal/framework/service/`
+- [X] T032 [P] [US2] Move `server/internal/services/ffmpeg_service.go` → `server/internal/framework/service/`
+- [X] T033 [P] [US2] Move `server/internal/services/follow_service.go` → `server/internal/framework/service/`
+- [X] T034 [P] [US2] Move `server/internal/services/gamification_service.go` → `server/internal/framework/service/`
+- [X] T035 [P] [US2] Move `server/internal/services/interaction_service.go` → `server/internal/framework/service/`
+- [X] T036 [P] [US2] Move `server/internal/services/jwt_service.go` → `server/internal/framework/service/`
+- [X] T037 [P] [US2] Move `server/internal/services/kms_client.go` → `server/internal/framework/service/`
+- [X] T038 [P] [US2] Move `server/internal/services/kms_service.go` → `server/internal/framework/service/`
+- [X] T039 [P] [US2] Move `server/internal/services/leaderboard_service.go` → `server/internal/framework/service/`
+- [X] T040 [P] [US2] Move `server/internal/services/learning_gamification_service.go` → `server/internal/framework/service/`
+- [X] T041 [P] [US2] Move `server/internal/services/lesson_service.go` → `server/internal/framework/service/`
+- [X] T042 [P] [US2] Move `server/internal/services/login_service.go` → `server/internal/framework/service/`
+- [X] T043 [P] [US2] Move `server/internal/services/logout_service.go` → `server/internal/framework/service/`
+- [X] T044 [P] [US2] Move `server/internal/services/marketplace_service.go` → `server/internal/framework/service/`
+- [X] T045 [P] [US2] Move `server/internal/services/messaging_service.go` → `server/internal/framework/service/`
+- [X] T046 [P] [US2] Move `server/internal/services/moderation_client.go` → `server/internal/framework/service/`
+- [X] T047 [P] [US2] Move `server/internal/services/moderation_service.go` → `server/internal/framework/service/`
+- [X] T048 [P] [US2] Move `server/internal/services/notification_batcher.go` → `server/internal/framework/service/`
+- [X] T049 [P] [US2] Move `server/internal/services/notification_service.go` → `server/internal/framework/service/`
+- [X] T050 [P] [US2] Move `server/internal/services/ocr_service.go` → `server/internal/framework/service/`
+- [X] T051 [P] [US2] Move `server/internal/services/openai_service.go` → `server/internal/framework/service/`
+- [X] T052 [P] [US2] Move `server/internal/services/password_service.go` → `server/internal/framework/service/`
+- [X] T053 [P] [US2] Move `server/internal/services/post_service.go` → `server/internal/framework/service/`
+- [X] T054 [P] [US2] Move `server/internal/services/property_service.go` → `server/internal/framework/service/`
+- [X] T055 [P] [US2] Move `server/internal/services/quest_progress_service.go` → `server/internal/framework/service/`
+- [X] T056 [P] [US2] Move `server/internal/services/quest_service.go` → `server/internal/framework/service/`
+- [X] T057 [P] [US2] Move `server/internal/services/queue_service.go` → `server/internal/framework/service/`
+- [X] T058 [P] [US2] Move `server/internal/services/refresh_token_service.go` → `server/internal/framework/service/`
+- [X] T059 [P] [US2] Move `server/internal/services/report_service.go` → `server/internal/framework/service/`
+- [X] T060 [P] [US2] Move `server/internal/services/retry_service.go` → `server/internal/framework/service/`
+- [X] T061 [P] [US2] Move `server/internal/services/rtmp_service.go` → `server/internal/framework/service/`
+- [X] T062 [P] [US2] Move `server/internal/services/search_service.go` → `server/internal/framework/service/`
+- [X] T063 [P] [US2] Move `server/internal/services/signup_service.go` → `server/internal/framework/service/`
+- [X] T064 [P] [US2] Move `server/internal/services/social_gamification_service.go` → `server/internal/framework/service/`
+- [X] T065 [P] [US2] Move `server/internal/services/social_service.go` → `server/internal/framework/service/`
+- [X] T066 [P] [US2] Move `server/internal/services/token_cleanup_service.go` → `server/internal/framework/service/`
+- [X] T067 [P] [US2] Move `server/internal/services/transaction_service.go` → `server/internal/framework/service/`
+- [X] T068 [P] [US2] Move `server/internal/services/transcoding_service.go` → `server/internal/framework/service/`
+- [X] T069 [P] [US2] Move `server/internal/services/two_factor_service.go` → `server/internal/framework/service/`
+- [X] T070 [P] [US2] Move `server/internal/services/user_service.go` → `server/internal/framework/service/`
+- [X] T071 [P] [US2] Move `server/internal/services/video_stream_service.go` → `server/internal/framework/service/`
+- [X] T072 [US2] [US7] Update all imports from `internal/services` → `internal/framework/service` across codebase
+- [X] T073 [US2] Create `server/internal/framework/service/index.go` with package exports (facade pattern per Q5)
+- [X] T074 [US2] [US7] Run `go build ./...` in `server/` - verify zero errors
+- [X] T074a [US2] Verify services embed `BaseService`: `grep -l "BaseService" server/internal/framework/service/*.go | wc -l` (FR-004)
+- [X] T074b [US2] Spot-check 5 services for `BaseService` field: `achievement_service.go`, `auth_service.go`, `user_service.go`, `quest_service.go`, `notification_service.go`
+- [X] T075 [US2] Delete empty `server/internal/services/` directory
+- [X] T076 Create git tag `post-phase-3-services`
 
 **Checkpoint**: All services in framework. Build passes.
 

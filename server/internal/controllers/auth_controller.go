@@ -12,7 +12,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/repositories"
+	"github.com/keshablive/quester/internal/framework/repository"
 )
 
 // AuthController handles authentication endpoints
@@ -672,7 +672,7 @@ func (ctrl *AuthController) ViewActiveTokens(c *fiber.Ctx) error {
 
 	// Initialize service
 	// Note: In a real app, use DI. Here we instantiate for consolidation.
-	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
+	tokenRepo := repository.NewRefreshTokenRepository(database.DB)
 	// We can use AuthService since it has the token repo
 	// But AuthService doesn't expose GetActiveTokens directly in the facade I created?
 	// Wait, I added GetActiveTokens to RefreshTokenRepository interface in AuthService,
