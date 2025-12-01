@@ -256,6 +256,12 @@ A clean architecture where:
 - Q: Execution order - server first, client first, parallel, or by layer? → A: Server first, then client (establishes patterns before applying to client)
 - Q: Service interface scope - all at once or phased? → A: Critical path first (~15 core services: auth, user, payment, courses), defer remaining to subsequent phases
 - Q: Rollback strategy if issues arise mid-refactor? → A: Git checkpoints with atomic commits per logical unit; each directory consolidation = 1 commit for easy revert
+- Q: How to handle framework code that currently imports app code? → A: Extract interfaces in framework, move implementations to app layer (keeps framework pure)
+- Q: Client hooks organization - by type or by domain? → A: By type (hooks/queries/, hooks/mutations/, hooks/utils/) - aligns with TanStack Query patterns
+- Q: Barrel file strategy for client? → A: Hierarchical - each folder has index.ts, core/index.ts re-exports (enables tree-shaking + granular imports)
+- Q: Import update tooling approach? → A: IDE refactoring (VS Code "Move Symbol") + verification scripts to catch misses
+- Q: Validation checkpoint granularity? → A: After each directory move (e.g., after middleware consolidation, run go build; catches issues early)
+- Q: Rule for shared vs features components? → A: Usage count - used by ≥2 features → shared/, used by 1 feature → features/
 
 ---
 
