@@ -197,6 +197,8 @@ A clean architecture where:
   - `core/hooks/` - All React hooks (queries, mutations, utilities)
   - `core/auth/` - Authentication (unchanged)
   - `core/query/` - TanStack Query infrastructure (unchanged)
+  - `core/routes/` - Route utilities (unchanged)
+  - `core/config/` - App configuration (unchanged)
   - `core/utils/` - Utility functions
   - `core/types/` - Shared TypeScript types
   - `core/constants/` - Application constants
@@ -205,6 +207,7 @@ A clean architecture where:
   - `components/shared/` - Reusable business components
   - `components/features/` - Feature-specific components (renamed from pages)
   - `components/layout/` - Layout components (unchanged)
+  - `components/auth/` - Auth-specific components (unchanged)
 - **FR-012**: Client MUST use `@/` alias for all imports outside the same directory
 - **FR-013**: Client MUST update all import paths after file moves
 - **FR-014**: Client `npm run typecheck` MUST pass after all changes
@@ -227,8 +230,8 @@ A clean architecture where:
 - **SC-001**: Server framework builds independently (`go build ./internal/framework/...` succeeds with 0 application imports)
 - **SC-002**: Server has 0 duplicate directories (only one location for middleware, websocket, config)
 - **SC-003**: Server has interface definitions for critical path services (~15 interfaces for auth, user, payment, courses)
-- **SC-004**: Client `core/` has exactly 8 top-level subdirectories with clear purposes
-- **SC-005**: Client `components/` has exactly 4 top-level subdirectories (ui, shared, features, layout)
+- **SC-004**: Client `core/` has exactly 10 top-level subdirectories with clear purposes (api, services, hooks, auth, query, routes, config, constants, types, utils)
+- **SC-005**: Client `components/` has exactly 5 top-level subdirectories (ui, shared, features, layout, auth)
 - **SC-006**: 0 import errors after refactoring (both `go build` and `npm run typecheck` pass)
 - **SC-007**: 0 test failures after refactoring (both `go test ./...` and `npm test` pass)
 - **SC-008**: All imports follow consistent patterns (verifiable by linting)

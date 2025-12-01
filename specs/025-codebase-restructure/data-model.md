@@ -65,7 +65,7 @@ internal/framework/interfaces/
     ├── streaming_service.go
     ├── tenant_service.go
     ├── token_service.go
-    ├── two_factor_service.go
+    ├── 2fa_service.go
     ├── partner_service.go
     └── report_service.go
 ```

@@ -40,7 +40,7 @@
 - [ ] T010 [P] Create QuestServiceInterface in `server/internal/framework/interfaces/services/quest_service.go`
 - [ ] T011 [P] Create TenantServiceInterface in `server/internal/framework/interfaces/services/tenant_service.go`
 - [ ] T012 [P] Create TokenServiceInterface in `server/internal/framework/interfaces/services/token_service.go`
-- [ ] T013 [P] Create TwoFactorServiceInterface in `server/internal/framework/interfaces/services/two_factor_service.go`
+- [ ] T013 [P] Create TwoFactorServiceInterface in `server/internal/framework/interfaces/services/2fa_service.go`
 - [ ] T014 [P] Create BadgeServiceInterface in `server/internal/framework/interfaces/services/badge_service.go`
 - [ ] T015 [P] Create AchievementServiceInterface in `server/internal/framework/interfaces/services/achievement_service.go`
 - [ ] T016 [P] Create NotificationServiceInterface in `server/internal/framework/interfaces/services/notification_service.go`
@@ -190,6 +190,7 @@
 
 - [ ] T090 [US4] Update `client/core/index.ts` with categorized exports per data-model.md
 - [ ] T091 [US4] Verify typecheck: `npm run typecheck`
+- [ ] T091a [US4] Verify core/ has exactly 10 subdirectories: `ls -d client/core/*/ | wc -l` (expect 10)
 - [ ] T092 [US4] Git commit: `git commit -m "feat(025): US4 - update core barrel exports"`
 
 **Checkpoint**: Core reorganized with 8 clear subdirectories - FR-010 satisfied
@@ -225,6 +226,7 @@
 - [ ] T103 [P] [US5] Update `client/components/shared/index.ts` with all shared components
 - [ ] T104 [US5] Update `client/components/index.ts` main barrel per data-model.md
 - [ ] T105 [US5] Verify typecheck: `npm run typecheck`
+- [ ] T105a [US5] Verify components/ has exactly 5 subdirectories: `ls -d client/components/*/ | wc -l` (expect 5)
 - [ ] T106 [US5] Git commit: `git commit -m "feat(025): US5 - update component barrel exports"`
 
 **Checkpoint**: Components organized by role - FR-011 satisfied
@@ -394,8 +396,8 @@ Per clarifications: Git checkpoints with atomic commits
 | SC-001: Framework builds independently | T028, T120 |
 | SC-002: 0 duplicate directories | T035, T042, T049 |
 | SC-003: ~15 service interfaces | T021, T067 |
-| SC-004: Client core/ has 8 subdirectories | T092 |
-| SC-005: Client components/ has 4 subdirectories | T106 |
+| SC-004: Client core/ has 10 subdirectories | T092 |
+| SC-005: Client components/ has 5 subdirectories | T106 |
 | SC-006: 0 import errors | T029, T111, T115, T118 |
 | SC-007: 0 test failures | T069, T117 |
 | SC-008: Consistent import patterns | T109, T113 |
