@@ -65,7 +65,7 @@ import { SplashScreen } from '../components/ui/SplashScreen';
 #### 5. Auth Component Imports (Use relative paths)
 
 ```typescript
-// ✅ GOOD - In components/pages/home/WelcomeScreen.tsx
+// ✅ GOOD - In components/features/home/WelcomeScreen.tsx
 import { AuthModal } from '../../auth/AuthModal';
 ```
 
@@ -73,8 +73,8 @@ import { AuthModal } from '../../auth/AuthModal';
 
 ```typescript
 // ✅ GOOD
-import { DashboardHeader } from '@/components/pages/dashboard/DashboardHeader';
-import { StatsCards } from '@/components/pages/dashboard/StatsCards';
+import { DashboardHeader } from '@/components/features/dashboard/DashboardHeader';
+import { StatsCards } from '@/components/features/dashboard/StatsCards';
 ```
 
 #### 7. TanStack Query Hook Imports (Use barrel or direct)
@@ -145,7 +145,7 @@ If you encounter the "Element type is invalid" error:
 import { MainLayout } from '@/components';
 import { SplashScreen } from '@/components';
 
-// components/pages/home/WelcomeScreen.tsx
+// components/features/home/WelcomeScreen.tsx
 import { Button, Icon, Text, AuthModal } from '@/components';
 ```
 
@@ -155,7 +155,7 @@ import { Button, Icon, Text, AuthModal } from '@/components';
 import { MainLayout } from '../components/layout/MainLayout';
 import { SplashScreen } from '../components/ui/SplashScreen';
 
-// components/pages/home/WelcomeScreen.tsx
+// components/features/home/WelcomeScreen.tsx
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -178,7 +178,7 @@ import { AuthModal } from '../../auth/AuthModal';
 ### Use Direct Imports For:
 - ✅ `components/ui/*` - UI primitives
 - ✅ `components/layout/*` - Layout components
-- ✅ `components/pages/*` - Page-specific components
+- ✅ `components/features/*` - Page-specific components
 - ✅ `components/auth/*` - Auth components
 
 ## Troubleshooting

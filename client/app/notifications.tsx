@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Tabs, TabsList, TabsTrigger, TabsContent, Icon, Text } from '@/components/ui';
 import { Bell, Settings as SettingsIcon } from 'lucide-react-native';
-import { NotificationList, NotificationSettings } from '@/components/pages/notifications';
+import { NotificationList, NotificationSettings } from '@/components/features/notifications';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';
 

@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import { AchievementsList } from '@/components/pages/achievements';
+import { AchievementsList } from '@/components/features/achievements';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';
 

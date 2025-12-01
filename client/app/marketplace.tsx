@@ -18,9 +18,9 @@ import {
   MarketplaceList,
   MarketplaceDetail,
   MarketplaceForm,
-} from '@/components/pages/marketplace';
+} from '@/components/features/marketplace';
 import { Property, ClassifiedAd } from '@/core';
-import { MarketplaceItem, MarketplaceItemType } from '@/components/pages/marketplace/types';
+import { MarketplaceItem, MarketplaceItemType } from '@/components/features/marketplace/types';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';
 

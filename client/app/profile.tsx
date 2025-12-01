@@ -6,8 +6,8 @@ import {
   ProfileBio,
   ContactInfo,
   RecentActivity,
-} from '@/components/pages/profile';
-import { LearningAchievementsGrid } from '@/components/pages/learning';
+} from '@/components/features/profile';
+import { LearningAchievementsGrid } from '@/components/features/learning';
 import { useLearningAchievements, useLearningXP } from '@/core/hooks';
 
 /**

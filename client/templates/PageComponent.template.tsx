@@ -4,13 +4,13 @@
  * Use this template when creating new page components.
  *
  * Steps:
- * 1. Copy this file to components/pages/[category]/[ComponentName].tsx
+ * 1. Copy this file to components/features/[category]/[ComponentName].tsx
  * 2. Rename the component
  * 3. Update imports as needed
  * 4. Implement your page logic
  *
  * @example
- * components/pages/dashboard/OverviewPage.tsx
+ * components/features/dashboard/OverviewPage.tsx
  */
 
 import * as React from 'react';

@@ -9,7 +9,7 @@
  *
  * @example
  * ```tsx
- * const AdminScreen = lazy(() => import('@/components/pages/admin/AdminDashboard'));
+ * const AdminScreen = lazy(() => import('@/components/features/admin/AdminDashboard'));
  *
  * <ChunkErrorBoundary onError={logError} maxRetries={3}>
  *   <Suspense fallback={<LoadingFallback />}>

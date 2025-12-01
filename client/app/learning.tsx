@@ -25,7 +25,7 @@ import {
   LearningStreakWidget,
   LearningChallengesWidget,
   LearningLeaderboardWidget,
-} from '@/components/pages/learning';
+} from '@/components/features/learning';
 import { useLearningXP, useLearningProgress, useLearningGamificationWebSocket } from '@/core/hooks';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';

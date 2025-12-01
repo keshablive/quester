@@ -2,7 +2,7 @@ import { Stack, router } from 'expo-router';
 import * as React from 'react';
 import { ThemeToggle } from '@/components';
 import { appConfig, ROUTES } from '@/core';
-import { WelcomeScreen } from '@/components/pages/home';
+import { WelcomeScreen } from '@/components/features/home';
 import { useAuth } from '@/core/auth/AuthContext';
 
 const SCREEN_OPTIONS = {

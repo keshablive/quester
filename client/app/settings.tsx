@@ -11,7 +11,7 @@ import {
   NotificationSettings, 
   PrivacySettings, 
   AccountSettings 
-} from '@/components/pages/settings';
+} from '@/components/features/settings';
 
 export default function SettingsPage() {
   return (

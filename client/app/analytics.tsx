@@ -5,22 +5,22 @@ import { ChunkErrorBoundary, PageLoadingFallback, useSocialLeaderboard, useSocia
 
 // US3: Lazy load heavy analytics components for faster app launch
 const AnalyticsHeader = lazy(() =>
-  import('@/components/pages/analytics').then((m) => ({ default: m.AnalyticsHeader }))
+  import('@/components/features/analytics').then((m) => ({ default: m.AnalyticsHeader }))
 );
 const KeyMetrics = lazy(() =>
-  import('@/components/pages/analytics').then((m) => ({ default: m.KeyMetrics }))
+  import('@/components/features/analytics').then((m) => ({ default: m.KeyMetrics }))
 );
 const TrafficOverview = lazy(() =>
-  import('@/components/pages/analytics').then((m) => ({ default: m.TrafficOverview }))
+  import('@/components/features/analytics').then((m) => ({ default: m.TrafficOverview }))
 );
 const TopPages = lazy(() =>
-  import('@/components/pages/analytics').then((m) => ({ default: m.TopPages }))
+  import('@/components/features/analytics').then((m) => ({ default: m.TopPages }))
 );
 const Demographics = lazy(() =>
-  import('@/components/pages/analytics').then((m) => ({ default: m.Demographics }))
+  import('@/components/features/analytics').then((m) => ({ default: m.Demographics }))
 );
 const SocialLeaderboardWidget = lazy(() =>
-  import('@/components/pages/communicate/Social').then((m) => ({
+  import('@/components/features/communicate/Social').then((m) => ({
     default: m.SocialLeaderboardWidget,
   }))
 );

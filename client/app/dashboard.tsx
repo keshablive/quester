@@ -16,7 +16,7 @@ import {
   StatsCards,
   QuickActions,
   RecentActivity,
-} from '@/components/pages/dashboard';
+} from '@/components/features/dashboard';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';
 

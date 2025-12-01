@@ -13,7 +13,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, Modal } from 'react-native';
-import { QuestList, QuestDetail } from '@/components/pages/quests';
+import { QuestList, QuestDetail } from '@/components/features/quests';
 import { Quest } from '@/core/types/quest';
 import { useAuth } from '@/core/auth/AuthContext';
 import { useStartQuest, useAbandonQuest } from '@/core/hooks/mutations/useQuestMutations';

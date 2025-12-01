@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import { BadgesList } from '@/components/pages/badges';
+import { BadgesList } from '@/components/features/badges';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';
 

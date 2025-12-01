@@ -4,7 +4,7 @@ import { ChunkErrorBoundary, PageLoadingFallback } from '@/core';
 
 // US3: Code split the AdminDashboard component for faster app launch
 const AdminDashboard = lazy(() =>
-  import('@/components/pages/admin').then((module) => ({
+  import('@/components/features/admin').then((module) => ({
     default: module.AdminDashboard,
   }))
 );

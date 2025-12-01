@@ -17,7 +17,7 @@ import {
   // Groups
   GroupList,
   CreateGroup,
-} from '@/components/pages/communicate';
+} from '@/components/features/communicate';
 import { Post } from '@/core';
 import { useUnreadCount } from '@/core/hooks/queries';
 

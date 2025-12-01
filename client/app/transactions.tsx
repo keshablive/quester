@@ -12,7 +12,7 @@
 
 import React, { useState } from 'react';
 import { View, Modal } from 'react-native';
-import { TransactionList, TransactionDetail } from '@/components/pages/transactions';
+import { TransactionList, TransactionDetail } from '@/components/features/transactions';
 import { Transaction } from '@/core';
 import { OfflineIndicator } from '@/components/shared';
 import { ChunkErrorBoundary } from '@/core/routes';
