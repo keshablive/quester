@@ -47,8 +47,11 @@ export * from './routes';
 // Auth
 export * from './auth';
 
-// API (Client, Services, WebSocket)
+// API Client
 export * from './api';
+
+// Services
+export * from './services';
 
 // Layout Components
 export * from './components/Layout';
