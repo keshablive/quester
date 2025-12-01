@@ -183,17 +183,18 @@ As a developer, I want all import paths updated correctly so that the codebase c
 
 ## Clarifications
 
-### Session 2025-12-01
+### Session 2025-12-01 (Reset)
 
-- Q: When resolving duplicate declarations in auth services, which consolidation strategy? → A: Keep separate service files, extract shared types to `auth_types.go`
-- Q: Where should `internal/models/` be placed in the final structure? → A: Keep at `internal/models/` (shared, independent package)
-- Q: Rollback strategy if refactoring causes build failures mid-way? → A: Git tags at phase boundaries (e.g., `pre-phase-1`, `post-phase-1`)
-- Q: Where should `internal/repositories/` be placed? → A: Move to `internal/framework/repository/` (consistent with services/controllers/routes)
-- Q: What should happen to `internal/utils/` since `internal/framework/utils/` exists? → A: Merge into `internal/framework/utils/` (single utils location)
-- Q: Where should `internal/services/` (60 files) be placed? → A: Move to `internal/framework/service/` (framework owns all services)
-- Q: Where should `internal/controllers/` (39 files) be placed? → A: Move to `internal/framework/controller/` (framework owns controllers)
-- Q: Where should `internal/routes/` (21 files) be placed? → A: Move to `internal/framework/routes/` (framework owns routes)
-- Q: What should remain in `internal/app/` directory? → A: Keep for bootstrap/initialization code only (`app.go`)
+- Q1: Service layer pattern - relationship between BaseService and domain services? → A: Keep base patterns separate (`base.go`, `errors.go`, `transaction.go`) + domain services embed `BaseService`
+- Q2: Repository layer pattern - relationship between GenericRepository and domain repos? → A: Keep base patterns separate (`generic.go`, `errors.go`, `options.go`) + domain repos embed `GenericRepository`
+- Q3: Controller layer pattern - relationship between helpers and domain controllers? → A: Keep helpers separate (`pagination.go`, `errors.go`, `auth.go`) + controllers import helpers directly (no embedding)
+- Q4: Duplicate type resolution strategy for auth services? → A: Extract shared types to `auth_types.go`, keep separate service files (`login_service.go`, `signup_service.go`, `refresh_token_service.go`) that import types
+- Q5: Framework package export strategy? → A: Single `index.go` per package that exports all public types/functions (facade pattern)
+- Q6: Directory cleanup strategy after moving files? → A: Delete empty directories immediately after moving files
+- Q7: Adapters directory handling? → A: Keep `internal/adapters/` as separate package (not part of framework)
+- Q8: Mocks directory handling? → A: Keep `internal/mocks/` as dedicated top-level package for all mocks
+- Q9: Test file location strategy? → A: Centralize all tests in `tests/unit/` directory with mirrored structure
+- Q10: Migrations directory handling? → A: Keep `internal/migrations/` as separate top-level package (not part of framework)
 
 ## Assumptions
 
