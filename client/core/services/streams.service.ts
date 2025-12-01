@@ -1,5 +1,5 @@
-import { apiClient } from '../client';
-import { API_ENDPOINTS, ENV } from '../../config/env';
+import { apiClient } from '../api/client';
+import { API_ENDPOINTS, ENV } from '../config/env';
 
 export interface Stream {
     id: string;

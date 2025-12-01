@@ -5,7 +5,7 @@
  * 006-course-gamification: US3 - Achievement tracking
  */
 import { useState, useCallback, useEffect } from 'react';
-import { learningGamificationService } from '../api/services/learning-gamification.service';
+import { learningGamificationService } from '../services/learning-gamification.service';
 import type { LearningAchievement } from '../types/learning-gamification.types';
 
 /**

@@ -19,7 +19,7 @@ import {
   type UseMutationOptions,
   type UseMutationResult,
 } from '@tanstack/react-query';
-import { notificationsService, NotificationSettings } from '../../api/services/notifications.service';
+import { notificationsService, NotificationSettings } from '../../services/notifications.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import { offlineMutationQueue } from '../../query/offlineQueue';

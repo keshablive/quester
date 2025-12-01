@@ -17,8 +17,8 @@ import {
   type UseInfiniteQueryOptions,
   type UseInfiniteQueryResult,
 } from '@tanstack/react-query';
-import { propertiesService } from '../../api/services/properties.service';
-import { classifiedsService } from '../../api/services/classifieds.service';
+import { propertiesService } from '../../services/properties.service';
+import { classifiedsService } from '../../services/classifieds.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type {

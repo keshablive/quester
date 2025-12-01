@@ -11,7 +11,7 @@
  * hooks that provide automatic caching, background refresh, and optimistic updates.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { socialGamificationService, DailyChallenge } from '../api/services/social-gamification.service';
+import { socialGamificationService, DailyChallenge } from '../services/social-gamification.service';
 
 export interface DailyChallengesState {
   challenges: DailyChallenge[];

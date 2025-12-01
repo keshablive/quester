@@ -13,7 +13,7 @@ import {
   type UseInfiniteQueryResult,
   type InfiniteData,
 } from '@tanstack/react-query';
-import { socialService } from '../../api/services/social.service';
+import { socialService } from '../../services/social.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type { SocialPost, PaginatedResponse, ApiError } from '../../types/query.types';

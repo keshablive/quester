@@ -6,7 +6,7 @@
  * 006-course-gamification T096
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { learningGamificationService } from '../api/services/learning-gamification.service';
+import { learningGamificationService } from '../services/learning-gamification.service';
 import type {
   DailyLearningChallenge,
   ChallengeStatus,

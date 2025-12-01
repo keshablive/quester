@@ -13,7 +13,7 @@ import {
   ContentMilestone,
   LeaderboardEntry,
   LeaderboardResponse,
-} from '../api/services/social-gamification.service';
+} from '../services/social-gamification.service';
 import { useXPNotification } from './useXPNotification';
 
 /**

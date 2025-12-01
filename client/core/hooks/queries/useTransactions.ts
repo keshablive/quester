@@ -17,7 +17,7 @@ import {
   type UseInfiniteQueryOptions,
   type UseInfiniteQueryResult,
 } from '@tanstack/react-query';
-import { transactionsService } from '../../api/services/transactions.service';
+import { transactionsService } from '../../services/transactions.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type {

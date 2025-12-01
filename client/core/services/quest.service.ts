@@ -1,5 +1,5 @@
-import { apiClient } from '../client';
-import { Quest, QuestFilters, QuestProgress } from '../../types/quest';
+import { apiClient } from '../api/client';
+import { Quest, QuestFilters, QuestProgress } from '../types/quest';
 
 export const questService = {
     /**

@@ -18,7 +18,7 @@ import {
   type UseMutationOptions,
   type UseMutationResult,
 } from '@tanstack/react-query';
-import { certificatesService, Certificate } from '../../api/services/certificates.service';
+import { certificatesService, Certificate } from '../../services/certificates.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type {

@@ -6,7 +6,7 @@
  * 006-course-gamification T086
  */
 import { useState, useCallback } from 'react';
-import { learningGamificationService } from '../api/services/learning-gamification.service';
+import { learningGamificationService } from '../services/learning-gamification.service';
 
 /**
  * Badge award state

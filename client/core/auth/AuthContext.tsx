@@ -16,7 +16,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authService } from '../api/services/auth.service';
+import { authService } from '../services/auth.service';
 import { apiClient } from '../api/client';
 import { mapAuthError } from '../utils/auth-errors';
 import {

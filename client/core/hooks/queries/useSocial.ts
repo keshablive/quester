@@ -18,7 +18,7 @@ import {
   type UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';
-import { socialService } from '../../api/services/social.service';
+import { socialService } from '../../services/social.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type { FollowStats, ApiError, PaginatedResponse } from '../../types/query.types';

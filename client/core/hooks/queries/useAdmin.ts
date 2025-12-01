@@ -12,7 +12,7 @@ import {
   type UseQueryOptions,
   type UseQueryResult,
 } from '@tanstack/react-query';
-import { adminService } from '../../api/services/admin.service';
+import { adminService } from '../../services/admin.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type { AdminStats, AuditLogEntry, AuditLogFilters, ApiError } from '../../types/query.types';

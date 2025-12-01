@@ -12,7 +12,7 @@
  * hooks that provide automatic caching, background refresh, and optimistic updates.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { learningGamificationService } from '../api/services/learning-gamification.service';
+import { learningGamificationService } from '../services/learning-gamification.service';
 import type { LearningCourseProgress } from '../types/learning-gamification.types';
 
 /**

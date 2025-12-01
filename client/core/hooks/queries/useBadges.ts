@@ -12,7 +12,7 @@ import {
   type UseQueryOptions,
   type UseQueryResult,
 } from '@tanstack/react-query';
-import { badgesService } from '../../api/services/gamification.service';
+import { badgesService } from '../../services/gamification.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type { ExtendedBadge, ApiError } from '../../types/query.types';

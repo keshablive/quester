@@ -15,7 +15,7 @@ import {
   type UseMutationResult,
   type InfiniteData,
 } from '@tanstack/react-query';
-import { socialService } from '../../api/services/social.service';
+import { socialService } from '../../services/social.service';
 import { queryKeys } from '../../query/keys';
 import type { SocialPost, PaginatedResponse, ApiError } from '../../types/query.types';
 import Toast from 'react-native-toast-message';

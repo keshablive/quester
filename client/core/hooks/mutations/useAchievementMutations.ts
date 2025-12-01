@@ -10,7 +10,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { achievementsService } from '../../api/services/gamification.service';
+import { achievementsService } from '../../services/gamification.service';
 import { queryKeys } from '../../query/keys';
 import type { Achievement } from '../../types/query.types';
 

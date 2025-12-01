@@ -13,7 +13,7 @@ import {
   type UseMutationOptions,
   type UseMutationResult,
 } from '@tanstack/react-query';
-import { groupsService } from '../../api/services/messages.service';
+import { groupsService } from '../../services/messages.service';
 import { queryKeys } from '../../query/keys';
 import type { Group, ApiError } from '../../types/query.types';
 

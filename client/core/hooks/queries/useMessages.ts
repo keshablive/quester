@@ -20,7 +20,7 @@ import {
   type Message,
   type MessageThread,
   type MessageStats,
-} from '../../api/services/messages.service';
+} from '../../services/messages.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type { ApiError, PaginatedResponse } from '../../types/query.types';

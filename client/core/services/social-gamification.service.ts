@@ -4,8 +4,8 @@
  * API client for social XP, challenges, and milestones.
  * FR-001 to FR-016: Social gamification features
  */
-import { apiClient } from '../client';
-import { API_ENDPOINTS } from '../../config/env';
+import { apiClient } from '../api/client';
+import { API_ENDPOINTS } from '../config/env';
 
 /**
  * XP Transaction from social actions

@@ -5,7 +5,7 @@
  * 006-course-gamification T065: Learning leaderboard state management
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { learningGamificationService, LearningLeaderboardResponse } from '../api/services/learning-gamification.service';
+import { learningGamificationService, LearningLeaderboardResponse } from '../services/learning-gamification.service';
 import type { LearningLeaderboardEntry, LeaderboardTimeframe } from '../types/learning-gamification.types';
 
 // Re-export for consumers who import from hooks

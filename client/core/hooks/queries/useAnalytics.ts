@@ -12,13 +12,13 @@ import {
   type UseQueryOptions,
   type UseQueryResult,
 } from '@tanstack/react-query';
-import { analyticsService } from '../../api/services/analytics.service';
+import { analyticsService } from '../../services/analytics.service';
 import type {
   UserAnalyticsSummary,
   TopCourse,
   EngagementSummary,
   TimeSeriesData,
-} from '../../api/services/analytics.service';
+} from '../../services/analytics.service';
 import { queryKeys } from '../../query/keys';
 import { STALE_TIMES, GC_TIME } from '../../query/constants';
 import type { ApiError } from '../../types/query.types';
@@ -179,7 +179,7 @@ export type {
   TopCourse,
   EngagementSummary,
   TimeSeriesData,
-} from '../../api/services/analytics.service';
+} from '../../services/analytics.service';
 
 /**
  * Time range for engagement chart queries

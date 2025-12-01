@@ -1,5 +1,5 @@
-import { apiClient, ApiError } from '../client';
-import { API_ENDPOINTS } from '../../config/env';
+import { apiClient, ApiError } from '../api/client';
+import { API_ENDPOINTS } from '../config/env';
 import type {
     AuthResponse,
     LoginRequest,

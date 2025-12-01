@@ -6,8 +6,8 @@
  * 
  * @see specs/006-course-gamification/spec.md
  */
-import { apiClient } from '../client';
-import { API_ENDPOINTS } from '../../config/env';
+import { apiClient } from '../api/client';
+import { API_ENDPOINTS } from '../config/env';
 import type {
   LearningXPTransaction,
   LearningXPSummary,
@@ -19,7 +19,7 @@ import type {
   LearningAchievement,
   LearningStreakMilestone,
   PaginatedResponse,
-} from '../../types/learning-gamification.types';
+} from '../types/learning-gamification.types';
 
 /**
  * Leaderboard response with user's own rank

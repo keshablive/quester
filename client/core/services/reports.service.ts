@@ -1,5 +1,5 @@
-import { apiClient } from '../client';
-import { API_ENDPOINTS } from '../../config/env';
+import { apiClient } from '../api/client';
+import { API_ENDPOINTS } from '../config/env';
 
 export interface Report {
     id: string;

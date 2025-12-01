@@ -20,7 +20,7 @@ import {
 import {
   messagesService,
   type Message,
-} from '../../api/services/messages.service';
+} from '../../services/messages.service';
 import { queryKeys } from '../../query/keys';
 import type { ApiError } from '../../types/query.types';
 

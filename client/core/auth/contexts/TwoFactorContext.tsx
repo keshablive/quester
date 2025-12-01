@@ -11,7 +11,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-import { authService } from '../../api/services/auth.service';
+import { authService } from '../../services/auth.service';
 import { TwoFactorState } from '../types';
 import { mapAuthError } from '../../utils/auth-errors';
 import { useCoreAuthContext } from './CoreAuthContext';

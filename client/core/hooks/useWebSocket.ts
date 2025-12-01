@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { webSocketService, WS_MESSAGE_TYPES } from '../api/services/websocket.service';
+import { webSocketService, WS_MESSAGE_TYPES } from '../services/websocket.service';
 
 /**
  * Hook to use WebSocket connection

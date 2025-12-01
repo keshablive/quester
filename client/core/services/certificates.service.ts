@@ -1,6 +1,6 @@
-import { apiClient, ApiError } from '../client';
-import type { ServiceRequestOptions } from '../client';
-import { API_ENDPOINTS } from '../../config/env';
+import { apiClient, ApiError } from '../api/client';
+import type { ServiceRequestOptions } from '../api/client';
+import { API_ENDPOINTS } from '../config/env';
 
 /**
  * Certificate metadata structure

@@ -10,7 +10,7 @@
  */
 
 import { useEffect, useCallback, useState } from 'react';
-import { webSocketService } from '../api/services/websocket.service';
+import { webSocketService } from '../services/websocket.service';
 import type {
   LearningXPAwardResult,
   UnlockedAchievement,

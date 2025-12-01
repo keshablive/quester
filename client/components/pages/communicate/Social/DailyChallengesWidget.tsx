@@ -19,7 +19,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import { useDailyChallenges } from '@/core/hooks/useDailyChallenges';
-import { DailyChallenge } from '@/core/api/services/social-gamification.service';
+import { DailyChallenge } from '@/core/services/social-gamification.service';
 
 // Map action types to icons
 const getActionIcon = (actionType: string, completed: boolean) => {

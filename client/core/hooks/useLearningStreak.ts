@@ -5,7 +5,7 @@
  * 006-course-gamification T076: Learning streak state management
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { learningGamificationService } from '../api/services/learning-gamification.service';
+import { learningGamificationService } from '../services/learning-gamification.service';
 import type { LearningStreakInfo, LearningStreakMilestone } from '../types/learning-gamification.types';
 import { STREAK_MILESTONES } from '../types/learning-gamification.types';
 
