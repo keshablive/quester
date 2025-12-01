@@ -2,12 +2,10 @@ package services
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -15,47 +13,6 @@ import (
 	"github.com/keshablive/quester/internal/framework/auth"
 	"github.com/keshablive/quester/internal/models"
 )
-
-// AuthRequest types
-type SignupRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Username string `json:"username" validate:"required,min=3,max=30"`
-	Password string `json:"password" validate:"required,min=8"`
-}
-
-type LoginRequest struct {
-	Email    string
-	Password string
-}
-
-// AuthResponse types
-type AuthResponse struct {
-	AccessToken  string       `json:"access_token"`
-	RefreshToken string       `json:"refresh_token"`
-	User         *models.User `json:"user"`
-}
-
-type RefreshResponse struct {
-	AccessToken  string       `json:"access_token"`
-	RefreshToken string       `json:"refresh_token,omitempty"`
-	User         *models.User `json:"user"`
-}
-
-// Interfaces
-type UserRepository interface {
-	FindByEmail(ctx context.Context, tenantID uuid.UUID, email string) (*models.User, error)
-	FindByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
-	CreateUser(ctx context.Context, tenantID uuid.UUID, user *models.User) error
-	UpdateUser(ctx context.Context, user *models.User) error
-}
-
-type RefreshTokenRepository interface {
-	CreateToken(ctx context.Context, token *models.RefreshToken) error
-	FindByToken(ctx context.Context, tokenString string) (*models.RefreshToken, error)
-	RevokeToken(ctx context.Context, tokenString string) error
-	RevokeAllByUserID(ctx context.Context, userID uuid.UUID) (int, error)
-	GetActiveTokens(ctx context.Context, userID uuid.UUID, limit, offset int) ([]models.RefreshToken, int64, error)
-}
 
 // AuthService handles all authentication related operations
 type AuthService struct {
@@ -239,12 +196,12 @@ func (s *AuthService) generateTokens(ctx context.Context, user *models.User) (*A
 		return nil, err
 	}
 
-	refreshTokenString, err := generateRandomToken(32)
+	refreshTokenString, err := GenerateRandomToken(32)
 	if err != nil {
 		return nil, err
 	}
 
-	tokenHash := hashToken(refreshTokenString)
+	tokenHash := HashToken(refreshTokenString)
 	refreshToken := &models.RefreshToken{
 		UserID:    user.ID,
 		TokenHash: tokenHash,
@@ -274,59 +231,4 @@ func (s *AuthService) updateLoginStreak(user *models.User) {
 		}
 	}
 	user.LastLogin = &now
-}
-
-// Static Helpers (moved from individual files)
-
-func generateRandomToken(length int) (string, error) {
-	bytes := make([]byte, length)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
-}
-
-func hashToken(token string) string {
-	hash := sha256.Sum256([]byte(token))
-	return hex.EncodeToString(hash[:])
-}
-
-// Validation Helpers
-
-var (
-	emailRegex    = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_.\-]+$`)
-)
-
-func ValidateEmail(email string) error {
-	if email == "" {
-		return fmt.Errorf("email cannot be empty")
-	}
-	email = strings.TrimSpace(email)
-	if strings.Contains(email, "..") || !emailRegex.MatchString(email) {
-		return fmt.Errorf("invalid email format")
-	}
-	return nil
-}
-
-func ValidateUsername(username string) error {
-	if username == "" {
-		return fmt.Errorf("username cannot be empty")
-	}
-	username = strings.TrimSpace(username)
-	if len(username) < 3 || len(username) > 30 {
-		return fmt.Errorf("username must be between 3 and 30 characters")
-	}
-	if !usernameRegex.MatchString(username) {
-		return fmt.Errorf("username can only contain letters, numbers, underscore, hyphen, and dot")
-	}
-	return nil
-}
-
-func ValidatePassword(password string) error {
-	if len(password) < 8 {
-		return fmt.Errorf("password must be at least 8 characters")
-	}
-	// Add complexity checks if needed
-	return nil
 }

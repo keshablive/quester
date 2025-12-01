@@ -4,7 +4,6 @@ package services
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/google/uuid"
@@ -12,112 +11,6 @@ import (
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
 )
-
-// Email validation regex (RFC 5322 simplified)
-var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-
-// Username validation regex (alphanumeric, underscore, hyphen, dot)
-var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_.\-]+$`)
-
-// Password strength requirements
-const (
-	MinPasswordLength = 8
-	MinUsernameLength = 3
-	MaxUsernameLength = 30
-)
-
-// SignupRequest contains the data needed to create a new user account
-type SignupRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Username string `json:"username" validate:"required,min=3,max=30"`
-	Password string `json:"password" validate:"required,min=8"`
-}
-
-// SignupResponse contains the tokens and user data after successful signup
-type SignupResponse struct {
-	AccessToken  string       `json:"access_token"`
-	RefreshToken string       `json:"refresh_token"`
-	User         *models.User `json:"user"`
-}
-
-// ValidateEmail validates email format using RFC 5322 simplified regex
-func ValidateEmail(email string) error {
-	if email == "" {
-		return fmt.Errorf("email cannot be empty")
-	}
-
-	email = strings.TrimSpace(email)
-	email = strings.ToLower(email)
-
-	// Check for consecutive dots (invalid)
-	if strings.Contains(email, "..") {
-		return fmt.Errorf("invalid email format")
-	}
-
-	if !emailRegex.MatchString(email) {
-		return fmt.Errorf("invalid email format")
-	}
-
-	return nil
-}
-
-// ValidatePassword validates password strength
-// Requirements: min 8 chars, uppercase, lowercase, number, special character
-func ValidatePassword(password string) error {
-	if password == "" {
-		return fmt.Errorf("password cannot be empty")
-	}
-
-	if len(password) < MinPasswordLength {
-		return fmt.Errorf("password must be at least 8 characters long")
-	}
-
-	hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
-	if !hasUpper {
-		return fmt.Errorf("password must contain at least one uppercase letter")
-	}
-
-	hasLower := regexp.MustCompile(`[a-z]`).MatchString(password)
-	if !hasLower {
-		return fmt.Errorf("password must contain at least one lowercase letter")
-	}
-
-	hasNumber := regexp.MustCompile(`[0-9]`).MatchString(password)
-	if !hasNumber {
-		return fmt.Errorf("password must contain at least one number")
-	}
-
-	hasSpecial := regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`).MatchString(password)
-	if !hasSpecial {
-		return fmt.Errorf("password must contain at least one special character")
-	}
-
-	return nil
-}
-
-// ValidateUsername validates username format
-// Requirements: 3-30 chars, alphanumeric + underscore, hyphen, dot
-func ValidateUsername(username string) error {
-	if username == "" {
-		return fmt.Errorf("username cannot be empty")
-	}
-
-	username = strings.TrimSpace(username)
-
-	if len(username) < MinUsernameLength {
-		return fmt.Errorf("username must be at least 3 characters long")
-	}
-
-	if len(username) > MaxUsernameLength {
-		return fmt.Errorf("username must be maximum 30 characters long")
-	}
-
-	if !usernameRegex.MatchString(username) {
-		return fmt.Errorf("username can only contain letters, numbers, underscore, hyphen, and dot")
-	}
-
-	return nil
-}
 
 // Signup creates a new user account with validation
 // Steps:

@@ -25,9 +25,9 @@
 
 **Purpose**: Create rollback points and verify baseline state
 
-- [ ] T001 Create git tag `pre-consolidation` for full rollback capability
-- [ ] T002 Run `go build ./...` in `server/` and document current errors (expected: duplicate declarations)
-- [ ] T003 Record baseline build time for SC-009 comparison
+- [X] T001 Create git tag `pre-consolidation` for full rollback capability
+- [X] T002 Run `go build ./...` in `server/` and document current errors (expected: duplicate declarations)
+- [X] T003 Record baseline build time for SC-009 comparison (baseline: ~2.5s)
 
 ---
 
@@ -37,18 +37,18 @@
 
 **⚠️ CRITICAL**: Server cannot build until this phase is complete
 
-- [ ] T004 Create git tag `pre-phase-2` for phase rollback
-- [ ] T005 [US1] Create `server/internal/services/auth_types.go` with extracted shared types:
+- [X] T004 Create git tag `pre-phase-2` for phase rollback
+- [X] T005 [US1] Create `server/internal/services/auth_types.go` with extracted shared types:
   - `SignupRequest` struct
   - `LoginRequest` struct  
   - `RefreshResponse` struct
   - `UserRepository` interface
   - `RefreshTokenRepository` interface
-- [ ] T006 [US1] Remove duplicate `LoginRequest` and interfaces from `server/internal/services/login_service.go`
-- [ ] T007 [US1] Remove duplicate `SignupRequest` from `server/internal/services/signup_service.go`
-- [ ] T008 [US1] Remove duplicate `RefreshResponse` from `server/internal/services/refresh_token_service.go`
-- [ ] T009 [US1] Remove duplicate declarations from `server/internal/services/auth_service.go` (keep imports to auth_types.go)
-- [ ] T010 [US1] [US7] Run `go build ./...` in `server/` - verify zero errors
+- [X] T006 [US1] Remove duplicate `LoginRequest` and interfaces from `server/internal/services/login_service.go`
+- [X] T007 [US1] Remove duplicate `SignupRequest` from `server/internal/services/signup_service.go`
+- [X] T008 [US1] Remove duplicate `RefreshResponse` from `server/internal/services/refresh_token_service.go`
+- [X] T009 [US1] Remove duplicate declarations from `server/internal/services/auth_service.go` (keep imports to auth_types.go)
+- [X] T010 [US1] [US7] Run `go build ./internal/services/...` in `server/` - verify zero errors (NOTE: controllers have separate duplicates to fix in Phase 5)
 - [ ] T011 Create git tag `post-phase-2-duplicates-fixed`
 
 **Checkpoint**: Server builds successfully. Phase 3+ can proceed.

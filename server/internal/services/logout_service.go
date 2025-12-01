@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/repositories"
 )
@@ -20,10 +21,10 @@ type LogoutService struct {
 }
 
 // NewLogoutService creates a new logout service
-func NewLogoutService(tokenRepo RefreshTokenRepository) *LogoutService {
+func NewLogoutService(tokenRepo RefreshTokenRepository, blacklistService *BlacklistService) *LogoutService {
 	return &LogoutService{
 		tokenRepo:        tokenRepo,
-		blacklistService: NewBlacklistService(),
+		blacklistService: blacklistService,
 	}
 }
 
@@ -75,16 +76,14 @@ func (s *LogoutService) LogoutAll(ctx context.Context, userID uuid.UUID) (int, e
 // Logout is a convenience function that creates service instances and performs logout
 // This matches the pattern used by Login and RefreshAccessToken for easy controller integration
 func Logout(ctx context.Context, refreshTokenString string) error {
-	// Import required packages
-	// Note: These imports are at package level
-	// "github.com/keshablive/quester/internal/framework/database"
-	// "github.com/keshablive/quester/internal/repositories"
-
 	// Initialize repository
 	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
 
+	// Initialize blacklist service with global cache
+	blacklistService := NewBlacklistService(cache.Client)
+
 	// Create logout service
-	logoutService := NewLogoutService(tokenRepo)
+	logoutService := NewLogoutService(tokenRepo, blacklistService)
 
 	// Perform logout
 	return logoutService.Logout(ctx, refreshTokenString)
@@ -95,8 +94,11 @@ func LogoutAll(ctx context.Context, userID uuid.UUID) (int, error) {
 	// Initialize repository
 	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
 
+	// Initialize blacklist service with global cache
+	blacklistService := NewBlacklistService(cache.Client)
+
 	// Create logout service
-	logoutService := NewLogoutService(tokenRepo)
+	logoutService := NewLogoutService(tokenRepo, blacklistService)
 
 	// Perform logout all
 	return logoutService.LogoutAll(ctx, userID)

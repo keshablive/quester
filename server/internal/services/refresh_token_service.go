@@ -9,17 +9,11 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
 )
-
-// RefreshResponse represents the response after refreshing a token
-type RefreshResponse struct {
-	AccessToken  string       `json:"access_token"`
-	RefreshToken string       `json:"refresh_token,omitempty"` // Optional - only if token rotation enabled
-	User         *models.User `json:"user"`
-}
 
 // RefreshTokenService handles token refresh operations
 type RefreshTokenService struct {
@@ -29,16 +23,16 @@ type RefreshTokenService struct {
 }
 
 // NewRefreshTokenService creates a new refresh token service
-func NewRefreshTokenService(tokenRepo RefreshTokenRepository, userRepo UserRepository) *RefreshTokenService {
+func NewRefreshTokenService(tokenRepo RefreshTokenRepository, userRepo UserRepository, blacklistService *BlacklistService) *RefreshTokenService {
 	return &RefreshTokenService{
 		tokenRepo:        tokenRepo,
 		userRepo:         userRepo,
-		blacklistService: NewBlacklistService(),
+		blacklistService: blacklistService,
 	}
 }
 
-// RefreshAccessToken validates a refresh token and generates a new access token
-func (s *RefreshTokenService) RefreshAccessToken(ctx context.Context, refreshTokenString string) (*RefreshResponse, error) {
+// RefreshAccessTokenMethod validates a refresh token and generates a new access token
+func (s *RefreshTokenService) RefreshAccessTokenMethod(ctx context.Context, refreshTokenString string) (*RefreshResponse, error) {
 	// Validate input
 	if refreshTokenString == "" {
 		return nil, errors.New("refresh token is required")
@@ -50,7 +44,7 @@ func (s *RefreshTokenService) RefreshAccessToken(ctx context.Context, refreshTok
 
 	// Check Redis blacklist FIRST for fast rejection (adds ~1-2ms)
 	// This prevents unnecessary database queries for revoked tokens
-	if s.blacklistService.IsBlacklisted(tokenHash) {
+	if s.blacklistService.IsBlacklistedSimple(tokenHash) {
 		return nil, errors.New("token has been revoked")
 	}
 
@@ -88,37 +82,6 @@ func (s *RefreshTokenService) RefreshAccessToken(ctx context.Context, refreshTok
 		User:        user,
 	}
 
-	// Token rotation: create new refresh token and revoke old one
-	// This is optional but recommended for security
-	// Comment this block if you want to keep refresh tokens valid until expiry
-	/*
-		newRefreshTokenString, err := generateRandomToken(64)
-		if err != nil {
-			return nil, fmt.Errorf("failed to generate new refresh token: %w", err)
-		}
-
-		newRefreshToken := &models.RefreshToken{
-			ID:        uuid.New(),
-			UserID:    user.ID,
-			TokenHash: newRefreshTokenString,
-			ExpiresAt: time.Now().Add(30 * 24 * time.Hour), // 30 days
-			CreatedAt: time.Now(),
-		}
-
-		// Save new refresh token
-		if err := s.tokenRepo.CreateToken(ctx, newRefreshToken); err != nil {
-			return nil, fmt.Errorf("failed to create new refresh token: %w", err)
-		}
-
-		// Revoke old refresh token
-		if err := s.tokenRepo.RevokeToken(ctx, refreshTokenString); err != nil {
-			// Log error but don't fail the request
-			// The new token is already created
-		}
-
-		response.RefreshToken = newRefreshTokenString
-	*/
-
 	return response, nil
 }
 
@@ -153,21 +116,19 @@ func (s *RefreshTokenService) GetActiveTokens(ctx context.Context, userID string
 	return tokens, total, nil
 }
 
-// RefreshAccessToken is a convenience function that creates service instances and refreshes access token
+// RefreshAccessTokenFunc is a convenience function that creates service instances and refreshes access token
 // This matches the pattern used by Login for easy controller integration
-func RefreshAccessToken(ctx context.Context, refreshTokenString string) (*RefreshResponse, error) {
-	// Import required packages
-	// Note: These imports are at package level
-	// "github.com/keshablive/quester/internal/framework/database"
-	// "github.com/keshablive/quester/internal/repositories"
-
+func RefreshAccessTokenFunc(ctx context.Context, refreshTokenString string) (*RefreshResponse, error) {
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(database.DB)
 	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
 
+	// Initialize blacklist service with global cache
+	blacklistService := NewBlacklistService(cache.Client)
+
 	// Create refresh token service
-	refreshService := NewRefreshTokenService(tokenRepo, userRepo)
+	refreshService := NewRefreshTokenService(tokenRepo, userRepo, blacklistService)
 
 	// Perform token refresh
-	return refreshService.RefreshAccessToken(ctx, refreshTokenString)
+	return refreshService.RefreshAccessTokenMethod(ctx, refreshTokenString)
 }

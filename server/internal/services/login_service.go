@@ -2,9 +2,6 @@ package services
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"time"
@@ -14,44 +11,6 @@ import (
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
 )
-
-// LoginRequest represents login credentials
-type LoginRequest struct {
-	Email    string
-	Password string
-}
-
-// LoginResponse contains authentication tokens and user data
-type LoginResponse struct {
-	AccessToken  string       `json:"access_token"`
-	RefreshToken string       `json:"refresh_token"`
-	User         *models.User `json:"user"`
-}
-
-// NotFoundError represents a resource not found error
-type NotFoundError struct {
-	Message string
-}
-
-func (e *NotFoundError) Error() string {
-	return e.Message
-}
-
-// UserRepository interface for user data access
-type UserRepository interface {
-	FindByEmail(ctx context.Context, tenantID uuid.UUID, email string) (*models.User, error)
-	FindByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
-	UpdateUser(ctx context.Context, user *models.User) error
-}
-
-// RefreshTokenRepository interface for refresh token data access
-type RefreshTokenRepository interface {
-	CreateToken(ctx context.Context, token *models.RefreshToken) error
-	FindByToken(ctx context.Context, tokenString string) (*models.RefreshToken, error)
-	RevokeToken(ctx context.Context, tokenString string) error
-	RevokeAllByUserID(ctx context.Context, userID uuid.UUID) (int, error)
-	GetActiveTokens(ctx context.Context, userID uuid.UUID, limit, offset int) ([]models.RefreshToken, int64, error)
-}
 
 // LoginService handles user authentication
 type LoginService struct {
@@ -110,9 +69,6 @@ func (s *LoginService) Login(ctx context.Context, tenantID uuid.UUID, email, pas
 		go func(uID uuid.UUID, streak int) {
 			if err := s.achievementSvc.TrackStreak(context.Background(), uID, streak); err != nil {
 				// log but do not block login flow
-				// Use standard library log to avoid heavy deps in this file
-				// (there's an existing logging choice elsewhere in project)
-				// fmt.Printf used here for minimal changes
 				fmt.Printf("achievement.TrackStreak error: %v\n", err)
 			}
 		}(user.ID, user.LoginStreak)
@@ -125,13 +81,13 @@ func (s *LoginService) Login(ctx context.Context, tenantID uuid.UUID, email, pas
 	}
 
 	// Generate refresh token (30 days)
-	refreshTokenString, err := generateRandomToken(32)
+	refreshTokenString, err := GenerateRandomToken(32)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate refresh token: %w", err)
 	}
 
 	// Hash refresh token for storage
-	tokenHash := hashToken(refreshTokenString)
+	tokenHash := HashToken(refreshTokenString)
 
 	// Create refresh token record
 	refreshToken := &models.RefreshToken{
@@ -177,38 +133,17 @@ func (s *LoginService) updateLoginStreak(user *models.User) {
 	user.LastLogin = &now
 }
 
-// generateRandomToken generates a cryptographically secure random token
-func generateRandomToken(length int) (string, error) {
-	bytes := make([]byte, length)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
-}
-
-// hashToken creates a SHA256 hash of the token for storage
-func hashToken(token string) string {
-	hash := sha256.Sum256([]byte(token))
-	return hex.EncodeToString(hash[:])
-}
-
-// Login is a convenience function that creates service instances and performs login
+// LoginFunc is a convenience function that creates service instances and performs login
 // This matches the pattern used by Signup for easy controller integration
-func Login(ctx context.Context, tenantID uuid.UUID, email, password string) (*LoginResponse, error) {
-	// Import required packages
-	// Note: These imports are at package level, adding here for clarity
-	// "github.com/keshablive/quester/internal/framework/database"
-	// "github.com/keshablive/quester/internal/repositories"
-
+func LoginFunc(ctx context.Context, tenantID uuid.UUID, email, password string) (*LoginResponse, error) {
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(database.DB)
 	tokenRepo := repositories.NewRefreshTokenRepository(database.DB)
 
 	// Create login service
 	loginService := NewLoginService(userRepo, tokenRepo)
-	// Wire achievement service for optional streak tracking
-	achievementSvc := NewAchievementService(database.DB)
-	loginService.SetAchievementService(achievementSvc)
+	// Note: AchievementService is optional for streak tracking
+	// It can be wired in via SetAchievementService if needed
 
 	// Perform login
 	return loginService.Login(ctx, tenantID, email, password)
