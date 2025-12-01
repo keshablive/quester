@@ -197,49 +197,49 @@
 
 **Independent Test**: `go build ./...` passes; all controllers importable from `internal/framework/controller`
 
-- [ ] T122 Create git tag `pre-phase-5`
-- [ ] T123 [P] [US4] Move `server/internal/controllers/achievement_controller.go` → `server/internal/framework/controller/`
-- [ ] T124 [P] [US4] Move `server/internal/controllers/analytics_controller.go` → `server/internal/framework/controller/`
-- [ ] T125 [P] [US4] Move `server/internal/controllers/auth_controller.go` → `server/internal/framework/controller/`
-- [ ] T126 [P] [US4] Move `server/internal/controllers/badge_controller.go` → `server/internal/framework/controller/`
-- [ ] T127 [P] [US4] Move `server/internal/controllers/blacklist_controller.go` → `server/internal/framework/controller/`
-- [ ] T128 [P] [US4] Move `server/internal/controllers/certificate_controller.go` → `server/internal/framework/controller/`
-- [ ] T129 [P] [US4] Move `server/internal/controllers/classified_ad_controller.go` → `server/internal/framework/controller/`
-- [ ] T130 [P] [US4] Move `server/internal/controllers/comment_controller.go` → `server/internal/framework/controller/`
-- [ ] T131 [P] [US4] Move `server/internal/controllers/course_controller.go` → `server/internal/framework/controller/`
-- [ ] T132 [P] [US4] Move `server/internal/controllers/dashboard_controller.go` → `server/internal/framework/controller/`
-- [ ] T133 [P] [US4] Move `server/internal/controllers/enrollment_controller.go` → `server/internal/framework/controller/`
-- [ ] T134 [P] [US4] Move `server/internal/controllers/follow_controller.go` → `server/internal/framework/controller/`
-- [ ] T135 [P] [US4] Move `server/internal/controllers/groups_controller.go` → `server/internal/framework/controller/`
-- [ ] T136 [P] [US4] Move `server/internal/controllers/interaction_controller.go` → `server/internal/framework/controller/`
-- [ ] T137 [P] [US4] Move `server/internal/controllers/kms_controller.go` → `server/internal/framework/controller/`
-- [ ] T138 [P] [US4] Move `server/internal/controllers/leaderboard_controller.go` → `server/internal/framework/controller/`
-- [ ] T139 [P] [US4] Move `server/internal/controllers/learning_gamification_controller.go` → `server/internal/framework/controller/`
-- [ ] T140 [P] [US4] Move `server/internal/controllers/lesson_controller.go` → `server/internal/framework/controller/`
-- [ ] T141 [P] [US4] Move `server/internal/controllers/like_controller.go` → `server/internal/framework/controller/`
-- [ ] T142 [P] [US4] Move `server/internal/controllers/marketplace_controller.go` → `server/internal/framework/controller/`
-- [ ] T143 [P] [US4] Move `server/internal/controllers/messages_controller.go` → `server/internal/framework/controller/`
-- [ ] T144 [P] [US4] Move `server/internal/controllers/metrics_controller.go` → `server/internal/framework/controller/`
-- [ ] T145 [P] [US4] Move `server/internal/controllers/moderation_controller.go` → `server/internal/framework/controller/`
-- [ ] T146 [P] [US4] Move `server/internal/controllers/notifications_controller.go` → `server/internal/framework/controller/`
-- [ ] T147 [P] [US4] Move `server/internal/controllers/post_controller.go` → `server/internal/framework/controller/`
-- [ ] T148 [P] [US4] Move `server/internal/controllers/property_controller.go` → `server/internal/framework/controller/`
-- [ ] T149 [P] [US4] Move `server/internal/controllers/quest_controller.go` → `server/internal/framework/controller/`
-- [ ] T150 [P] [US4] Move `server/internal/controllers/quest_progress_controller.go` → `server/internal/framework/controller/`
-- [ ] T151 [P] [US4] Move `server/internal/controllers/report_controller.go` → `server/internal/framework/controller/`
-- [ ] T152 [P] [US4] Move `server/internal/controllers/social_controller.go` → `server/internal/framework/controller/`
-- [ ] T153 [P] [US4] Move `server/internal/controllers/social_gamification_controller.go` → `server/internal/framework/controller/`
-- [ ] T154 [P] [US4] Move `server/internal/controllers/token_controller.go` → `server/internal/framework/controller/`
-- [ ] T155 [P] [US4] Move `server/internal/controllers/transaction_controller.go` → `server/internal/framework/controller/`
-- [ ] T156 [P] [US4] Move `server/internal/controllers/two_factor_controller.go` → `server/internal/framework/controller/`
-- [ ] T157 [P] [US4] Move `server/internal/controllers/user_controller.go` → `server/internal/framework/controller/`
-- [ ] T158 [P] [US4] Move `server/internal/controllers/video_streaming_controller.go` → `server/internal/framework/controller/`
-- [ ] T159 [P] [US4] Move `server/internal/controllers/websocket_controller.go` → `server/internal/framework/controller/`
-- [ ] T160 [US4] [US7] Update all imports from `internal/controllers` → `internal/framework/controller` across codebase
-- [ ] T161 [US4] Update `server/internal/framework/controller/index.go` with domain controller exports
-- [ ] T162 [US4] [US7] Run `go build ./...` in `server/` - verify zero errors
-- [ ] T163 [US4] Delete empty `server/internal/controllers/` directory
-- [ ] T164 Create git tag `post-phase-5-controllers`
+- [X] T122 Create git tag `pre-phase-5`
+- [X] T123 [P] [US4] Move `server/internal/controllers/achievement_controller.go` → `server/internal/framework/controller/`
+- [X] T124 [P] [US4] Move `server/internal/controllers/analytics_controller.go` → `server/internal/framework/controller/`
+- [X] T125 [P] [US4] Move `server/internal/controllers/auth_controller.go` → `server/internal/framework/controller/`
+- [X] T126 [P] [US4] Move `server/internal/controllers/badge_controller.go` → `server/internal/framework/controller/`
+- [X] T127 [P] [US4] Move `server/internal/controllers/blacklist_controller.go` → `server/internal/framework/controller/`
+- [X] T128 [P] [US4] Move `server/internal/controllers/certificate_controller.go` → `server/internal/framework/controller/`
+- [X] T129 [P] [US4] Move `server/internal/controllers/classified_ad_controller.go` → `server/internal/framework/controller/`
+- [X] T130 [P] [US4] Move `server/internal/controllers/comment_controller.go` → `server/internal/framework/controller/`
+- [X] T131 [P] [US4] Move `server/internal/controllers/course_controller.go` → `server/internal/framework/controller/`
+- [X] T132 [P] [US4] Move `server/internal/controllers/dashboard_controller.go` → `server/internal/framework/controller/`
+- [X] T133 [P] [US4] Move `server/internal/controllers/enrollment_controller.go` → `server/internal/framework/controller/`
+- [X] T134 [P] [US4] Move `server/internal/controllers/follow_controller.go` → `server/internal/framework/controller/`
+- [X] T135 [P] [US4] Move `server/internal/controllers/groups_controller.go` → `server/internal/framework/controller/`
+- [X] T136 [P] [US4] Move `server/internal/controllers/interaction_controller.go` → `server/internal/framework/controller/`
+- [X] T137 [P] [US4] Move `server/internal/controllers/kms_controller.go` → `server/internal/framework/controller/`
+- [X] T138 [P] [US4] Move `server/internal/controllers/leaderboard_controller.go` → `server/internal/framework/controller/`
+- [X] T139 [P] [US4] Move `server/internal/controllers/learning_gamification_controller.go` → `server/internal/framework/controller/`
+- [X] T140 [P] [US4] Move `server/internal/controllers/lesson_controller.go` → `server/internal/framework/controller/`
+- [X] T141 [P] [US4] Move `server/internal/controllers/like_controller.go` → `server/internal/framework/controller/`
+- [X] T142 [P] [US4] Move `server/internal/controllers/marketplace_controller.go` → `server/internal/framework/controller/`
+- [X] T143 [P] [US4] Move `server/internal/controllers/messages_controller.go` → `server/internal/framework/controller/`
+- [X] T144 [P] [US4] Move `server/internal/controllers/metrics_controller.go` → `server/internal/framework/controller/`
+- [X] T145 [P] [US4] Move `server/internal/controllers/moderation_controller.go` → `server/internal/framework/controller/`
+- [X] T146 [P] [US4] Move `server/internal/controllers/notifications_controller.go` → `server/internal/framework/controller/`
+- [X] T147 [P] [US4] Move `server/internal/controllers/post_controller.go` → `server/internal/framework/controller/`
+- [X] T148 [P] [US4] Move `server/internal/controllers/property_controller.go` → `server/internal/framework/controller/`
+- [X] T149 [P] [US4] Move `server/internal/controllers/quest_controller.go` → `server/internal/framework/controller/`
+- [X] T150 [P] [US4] Move `server/internal/controllers/quest_progress_controller.go` → `server/internal/framework/controller/`
+- [X] T151 [P] [US4] Move `server/internal/controllers/report_controller.go` → `server/internal/framework/controller/`
+- [X] T152 [P] [US4] Move `server/internal/controllers/social_controller.go` → `server/internal/framework/controller/`
+- [X] T153 [P] [US4] Move `server/internal/controllers/social_gamification_controller.go` → `server/internal/framework/controller/`
+- [X] T154 [P] [US4] Move `server/internal/controllers/token_controller.go` → `server/internal/framework/controller/`
+- [X] T155 [P] [US4] Move `server/internal/controllers/transaction_controller.go` → `server/internal/framework/controller/`
+- [X] T156 [P] [US4] Move `server/internal/controllers/two_factor_controller.go` → `server/internal/framework/controller/`
+- [X] T157 [P] [US4] Move `server/internal/controllers/user_controller.go` → `server/internal/framework/controller/`
+- [X] T158 [P] [US4] Move `server/internal/controllers/video_streaming_controller.go` → `server/internal/framework/controller/`
+- [X] T159 [P] [US4] Move `server/internal/controllers/websocket_controller.go` → `server/internal/framework/controller/`
+- [X] T160 [US4] [US7] Update all imports from `internal/controllers` → `internal/framework/controller` across codebase
+- [X] T161 [US4] Update `server/internal/framework/controller/index.go` with domain controller exports
+- [X] T162 [US4] [US7] Run `go build ./...` in `server/` - verify zero errors
+- [X] T163 [US4] Delete empty `server/internal/controllers/` directory
+- [X] T164 Create git tag `post-phase-5-controllers`
 
 **Checkpoint**: All controllers in framework. Build passes.
 
@@ -251,33 +251,33 @@
 
 **Independent Test**: `go build ./...` passes; all routes importable from `internal/framework/routes`
 
-- [ ] T165 Create git tag `pre-phase-6`
-- [ ] T166 [P] [US5] Move `server/internal/routes/admin_routes.go` → `server/internal/framework/routes/`
-- [ ] T167 [P] [US5] Move `server/internal/routes/analytics_routes.go` → `server/internal/framework/routes/`
-- [ ] T168 [P] [US5] Move `server/internal/routes/auth_routes.go` → `server/internal/framework/routes/`
-- [ ] T169 [P] [US5] Move `server/internal/routes/certificate_routes.go` → `server/internal/framework/routes/`
-- [ ] T170 [P] [US5] Move `server/internal/routes/classified_routes.go` → `server/internal/framework/routes/`
-- [ ] T171 [P] [US5] Move `server/internal/routes/follow_routes.go` → `server/internal/framework/routes/`
-- [ ] T172 [P] [US5] Move `server/internal/routes/gamification_routes.go` → `server/internal/framework/routes/`
-- [ ] T173 [P] [US5] Move `server/internal/routes/leaderboard_routes.go` → `server/internal/framework/routes/`
-- [ ] T174 [P] [US5] Move `server/internal/routes/learning_gamification_routes.go` → `server/internal/framework/routes/`
-- [ ] T175 [P] [US5] Move `server/internal/routes/lms_routes.go` → `server/internal/framework/routes/`
-- [ ] T176 [P] [US5] Move `server/internal/routes/messages_routes.go` → `server/internal/framework/routes/`
-- [ ] T177 [P] [US5] Move `server/internal/routes/metrics_routes.go` → `server/internal/framework/routes/`
-- [ ] T178 [P] [US5] Move `server/internal/routes/notifications_routes.go` → `server/internal/framework/routes/`
-- [ ] T179 [P] [US5] Move `server/internal/routes/property_routes.go` → `server/internal/framework/routes/`
-- [ ] T180 [P] [US5] Move `server/internal/routes/reports_routes.go` → `server/internal/framework/routes/`
-- [ ] T181 [P] [US5] Move `server/internal/routes/routes.go` → `server/internal/framework/routes/`
-- [ ] T182 [P] [US5] Move `server/internal/routes/social_gamification_routes.go` → `server/internal/framework/routes/`
-- [ ] T183 [P] [US5] Move `server/internal/routes/social_routes.go` → `server/internal/framework/routes/`
-- [ ] T184 [P] [US5] Move `server/internal/routes/stream_routes.go` → `server/internal/framework/routes/`
-- [ ] T185 [P] [US5] Move `server/internal/routes/transaction_routes.go` → `server/internal/framework/routes/`
-- [ ] T186 [P] [US5] Move `server/internal/routes/websocket_routes.go` → `server/internal/framework/routes/`
-- [ ] T187 [US5] [US7] Update all imports from `internal/routes` → `internal/framework/routes` across codebase
-- [ ] T188 [US5] Create `server/internal/framework/routes/index.go` with package exports (facade pattern per Q5)
-- [ ] T189 [US5] [US7] Run `go build ./...` in `server/` - verify zero errors
-- [ ] T190 [US5] Delete empty `server/internal/routes/` directory
-- [ ] T191 Create git tag `post-phase-6-routes`
+- [X] T165 Create git tag `pre-phase-6`
+- [X] T166 [P] [US5] Move `server/internal/routes/admin_routes.go` → `server/internal/framework/routes/`
+- [X] T167 [P] [US5] Move `server/internal/routes/analytics_routes.go` → `server/internal/framework/routes/`
+- [X] T168 [P] [US5] Move `server/internal/routes/auth_routes.go` → `server/internal/framework/routes/`
+- [X] T169 [P] [US5] Move `server/internal/routes/certificate_routes.go` → `server/internal/framework/routes/`
+- [X] T170 [P] [US5] Move `server/internal/routes/classified_routes.go` → `server/internal/framework/routes/`
+- [X] T171 [P] [US5] Move `server/internal/routes/follow_routes.go` → `server/internal/framework/routes/`
+- [X] T172 [P] [US5] Move `server/internal/routes/gamification_routes.go` → `server/internal/framework/routes/`
+- [X] T173 [P] [US5] Move `server/internal/routes/leaderboard_routes.go` → `server/internal/framework/routes/`
+- [X] T174 [P] [US5] Move `server/internal/routes/learning_gamification_routes.go` → `server/internal/framework/routes/`
+- [X] T175 [P] [US5] Move `server/internal/routes/lms_routes.go` → `server/internal/framework/routes/`
+- [X] T176 [P] [US5] Move `server/internal/routes/messages_routes.go` → `server/internal/framework/routes/`
+- [X] T177 [P] [US5] Move `server/internal/routes/metrics_routes.go` → `server/internal/framework/routes/`
+- [X] T178 [P] [US5] Move `server/internal/routes/notifications_routes.go` → `server/internal/framework/routes/`
+- [X] T179 [P] [US5] Move `server/internal/routes/property_routes.go` → `server/internal/framework/routes/`
+- [X] T180 [P] [US5] Move `server/internal/routes/reports_routes.go` → `server/internal/framework/routes/`
+- [X] T181 [P] [US5] Move `server/internal/routes/routes.go` → `server/internal/framework/routes/`
+- [X] T182 [P] [US5] Move `server/internal/routes/social_gamification_routes.go` → `server/internal/framework/routes/`
+- [X] T183 [P] [US5] Move `server/internal/routes/social_routes.go` → `server/internal/framework/routes/`
+- [X] T184 [P] [US5] Move `server/internal/routes/stream_routes.go` → `server/internal/framework/routes/`
+- [X] T185 [P] [US5] Move `server/internal/routes/transaction_routes.go` → `server/internal/framework/routes/`
+- [X] T186 [P] [US5] Move `server/internal/routes/websocket_routes.go` → `server/internal/framework/routes/`
+- [X] T187 [US5] [US7] Update all imports from `internal/routes` → `internal/framework/routes` across codebase
+- [X] T188 [US5] Create `server/internal/framework/routes/index.go` with package exports (facade pattern per Q5)
+- [X] T189 [US5] [US7] Run `go build ./...` in `server/` - verify zero errors
+- [X] T190 [US5] Delete empty `server/internal/routes/` directory
+- [X] T191 Create git tag `post-phase-6-routes`
 
 **Checkpoint**: All routes in framework. Build passes.
 
@@ -289,10 +289,10 @@
 
 **Independent Test**: Models implement `TenantModel` interface where appropriate
 
-- [ ] T192 [US6] Verify `server/internal/models/` stays in place (no move needed per spec)
-- [ ] T193 [US6] Audit tenant-scoped models implement `TenantModel` interface
-- [ ] T194 [US6] [US7] Update any model imports if needed for consistency
-- [ ] T195 Create git tag `post-phase-7-models-verified`
+- [X] T192 [US6] Verify `server/internal/models/` stays in place (no move needed per spec)
+- [X] T193 [US6] Audit tenant-scoped models implement `TenantModel` interface
+- [X] T194 [US6] [US7] Update any model imports if needed for consistency
+- [X] T195 Create git tag `post-phase-7-models-verified`
 
 **Checkpoint**: Models verified. No changes needed.
 
@@ -302,14 +302,14 @@
 
 **Goal**: Utils consolidated in `internal/framework/utils/`
 
-- [ ] T196 Create git tag `pre-phase-8`
-- [ ] T197 [P] Move `server/internal/utils/response.go` → `server/internal/framework/utils/`
-- [ ] T198 [P] Move `server/internal/utils/validation.go` → `server/internal/framework/utils/`
-- [ ] T199 [US7] Update all imports from `internal/utils` → `internal/framework/utils` across codebase
-- [ ] T200 Create `server/internal/framework/utils/index.go` with package exports (facade pattern per Q5)
-- [ ] T201 [US7] Run `go build ./...` in `server/` - verify zero errors
-- [ ] T202 Delete empty `server/internal/utils/` directory
-- [ ] T203 Create git tag `post-phase-8-utils`
+- [X] T196 Create git tag `pre-phase-8`
+- [X] T197 [P] Move `server/internal/utils/response.go` → `server/internal/framework/utils/`
+- [X] T198 [P] Move `server/internal/utils/validation.go` → `server/internal/framework/utils/`
+- [X] T199 [US7] Update all imports from `internal/utils` → `internal/framework/utils` across codebase
+- [X] T200 Create `server/internal/framework/utils/index.go` with package exports (facade pattern per Q5)
+- [X] T201 [US7] Run `go build ./...` in `server/` - verify zero errors
+- [X] T202 Delete empty `server/internal/utils/` directory
+- [X] T203 Create git tag `post-phase-8-utils`
 
 **Checkpoint**: Utils merged. Build passes.
 
@@ -319,14 +319,14 @@
 
 **Purpose**: Final cleanup and comprehensive verification
 
-- [ ] T204 [US7] Run `go build ./...` in `server/` - final build verification
-- [ ] T205 [US7] Run `go test ./...` in `server/` - full test suite verification
-- [ ] T206 Record final build time and compare to baseline (SC-009: within 10%)
-- [ ] T207 Verify zero duplicate type declarations (SC-003)
-- [ ] T208 Verify `internal/app/` contains only `app.go` (SC-005)
-- [ ] T209 [P] Update any documentation referencing old paths
-- [ ] T210 Create final git tag `026-server-framework-consolidation-complete`
-- [ ] T211 Run quickstart.md validation checklist
+- [X] T204 [US7] Run `go build ./...` in `server/` - final build verification
+- [X] T205 [US7] Run `go test ./...` in `server/` - full test suite verification
+- [X] T206 Record final build time and compare to baseline (SC-009: within 10%)
+- [X] T207 Verify zero duplicate type declarations (SC-003)
+- [X] T208 Verify `internal/app/` contains only `app.go` (SC-005)
+- [X] T209 [P] Update any documentation referencing old paths
+- [X] T210 Create final git tag `026-server-framework-consolidation-complete`
+- [X] T211 Run quickstart.md validation checklist
 
 ---
 
