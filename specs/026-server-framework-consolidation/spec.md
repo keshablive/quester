@@ -13,10 +13,11 @@ This specification defines the consolidation of the server codebase into a clean
 - No clear separation between reusable framework components and application-specific implementations
 
 The goal is to reorganize all server code into a cohesive framework structure where:
-1. `internal/framework/` contains reusable, application-agnostic components
-2. `internal/app/` contains application-specific implementations
-3. All imports are updated to reflect the new structure
-4. Build errors are resolved
+1. `internal/framework/` contains all reusable components (services, controllers, repositories, routes, middleware, utils)
+2. `internal/app/` contains only bootstrap/initialization code (`app.go`)
+3. `internal/models/` remains as a shared independent package
+4. All imports are updated to reflect the new structure
+5. Build errors are resolved
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -46,9 +47,9 @@ As a developer, I want all services organized under `internal/framework/` with c
 
 **Acceptance Scenarios**:
 
-1. **Given** 60 service files in `internal/services/`, **When** reorganized, **Then** base/framework services are in `internal/framework/service/` and application services are in `internal/app/services/`
+1. **Given** 60 service files in `internal/services/`, **When** reorganized, **Then** all services are moved to `internal/framework/service/` alongside framework base patterns
 2. **Given** service files with inconsistent patterns, **When** consolidated, **Then** all services follow the `BaseService` embedding pattern
-3. **Given** service dependencies, **When** imports are updated, **Then** all imports use the correct framework paths
+3. **Given** service dependencies, **When** imports are updated, **Then** all imports use `internal/framework/service/` path
 
 ---
 
@@ -62,8 +63,8 @@ As a developer, I want all repositories organized under `internal/framework/` wi
 
 **Acceptance Scenarios**:
 
-1. **Given** 39 repository files in `internal/repositories/`, **When** reorganized, **Then** they are moved to `internal/app/repositories/` and follow the `GenericRepository` embedding pattern
-2. **Given** repository imports, **When** updated, **Then** all imports point to `internal/app/repositories/` and use framework base from `internal/framework/repository/`
+1. **Given** 39 repository files in `internal/repositories/`, **When** reorganized, **Then** they are moved to `internal/framework/repository/` and follow the `GenericRepository` embedding pattern
+2. **Given** repository imports, **When** updated, **Then** all imports point to `internal/framework/repository/`
 3. **Given** tenant-scoped queries, **When** reviewed, **Then** all repositories enforce tenant isolation
 
 ---
@@ -78,8 +79,8 @@ As a developer, I want all controllers organized under a consistent structure so
 
 **Acceptance Scenarios**:
 
-1. **Given** 39 controller files in `internal/controllers/`, **When** reorganized, **Then** they are in `internal/app/controllers/` with framework helpers
-2. **Given** controller dependencies, **When** imports are updated, **Then** all controllers use framework pagination and error handling
+1. **Given** 39 controller files in `internal/controllers/`, **When** reorganized, **Then** they are moved to `internal/framework/controller/` alongside framework helpers
+2. **Given** controller dependencies, **When** imports are updated, **Then** all controllers use `internal/framework/controller/` path for pagination and error handling
 3. **Given** controller tests, **When** imports are updated, **Then** all tests pass
 
 ---
@@ -94,8 +95,8 @@ As a developer, I want all route definitions organized consistently so that API 
 
 **Acceptance Scenarios**:
 
-1. **Given** 21 route files in `internal/routes/`, **When** organized, **Then** routes are in `internal/app/routes/` with clear groupings
-2. **Given** route middleware, **When** imports are updated, **Then** all routes use framework middleware correctly
+1. **Given** 21 route files in `internal/routes/`, **When** organized, **Then** routes are moved to `internal/framework/routes/` with clear groupings
+2. **Given** route middleware, **When** imports are updated, **Then** all routes use `internal/framework/middleware/` correctly
 
 ---
 
@@ -173,8 +174,8 @@ As a developer, I want all import paths updated correctly so that the codebase c
 - **SC-001**: `go build ./...` completes with zero errors
 - **SC-002**: `go test ./...` passes all existing tests
 - **SC-003**: Zero duplicate type declarations across the codebase
-- **SC-004**: Framework directory (`internal/framework/`) contains zero app-specific code
-- **SC-005**: App directory (`internal/app/`) contains all application-specific implementations
+- **SC-004**: Framework directory (`internal/framework/`) contains all services, controllers, repositories, routes
+- **SC-005**: App directory (`internal/app/`) contains only bootstrap/initialization code
 - **SC-006**: All services (60 files) follow consistent `BaseService` pattern
 - **SC-007**: All repositories (39 files) follow consistent `GenericRepository` pattern
 - **SC-008**: All imports updated and verified (0 broken imports)
@@ -187,8 +188,12 @@ As a developer, I want all import paths updated correctly so that the codebase c
 - Q: When resolving duplicate declarations in auth services, which consolidation strategy? → A: Keep separate service files, extract shared types to `auth_types.go`
 - Q: Where should `internal/models/` be placed in the final structure? → A: Keep at `internal/models/` (shared, independent package)
 - Q: Rollback strategy if refactoring causes build failures mid-way? → A: Git tags at phase boundaries (e.g., `pre-phase-1`, `post-phase-1`)
-- Q: Where should `internal/repositories/` be placed? → A: Move to `internal/app/repositories/` (app-specific implementations)
+- Q: Where should `internal/repositories/` be placed? → A: Move to `internal/framework/repository/` (consistent with services/controllers/routes)
 - Q: What should happen to `internal/utils/` since `internal/framework/utils/` exists? → A: Merge into `internal/framework/utils/` (single utils location)
+- Q: Where should `internal/services/` (60 files) be placed? → A: Move to `internal/framework/service/` (framework owns all services)
+- Q: Where should `internal/controllers/` (39 files) be placed? → A: Move to `internal/framework/controller/` (framework owns controllers)
+- Q: Where should `internal/routes/` (21 files) be placed? → A: Move to `internal/framework/routes/` (framework owns routes)
+- Q: What should remain in `internal/app/` directory? → A: Keep for bootstrap/initialization code only (`app.go`)
 
 ## Assumptions
 
