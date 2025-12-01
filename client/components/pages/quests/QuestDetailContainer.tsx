@@ -32,9 +32,9 @@ import {
   useStartQuest,
   useAbandonQuest,
   cn,
+  useOnlineManager,
 } from '@/core';
 import { OfflineIndicator, ErrorState, MutationErrorToast } from '@/components/shared';
-import { useOnlineManager } from '@/core/hooks/useOnlineManager';
 
 // ============================================================================
 // Types

@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { View, Text, Animated, StyleSheet, Platform } from 'react-native';
-import { useOnlineManager } from '../../core/hooks/useOnlineManager';
+import { useOnlineManager } from '@/core';
 
 interface OfflineIndicatorProps {
   /** Optional custom message */
