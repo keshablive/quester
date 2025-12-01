@@ -11,15 +11,15 @@ import (
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/framework/utils"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/datatypes"
 )
 
 type QuestController struct {
-	questService *services.QuestService
+	questService *service.QuestService
 }
 
-func NewQuestController(questService *services.QuestService) *QuestController {
+func NewQuestController(questService *service.QuestService) *QuestController {
 	return &QuestController{questService: questService}
 }
 

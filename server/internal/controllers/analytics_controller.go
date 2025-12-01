@@ -7,16 +7,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // AnalyticsController handles analytics HTTP requests
 type AnalyticsController struct {
-	service *services.AnalyticsService
+	service *service.AnalyticsService
 }
 
 // NewAnalyticsController creates a new analytics controller
-func NewAnalyticsController(service *services.AnalyticsService) *AnalyticsController {
+func NewAnalyticsController(service *service.AnalyticsService) *AnalyticsController {
 	return &AnalyticsController{service: service}
 }
 

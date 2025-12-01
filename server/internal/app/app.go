@@ -23,7 +23,7 @@ import (
 	"github.com/keshablive/quester/internal/migrations"
 	"github.com/keshablive/quester/internal/repositories"
 	"github.com/keshablive/quester/internal/routes"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -35,7 +35,7 @@ type TenantViolationLoggerAdapter struct{}
 func (t *TenantViolationLoggerAdapter) LogViolation(ctx context.Context, userID, userTenantID, resourceTenantID uuid.UUID, resourceType string, resourceID uuid.UUID, action, ip, userAgent string) {
 	// Create repository and service (safe for concurrent use)
 	auditRepo := repositories.NewAuditLogRepository(database.DB)
-	auditSvc := services.NewAuditLogService(auditRepo)
+	auditSvc := service.NewAuditLogService(auditRepo)
 
 	// Fire-and-forget audit logging
 	_ = auditSvc.LogTenantViolation(ctx, userID, userTenantID, resourceTenantID, resourceType, resourceID, action, ip, userAgent)
@@ -132,7 +132,7 @@ func New() (*App, error) {
 	// Start token cleanup scheduler (T083)
 	// Runs daily at 2 AM UTC - calculated as 24-hour interval
 	cleanupCtx, cancelCleanup := context.WithCancel(context.Background())
-	go services.StartTokenCleanup(cleanupCtx, database.DB, 24*time.Hour)
+	go service.StartTokenCleanup(cleanupCtx, database.DB, 24*time.Hour)
 	log.Println("✓ Token cleanup scheduler started (runs every 24 hours)")
 
 	// Start monthly leaderboard reset scheduler (T041)
@@ -479,7 +479,7 @@ func startStreakResetScheduler(ctx context.Context) {
 					challengeRepo := repositories.NewLearningChallengeRepository(db)
 					userRepo := repositories.NewUserRepository(db)
 
-					svc := services.NewLearningGamificationService(
+					svc := service.NewLearningGamificationService(
 						xpRepo,
 						streakRepo,
 						levelRepo,
@@ -532,7 +532,7 @@ func startChallengeCleanupScheduler(ctx context.Context) {
 					challengeRepo := repositories.NewLearningChallengeRepository(db)
 					userRepo := repositories.NewUserRepository(db)
 
-					svc := services.NewLearningGamificationService(
+					svc := service.NewLearningGamificationService(
 						xpRepo,
 						streakRepo,
 						levelRepo,
@@ -655,7 +655,7 @@ func registerRepositories(c *container.Container) {
 
 	// CacheService (007-api-performance-caching T035)
 	if err := c.RegisterSingleton("cacheService", func(c *container.Container) (interface{}, error) {
-		return services.NewCacheServiceFromGlobal(), nil
+		return service.NewCacheServiceFromGlobal(), nil
 	}); err != nil {
 		log.Fatalf("Failed to register cacheService: %v", err)
 	}
@@ -698,17 +698,17 @@ func registerServices(c *container.Container) {
 		userRepo, _ := c.Resolve("userRepository")
 
 		// Queue service and notification service are optional
-		var queueService *services.QueueService
+		var queueService *service.QueueService
 		if qs, err := c.Resolve("queueService"); err == nil {
-			queueService = qs.(*services.QueueService)
+			queueService = qs.(*service.QueueService)
 		}
 
-		var notifService *services.NotificationService
+		var notifService *service.NotificationService
 		if ns, err := c.Resolve("notificationService"); err == nil {
-			notifService = ns.(*services.NotificationService)
+			notifService = ns.(*service.NotificationService)
 		}
 
-		svc := services.NewSocialGamificationService(
+		svc := service.NewSocialGamificationService(
 			socialXPRepo.(*repositories.SocialXPRepository),
 			dailyChallengeRepo.(*repositories.DailyChallengeRepository),
 			contentMilestoneRepo.(*repositories.ContentMilestoneRepository),
@@ -737,17 +737,17 @@ func registerServices(c *container.Container) {
 		userRepo, _ := c.Resolve("userRepository")
 
 		// Queue service and notification service are optional
-		var queueService *services.QueueService
+		var queueService *service.QueueService
 		if qs, err := c.Resolve("queueService"); err == nil {
-			queueService = qs.(*services.QueueService)
+			queueService = qs.(*service.QueueService)
 		}
 
-		var notifService *services.NotificationService
+		var notifService *service.NotificationService
 		if ns, err := c.Resolve("notificationService"); err == nil {
-			notifService = ns.(*services.NotificationService)
+			notifService = ns.(*service.NotificationService)
 		}
 
-		svc := services.NewLearningGamificationService(
+		svc := service.NewLearningGamificationService(
 			learningXPRepo.(*repositories.LearningXPRepository),
 			learningStreakRepo.(*repositories.LearningStreakRepository),
 			learningLevelRepo.(*repositories.LearningLevelRepository),
@@ -775,7 +775,7 @@ func registerServices(c *container.Container) {
 		leaderboardRepo, _ := c.Resolve("leaderboardRepository")
 		userRepo, _ := c.Resolve("userRepository")
 
-		return services.NewLeaderboardService(
+		return service.NewLeaderboardService(
 			database.DB,
 			nil, // logger - will use default from BaseService
 			redisCache,
@@ -797,7 +797,7 @@ func registerServices(c *container.Container) {
 	// if err := c.RegisterSingleton("propertyService", func(c *container.Container) (interface{}, error) {
 	//     propertyRepo := c.MustResolveTyped[interfaces.PropertyRepository]("propertyRepository")
 	//     db := c.MustResolveTyped[*gorm.DB]("database")
-	//     return services.NewPropertyService(propertyRepo, db, ocrService, aiService), nil
+	//     return service.NewPropertyService(propertyRepo, db, ocrService, aiService), nil
 	// }); err != nil {
 	//     log.Fatalf("Failed to register propertyService: %v", err)
 	// }

@@ -7,11 +7,11 @@ import (
 
 	"github.com/keshablive/quester/internal/controllers"
 	fwmiddleware "github.com/keshablive/quester/internal/framework/middleware"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // SetupReportsRoutes registers report and dashboard routes
-func SetupReportsRoutes(app *fiber.App, reportService *services.ReportService, dashboardService *services.DashboardService, authMiddleware fiber.Handler) {
+func SetupReportsRoutes(app *fiber.App, reportService *service.ReportService, dashboardService *service.DashboardService, authMiddleware fiber.Handler) {
 	// Create controllers
 	reportController := controllers.NewReportController(reportService)
 	dashboardController := controllers.NewDashboardController(dashboardService)

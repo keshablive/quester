@@ -10,19 +10,19 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/framework/cache"
 	"github.com/keshablive/quester/internal/framework/database"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
 )
 
 // AuthController handles authentication endpoints
 type AuthController struct {
-	authService      *services.AuthService
-	twoFactorService *services.TwoFactorService
+	authService      *service.AuthService
+	twoFactorService *service.TwoFactorService
 }
 
 // NewAuthController creates a new AuthController
-func NewAuthController(authService *services.AuthService, twoFactorService *services.TwoFactorService) *AuthController {
+func NewAuthController(authService *service.AuthService, twoFactorService *service.TwoFactorService) *AuthController {
 	return &AuthController{
 		authService:      authService,
 		twoFactorService: twoFactorService,
@@ -122,7 +122,7 @@ func (ctrl *AuthController) Signup(c *fiber.Ctx) error {
 	}
 
 	// Call signup service
-	signupReq := &services.SignupRequest{
+	signupReq := &service.SignupRequest{
 		Email:    req.Email,
 		Username: req.Username,
 		Password: req.Password,
@@ -754,7 +754,7 @@ func (ctrl *AuthController) CheckBlacklistStatus(c *fiber.Ctx) error {
 	tokenHash := hashToken(token)
 
 	// Check blacklist
-	blacklistService := services.NewBlacklistService(cache.Client)
+	blacklistService := service.NewBlacklistService(cache.Client)
 	isBlacklisted := blacklistService.IsBlacklistedSimple(tokenHash)
 
 	// Return status
@@ -781,7 +781,7 @@ func (ctrl *AuthController) CleanupBlacklist(c *fiber.Ctx) error {
 	}
 
 	// Perform cleanup
-	blacklistService := services.NewBlacklistService(cache.Client)
+	blacklistService := service.NewBlacklistService(cache.Client)
 	count, err := blacklistService.CleanupExpiredTokens()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

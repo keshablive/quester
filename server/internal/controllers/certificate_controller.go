@@ -4,16 +4,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // CertificateController handles certificate-related HTTP requests
 type CertificateController struct {
-	service *services.CertificateService
+	service *service.CertificateService
 }
 
 // NewCertificateController creates a new certificate controller
-func NewCertificateController(service *services.CertificateService) *CertificateController {
+func NewCertificateController(service *service.CertificateService) *CertificateController {
 	return &CertificateController{
 		service: service,
 	}
@@ -26,7 +26,7 @@ func (ctrl *CertificateController) IssueCertificate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
 	}
 
-	var req services.IssueCertificateRequest
+	var req service.IssueCertificateRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
 	}

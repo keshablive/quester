@@ -8,16 +8,16 @@ import (
 	"github.com/keshablive/quester/internal/framework/core"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // MarketplaceController handles marketplace HTTP requests
 type MarketplaceController struct {
-	marketplaceService *services.MarketplaceService
+	marketplaceService *service.MarketplaceService
 }
 
 // NewMarketplaceController creates a new marketplace controller
-func NewMarketplaceController(marketplaceService *services.MarketplaceService) *MarketplaceController {
+func NewMarketplaceController(marketplaceService *service.MarketplaceService) *MarketplaceController {
 	return &MarketplaceController{
 		marketplaceService: marketplaceService,
 	}

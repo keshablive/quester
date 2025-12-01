@@ -7,14 +7,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/mocks"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBadgeService_Create(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	badge := &models.Badge{
@@ -39,7 +39,7 @@ func TestBadgeService_Create(t *testing.T) {
 func TestBadgeService_FindByID(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -66,7 +66,7 @@ func TestBadgeService_FindByID(t *testing.T) {
 func TestBadgeService_FindAll(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -90,7 +90,7 @@ func TestBadgeService_FindAll(t *testing.T) {
 func TestBadgeService_Update(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	badge := &models.Badge{
@@ -114,7 +114,7 @@ func TestBadgeService_Update(t *testing.T) {
 func TestBadgeService_Delete(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -134,7 +134,7 @@ func TestBadgeService_Delete(t *testing.T) {
 func TestBadgeService_GetBadgesByType(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -162,7 +162,7 @@ func TestBadgeService_GetBadgesByType(t *testing.T) {
 func TestBadgeService_GetUserBadges(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -187,7 +187,7 @@ func TestBadgeService_GetUserBadges(t *testing.T) {
 func TestBadgeService_AwardBadgeToUser(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	userBadge := &models.UserBadge{
@@ -210,7 +210,7 @@ func TestBadgeService_AwardBadgeToUser(t *testing.T) {
 func TestBadgeService_HasUserEarnedBadge(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -232,7 +232,7 @@ func TestBadgeService_HasUserEarnedBadge(t *testing.T) {
 func TestBadgeService_GetBadgeEarnCount(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -254,7 +254,7 @@ func TestBadgeService_GetBadgeEarnCount(t *testing.T) {
 func TestBadgeService_RevokeBadgeFromUser(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.BadgeRepository)
-	_ = services.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
+	_ = service.NewBadgeService(nil, nil, mockRepo, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()

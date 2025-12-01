@@ -11,13 +11,13 @@ import (
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
 // BadgeController handles badge-related HTTP requests
 type BadgeController struct {
-	badgeService *services.BadgeService
+	badgeService *service.BadgeService
 }
 
 // NewBadgeController creates a new badge controller with Redis-backed service
@@ -35,12 +35,12 @@ func NewBadgeController(db *gorm.DB) *BadgeController {
 	}
 
 	// Initialize notification service
-	notificationService := services.NewNotificationService(db)
+	notificationService := service.NewNotificationService(db)
 	log.Println("✓ Notification service initialized")
 
 	// Initialize badge repository and service
 	badgeRepo := repositories.NewBadgeRepository(db)
-	badgeService := services.NewBadgeService(db, nil, badgeRepo, badgeRepo, redisClient, notificationService)
+	badgeService := service.NewBadgeService(db, nil, badgeRepo, badgeRepo, redisClient, notificationService)
 
 	log.Println("✓ Badge service initialized with Redis caching and notifications")
 

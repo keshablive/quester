@@ -10,7 +10,7 @@ import (
 
 	"github.com/keshablive/quester/internal/mocks"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // TestQuestService_CreateQuest tests the CreateQuest method
@@ -18,7 +18,7 @@ func TestQuestService_CreateQuest(t *testing.T) {
 	// Arrange
 	mockQuestRepo := new(mocks.QuestRepository)
 	// mockUserRepo will be created in T029-T033
-	questService := services.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil) // Simplified for now
+	questService := service.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil) // Simplified for now
 
 	tenantID := uuid.New()
 	quest := &models.Quest{
@@ -48,7 +48,7 @@ func TestQuestService_CreateQuest(t *testing.T) {
 func TestQuestService_GetQuest(t *testing.T) {
 	// Arrange
 	mockQuestRepo := new(mocks.QuestRepository)
-	questService := services.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
+	questService := service.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	questID := uuid.New()
@@ -76,7 +76,7 @@ func TestQuestService_GetQuest(t *testing.T) {
 func TestQuestService_ListQuests(t *testing.T) {
 	// Arrange
 	mockQuestRepo := new(mocks.QuestRepository)
-	questService := services.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
+	questService := service.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	filters := map[string]interface{}{
@@ -104,7 +104,7 @@ func TestQuestService_ListQuests(t *testing.T) {
 func TestQuestService_UpdateQuest(t *testing.T) {
 	// Arrange
 	mockQuestRepo := new(mocks.QuestRepository)
-	questService := services.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
+	questService := service.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	questID := uuid.New()
@@ -139,7 +139,7 @@ func TestQuestService_UpdateQuest(t *testing.T) {
 func TestQuestService_DeleteQuest(t *testing.T) {
 	// Arrange
 	mockQuestRepo := new(mocks.QuestRepository)
-	questService := services.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
+	questService := service.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	questID := uuid.New()
@@ -159,7 +159,7 @@ func TestQuestService_DeleteQuest(t *testing.T) {
 func TestQuestService_GetActiveQuests(t *testing.T) {
 	// Arrange
 	mockQuestRepo := new(mocks.QuestRepository)
-	questService := services.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
+	questService := service.NewQuestService(nil, nil, nil, mockQuestRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	expectedQuests := []models.Quest{

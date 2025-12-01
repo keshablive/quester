@@ -6,12 +6,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/keshablive/quester/internal/framework/websocket"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // MessagesController handles message-related requests
 type MessagesController struct {
-	messagingService *services.MessagingService
+	messagingService *service.MessagingService
 	wsHandler        *websocket.Handler
 	redisManager     *websocket.RedisManager
 	typingIndicator  *websocket.TypingIndicator
@@ -19,7 +19,7 @@ type MessagesController struct {
 
 // NewMessagesController creates a new messages controller
 func NewMessagesController(
-	messagingService *services.MessagingService,
+	messagingService *service.MessagingService,
 	wsHandler *websocket.Handler,
 	redisManager *websocket.RedisManager,
 	typingIndicator *websocket.TypingIndicator,

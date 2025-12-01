@@ -7,16 +7,16 @@ import (
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/framework/utils"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // PropertyController handles property listing HTTP requests
 type PropertyController struct {
-	propertyService *services.PropertyService
+	propertyService *service.PropertyService
 }
 
 // NewPropertyController creates a new property controller
-func NewPropertyController(propertyService *services.PropertyService) *PropertyController {
+func NewPropertyController(propertyService *service.PropertyService) *PropertyController {
 	return &PropertyController{
 		propertyService: propertyService,
 	}
@@ -287,7 +287,7 @@ func (pc *PropertyController) Search(c *fiber.Ctx) error {
 		return responses.BadRequest(c, "Invalid tenant ID")
 	}
 
-	var req services.PropertySearchParams
+	var req service.PropertySearchParams
 	if err := c.BodyParser(&req); err != nil {
 		return responses.BadRequest(c, "Invalid request body")
 	}
@@ -450,7 +450,7 @@ func (pc *PropertyController) GetMyProperties(c *fiber.Ctx) error {
 	}
 
 	// Use search with owner filter
-	params := services.PropertySearchParams{
+	params := service.PropertySearchParams{
 		TenantID: tenantID,
 		Limit:    100,
 		Offset:   0,
@@ -462,7 +462,7 @@ func (pc *PropertyController) GetMyProperties(c *fiber.Ctx) error {
 	}
 
 	// Filter by owner (should be done in service layer ideally)
-	myProperties := make([]services.PropertyWithDistance, 0)
+	myProperties := make([]service.PropertyWithDistance, 0)
 	for _, p := range properties {
 		if p.Property.OwnerID == userID {
 			myProperties = append(myProperties, p)

@@ -4,21 +4,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
 // LessonController handles lesson-related HTTP requests
 type LessonController struct {
-	lessonService *services.LessonService
-	courseService *services.CourseService
+	lessonService *service.LessonService
+	courseService *service.CourseService
 }
 
 // NewLessonController creates a new lesson controller
 func NewLessonController(db *gorm.DB) *LessonController {
 	return &LessonController{
-		lessonService: services.NewLessonService(db),
-		courseService: services.NewCourseService(db),
+		lessonService: service.NewLessonService(db),
+		courseService: service.NewCourseService(db),
 	}
 }
 
@@ -76,7 +76,7 @@ func (ctrl *LessonController) CreateLesson(c *fiber.Ctx) error {
 	}
 
 	// Parse request body
-	var req services.CreateLessonRequest
+	var req service.CreateLessonRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
@@ -247,7 +247,7 @@ func (ctrl *LessonController) UpdateLesson(c *fiber.Ctx) error {
 	}
 
 	// Parse request body
-	var req services.UpdateLessonRequest
+	var req service.UpdateLessonRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
@@ -378,7 +378,7 @@ func (ctrl *LessonController) CompleteLesson(c *fiber.Ctx) error {
 	}
 
 	// Complete lesson
-	req := services.CompleteLessonRequest{
+	req := service.CompleteLessonRequest{
 		UserID:   userID,
 		LessonID: lessonID,
 		Grade:    body.Grade,

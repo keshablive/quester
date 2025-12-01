@@ -6,16 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // PostController handles post-related HTTP requests
 type PostController struct {
-	postService *services.PostService
+	postService *service.PostService
 }
 
 // NewPostController creates a new post controller
-func NewPostController(postService *services.PostService) *PostController {
+func NewPostController(postService *service.PostService) *PostController {
 	return &PostController{
 		postService: postService,
 	}

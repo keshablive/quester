@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -67,7 +67,7 @@ func TestBlacklistService_AddToBlacklist(t *testing.T) {
 				Addr: "localhost:6379",
 			})
 
-			service := services.NewBlacklistService(client)
+			service := service.NewBlacklistService(client)
 
 			// Test the method
 			err := service.AddToBlacklist(tt.tokenHash, tt.ttl)
@@ -124,7 +124,7 @@ func TestBlacklistService_IsBlacklisted(t *testing.T) {
 				Addr: "localhost:6379",
 			})
 
-			service := services.NewBlacklistService(client)
+			service := service.NewBlacklistService(client)
 
 			// Setup: Add token to blacklist if needed
 			if tt.setupToken && tt.tokenHash != "" {
@@ -149,7 +149,7 @@ func TestBlacklistService_RemoveFromBlacklist(t *testing.T) {
 		Addr: "localhost:6379",
 	})
 
-	service := services.NewBlacklistService(client)
+	service := service.NewBlacklistService(client)
 	tokenHash := "test_remove_123"
 	key := "blacklist:" + tokenHash
 
@@ -174,7 +174,7 @@ func TestBlacklistService_CleanupExpiredTokens(t *testing.T) {
 		Addr: "localhost:6379",
 	})
 
-	service := services.NewBlacklistService(client)
+	service := service.NewBlacklistService(client)
 
 	// Test cleanup (should be a no-op since Redis handles TTL)
 	count, err := service.CleanupExpiredTokens()

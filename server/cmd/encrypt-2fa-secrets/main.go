@@ -17,7 +17,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 func main() {
@@ -52,7 +52,7 @@ func main() {
 	// Create encryption key repository for KMS service
 	encKeyRepo := repositories.NewEncryptionKeyRepository(database.DB)
 
-	kmsService, err := services.NewKMSService(kmsConfig, encKeyRepo)
+	kmsService, err := service.NewKMSService(kmsConfig, encKeyRepo)
 	if err != nil {
 		log.Fatalf("Failed to initialize KMS service: %v", err)
 	}

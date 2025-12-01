@@ -8,19 +8,19 @@ import (
 	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
 // CourseController handles course-related HTTP requests
 type CourseController struct {
-	courseService *services.CourseService
+	courseService *service.CourseService
 }
 
 // NewCourseController creates a new course controller
 func NewCourseController(db *gorm.DB) *CourseController {
 	return &CourseController{
-		courseService: services.NewCourseService(db),
+		courseService: service.NewCourseService(db),
 	}
 }
 
@@ -64,7 +64,7 @@ func (ctrl *CourseController) CreateCourse(c *fiber.Ctx) error {
 	}
 
 	// Parse request body
-	var req services.CreateCourseRequest
+	var req service.CreateCourseRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
@@ -116,7 +116,7 @@ func (ctrl *CourseController) GetCourses(c *fiber.Ctx) error {
 	// Note: instructor_id query param not used - use GET /api/v1/instructors/:id/courses instead
 
 	// Build request
-	req := services.ListCoursesRequest{
+	req := service.ListCoursesRequest{
 		Page:       page,
 		Limit:      limit,
 		Difficulty: difficulty,
@@ -210,7 +210,7 @@ func (ctrl *CourseController) UpdateCourse(c *fiber.Ctx) error {
 	}
 
 	// Parse request body
-	var req services.UpdateCourseRequest
+	var req service.UpdateCourseRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",

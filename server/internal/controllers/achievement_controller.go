@@ -12,21 +12,21 @@ import (
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
 // AchievementController handles achievement HTTP requests
 type AchievementController struct {
-	achievementService *services.AchievementService
+	achievementService *service.AchievementService
 }
 
 // NewAchievementController creates a new achievement controller
 func NewAchievementController(db *gorm.DB) *AchievementController {
-	achievementService := services.NewAchievementService(db, nil, nil)
+	achievementService := service.NewAchievementService(db, nil, nil)
 
 	// Inject NotificationService
-	notificationSvc := services.NewNotificationService(db)
+	notificationSvc := service.NewNotificationService(db)
 	achievementService.SetNotificationService(notificationSvc)
 
 	// Best-effort injection of BadgeService and Badge UUID Adapter
@@ -37,15 +37,15 @@ func NewAchievementController(db *gorm.DB) *AchievementController {
 	if err == nil {
 		badgeRepo := repositories.NewBadgeRepository(db)
 		// Create a notification service for badge awards
-		notificationService := services.NewNotificationService(db)
-		badgeService := services.NewBadgeService(db, nil, badgeRepo, badgeRepo, redisClient, notificationService)
+		notificationService := service.NewNotificationService(db)
+		badgeService := service.NewBadgeService(db, nil, badgeRepo, badgeRepo, redisClient, notificationService)
 
 		// Inject legacy BadgeService (for reference)
 		achievementService.SetBadgeService(badgeService)
 
 		// Inject Badge UUID Adapter (preferred for achievement-to-badge integration)
 		// Note: NewBadgeUUIDAwardAdapter might not exist yet, commenting out for now
-		// badgeAdapter := services.NewBadgeUUIDAwardAdapter(db, badgeService)
+		// badgeAdapter := service.NewBadgeUUIDAwardAdapter(db, badgeService)
 		// achievementService.SetBadgeAdapter(badgeAdapter)
 
 		log.Println("BadgeService injected into AchievementService")

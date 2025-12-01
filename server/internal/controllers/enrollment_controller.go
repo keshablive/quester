@@ -8,21 +8,21 @@ import (
 	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/middleware"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
 // EnrollmentController handles enrollment-related HTTP requests
 type EnrollmentController struct {
-	enrollmentService *services.EnrollmentService
-	courseService     *services.CourseService
+	enrollmentService *service.EnrollmentService
+	courseService     *service.CourseService
 }
 
 // NewEnrollmentController creates a new enrollment controller
 func NewEnrollmentController(db *gorm.DB) *EnrollmentController {
 	return &EnrollmentController{
-		enrollmentService: services.NewEnrollmentService(db),
-		courseService:     services.NewCourseService(db),
+		enrollmentService: service.NewEnrollmentService(db),
+		courseService:     service.NewCourseService(db),
 	}
 }
 
@@ -65,7 +65,7 @@ func (ctrl *EnrollmentController) EnrollInCourse(c *fiber.Ctx) error {
 	}
 
 	// Create enrollment request
-	req := services.EnrollRequest{
+	req := service.EnrollRequest{
 		UserID:       userID,
 		CourseID:     courseID,
 		PaymentToken: body.PaymentToken,
@@ -130,7 +130,7 @@ func (ctrl *EnrollmentController) GetUserEnrollment(c *fiber.Ctx) error {
 	}
 
 	// Get enrollment details
-	req := services.GetEnrollmentRequest{
+	req := service.GetEnrollmentRequest{
 		UserID:   userID,
 		CourseID: courseID,
 	}
@@ -168,7 +168,7 @@ func (ctrl *EnrollmentController) GetUserEnrollments(c *fiber.Ctx) error {
 	limit, _ := strconv.Atoi(c.Query("limit", "20"))
 
 	// Create request
-	req := services.ListEnrollmentsRequest{
+	req := service.ListEnrollmentsRequest{
 		UserID: userID,
 		Status: status,
 		Page:   page,

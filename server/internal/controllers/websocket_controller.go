@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/keshablive/quester/internal/framework/websocket"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // WebSocketController handles WebSocket connections
@@ -12,8 +12,8 @@ type WebSocketController struct {
 	wsHandler           *websocket.Handler
 	redisManager        *websocket.RedisManager
 	typingIndicator     *websocket.TypingIndicator
-	messagingService    *services.MessagingService
-	notificationService *services.NotificationService
+	messagingService    *service.MessagingService
+	notificationService *service.NotificationService
 }
 
 // NewWebSocketController creates a new WebSocket controller
@@ -21,8 +21,8 @@ func NewWebSocketController(
 	wsHandler *websocket.Handler,
 	redisManager *websocket.RedisManager,
 	typingIndicator *websocket.TypingIndicator,
-	messagingService *services.MessagingService,
-	notificationService *services.NotificationService,
+	messagingService *service.MessagingService,
+	notificationService *service.NotificationService,
 ) *WebSocketController {
 	return &WebSocketController{
 		wsHandler:           wsHandler,

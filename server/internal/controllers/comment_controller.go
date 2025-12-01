@@ -6,16 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // CommentController handles comment-related HTTP requests
 type CommentController struct {
-	socialService *services.SocialService
+	socialService *service.SocialService
 }
 
 // NewCommentController creates a new comment controller
-func NewCommentController(socialService *services.SocialService) *CommentController {
+func NewCommentController(socialService *service.SocialService) *CommentController {
 	return &CommentController{
 		socialService: socialService,
 	}

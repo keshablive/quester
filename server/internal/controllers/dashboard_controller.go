@@ -7,16 +7,16 @@ import (
 	"github.com/keshablive/quester/internal/framework/core"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // DashboardController handles dashboard HTTP requests
 type DashboardController struct {
-	service *services.DashboardService
+	service *service.DashboardService
 }
 
 // NewDashboardController creates a new dashboard controller
-func NewDashboardController(service *services.DashboardService) *DashboardController {
+func NewDashboardController(service *service.DashboardService) *DashboardController {
 	return &DashboardController{service: service}
 }
 

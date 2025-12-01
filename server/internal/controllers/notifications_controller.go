@@ -6,19 +6,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // NotificationsController handles notification-related requests
 type NotificationsController struct {
-	notificationService *services.NotificationService
-	fcmService          *services.FCMService
+	notificationService *service.NotificationService
+	fcmService          *service.FCMService
 }
 
 // NewNotificationsController creates a new notifications controller
 func NewNotificationsController(
-	notificationService *services.NotificationService,
-	fcmService *services.FCMService,
+	notificationService *service.NotificationService,
+	fcmService *service.FCMService,
 ) *NotificationsController {
 	return &NotificationsController{
 		notificationService: notificationService,

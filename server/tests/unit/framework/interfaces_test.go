@@ -104,7 +104,7 @@ func TestVideoStreamImplementsStreamInfo(t *testing.T) {
 
 // ===========================================================================
 // TokenBlacklist Interface Tests
-// Verifies services.BlacklistService implements interfaces.TokenBlacklist
+// Verifies service.BlacklistService implements interfaces.TokenBlacklist
 // Note: Full integration test requires Redis, these are contract tests
 // ===========================================================================
 

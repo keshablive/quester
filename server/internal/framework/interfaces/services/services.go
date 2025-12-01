@@ -23,11 +23,11 @@
 // Usage Example:
 //
 //	type MyController struct {
-//	    authService services.AuthServiceInterface
-//	    userService services.UserServiceInterface
+//	    authService service.AuthServiceInterface
+//	    userService service.UserServiceInterface
 //	}
 //
-//	func NewMyController(auth services.AuthServiceInterface, user services.UserServiceInterface) *MyController {
+//	func NewMyController(auth service.AuthServiceInterface, user service.UserServiceInterface) *MyController {
 //	    return &MyController{authService: auth, userService: user}
 //	}
 package services
@@ -39,8 +39,8 @@ package services
 //
 // And then use interfaces like:
 //
-//	var auth services.AuthServiceInterface
-//	var user services.UserServiceInterface
+//	var auth service.AuthServiceInterface
+//	var user service.UserServiceInterface
 
 // Service interface type aliases for discoverability.
 // These are provided for IDE autocompletion and documentation.

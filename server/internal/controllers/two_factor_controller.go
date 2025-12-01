@@ -10,19 +10,19 @@ import (
 	"github.com/keshablive/quester/internal/framework/auth"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // TwoFactorController handles 2FA-related HTTP requests
 type TwoFactorController struct {
-	service         *services.TwoFactorService
+	service         *service.TwoFactorService
 	passwordService *auth.PasswordService
 	userRepo        *repositories.UserRepository
 }
 
 // NewTwoFactorController creates a new two-factor controller
 // T106: Now accepts UserRepository to eliminate global database access
-func NewTwoFactorController(service *services.TwoFactorService, userRepo *repositories.UserRepository) *TwoFactorController {
+func NewTwoFactorController(service *service.TwoFactorService, userRepo *repositories.UserRepository) *TwoFactorController {
 	return &TwoFactorController{
 		service:         service,
 		passwordService: auth.NewPasswordService(),
@@ -48,7 +48,7 @@ func (ctrl *TwoFactorController) Enable2FA(c *fiber.Ctx) error {
 
 	response, err := ctrl.service.Enable(userID, email)
 	if err != nil {
-		if errors.Is(err, services.ErrTwoFactorAlreadyEnabled) {
+		if errors.Is(err, service.ErrTwoFactorAlreadyEnabled) {
 			return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 				"error": "Two-factor authentication is already enabled",
 			})
@@ -83,7 +83,7 @@ func (ctrl *TwoFactorController) Verify2FA(c *fiber.Ctx) error {
 	}
 
 	if err := ctrl.service.Verify(userID, req.Code); err != nil {
-		if errors.Is(err, services.ErrInvalidTwoFactorCode) {
+		if errors.Is(err, service.ErrInvalidTwoFactorCode) {
 			ctrl.service.LogAuditEvent(userID, models.Event2FAVerificationFailed,
 				map[string]interface{}{"reason": "invalid_code"}, c.IP(), c.Get("User-Agent"))
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -133,7 +133,7 @@ func (ctrl *TwoFactorController) Disable2FA(c *fiber.Ctx) error {
 	}
 
 	if err := ctrl.service.Disable(userID); err != nil {
-		if errors.Is(err, services.ErrTwoFactorNotEnabled) {
+		if errors.Is(err, service.ErrTwoFactorNotEnabled) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Two-factor authentication is not enabled",
 			})
@@ -230,12 +230,12 @@ func (ctrl *TwoFactorController) RevokeTrustedDevice(c *fiber.Ctx) error {
 	currentDeviceFingerprint := c.Get("X-Device-Fingerprint", "")
 
 	if err := ctrl.service.RevokeDevice(userID, deviceID, currentDeviceFingerprint); err != nil {
-		if errors.Is(err, services.ErrDeviceNotFound) {
+		if errors.Is(err, service.ErrDeviceNotFound) {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": "Device not found",
 			})
 		}
-		if errors.Is(err, services.ErrCannotRevokeCurrentDevice) {
+		if errors.Is(err, service.ErrCannotRevokeCurrentDevice) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Cannot revoke current device",
 			})

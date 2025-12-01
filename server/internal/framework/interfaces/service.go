@@ -7,14 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// Service defines the base interface for all business logic services.
+// Service defines the base interface for all business logic service.
 // Services encapsulate domain logic and coordinate between repositories and external systems.
 type Service interface {
 	// HealthCheck returns nil if the service is healthy, or an error describing the issue.
 	HealthCheck(ctx context.Context) error
 }
 
-// CRUDService defines the standard CRUD operations for entity services.
+// CRUDService defines the standard CRUD operations for entity service.
 // T is the entity type, ID is the identifier type (typically uuid.UUID).
 //
 // All operations are tenant-scoped for multi-tenancy support.

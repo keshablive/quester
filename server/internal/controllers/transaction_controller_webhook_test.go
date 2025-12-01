@@ -8,7 +8,7 @@ import (
 
 "github.com/stretchr/testify/assert"
 "github.com/keshablive/quester/internal/framework/config"
-"github.com/keshablive/quester/internal/services"
+"github.com/keshablive/quester/internal/framework/service"
 )
 
 func TestWebhookRazorpaySignatureVerification(t *testing.T) {
@@ -18,7 +18,7 @@ RazorpayWebhookSecret: "test_secret_123",
 }
 
 // Create controller
-controller := NewTransactionController(&services.TransactionService{}, cfg)
+controller := NewTransactionController(&service.TransactionService{}, cfg)
 
 // Test payload
 payload := []byte(`{"event":"payment.captured","payload":{"payment":{"entity":{"id":"pay_123"}}}}`)
@@ -38,7 +38,7 @@ assert.False(t, controller.verifyRazorpaySignature(payload, "invalid_signature")
 assert.False(t, controller.verifyRazorpaySignature(payload, ""), "Empty signature should fail")
 
 // Test 4: No secret configured
-controllerNoSecret := NewTransactionController(&services.TransactionService{}, &config.Config{})
+controllerNoSecret := NewTransactionController(&service.TransactionService{}, &config.Config{})
 assert.False(t, controllerNoSecret.verifyRazorpaySignature(payload, validSignature), "Should fail if no secret configured")
 }
 
@@ -49,7 +49,7 @@ StripeWebhookSecret: "whsec_test_secret_456",
 }
 
 // Create controller
-controller := NewTransactionController(&services.TransactionService{}, cfg)
+controller := NewTransactionController(&service.TransactionService{}, cfg)
 
 // Test payload
 payload := []byte(`{"type":"payment_intent.succeeded","data":{"object":{"id":"pi_123"}}}`)
@@ -83,6 +83,6 @@ assert.False(t, controller.verifyStripeSignature(payload, noV1), "Missing v1 sig
 assert.False(t, controller.verifyStripeSignature(payload, ""), "Empty header should fail")
 
 // Test 6: No secret configured
-controllerNoSecret := NewTransactionController(&services.TransactionService{}, &config.Config{})
+controllerNoSecret := NewTransactionController(&service.TransactionService{}, &config.Config{})
 assert.False(t, controllerNoSecret.verifyStripeSignature(payload, validHeader), "Should fail if no secret configured")
 }

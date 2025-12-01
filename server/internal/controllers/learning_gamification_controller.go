@@ -5,17 +5,17 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // LearningGamificationController handles learning XP and gamification HTTP requests
 // Implements T032 from 006-course-gamification spec
 type LearningGamificationController struct {
-	gamificationService *services.LearningGamificationService
+	gamificationService *service.LearningGamificationService
 }
 
 // NewLearningGamificationController creates a new learning gamification controller
-func NewLearningGamificationController(gamificationService *services.LearningGamificationService) *LearningGamificationController {
+func NewLearningGamificationController(gamificationService *service.LearningGamificationService) *LearningGamificationController {
 	return &LearningGamificationController{
 		gamificationService: gamificationService,
 	}
@@ -187,7 +187,7 @@ func (ctrl *LearningGamificationController) GetLeaderboard(c *fiber.Ctx) error {
 	}
 
 	// Parse query parameters
-	timeframe := services.LeaderboardTimeframe(c.Query("timeframe", "weekly"))
+	timeframe := service.LeaderboardTimeframe(c.Query("timeframe", "weekly"))
 	limit, _ := strconv.Atoi(c.Query("limit", "50"))
 
 	ctx := c.Context()
@@ -245,7 +245,7 @@ func (ctrl *LearningGamificationController) GetCourseLeaderboard(c *fiber.Ctx) e
 	}
 
 	// Parse query parameters
-	timeframe := services.LeaderboardTimeframe(c.Query("timeframe", "weekly"))
+	timeframe := service.LeaderboardTimeframe(c.Query("timeframe", "weekly"))
 	limit, _ := strconv.Atoi(c.Query("limit", "50"))
 
 	ctx := c.Context()

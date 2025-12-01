@@ -6,16 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // LikeController handles like-related HTTP requests
 type LikeController struct {
-	socialService *services.SocialService
+	socialService *service.SocialService
 }
 
 // NewLikeController creates a new like controller
-func NewLikeController(socialService *services.SocialService) *LikeController {
+func NewLikeController(socialService *service.SocialService) *LikeController {
 	return &LikeController{
 		socialService: socialService,
 	}

@@ -11,14 +11,14 @@ import (
 
 	"github.com/keshablive/quester/internal/mocks"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // TestPropertyService_CreateProperty tests the CreateProperty method
 func TestPropertyService_CreateProperty(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	ownerID := uuid.New()
@@ -121,7 +121,7 @@ func TestPropertyService_CreateProperty_ValidationError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Arrange
 			mockRepo := new(mocks.PropertyRepository)
-			propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+			propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 			// Act
 			err := propertyService.CreateProperty(context.Background(), tt.property)
@@ -140,7 +140,7 @@ func TestPropertyService_CreateProperty_ValidationError(t *testing.T) {
 func TestPropertyService_GetProperty(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	propertyID := uuid.New()
@@ -170,7 +170,7 @@ func TestPropertyService_GetProperty(t *testing.T) {
 func TestPropertyService_GetProperty_NotFound(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	propertyID := uuid.New()
@@ -191,7 +191,7 @@ func TestPropertyService_GetProperty_NotFound(t *testing.T) {
 func TestPropertyService_UpdateProperty(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	propertyID := uuid.New()
@@ -224,7 +224,7 @@ func TestPropertyService_UpdateProperty(t *testing.T) {
 func TestPropertyService_UpdateProperty_NotFound(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	propertyID := uuid.New()
@@ -248,7 +248,7 @@ func TestPropertyService_UpdateProperty_NotFound(t *testing.T) {
 func TestPropertyService_DeleteProperty(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	propertyID := uuid.New()
@@ -268,7 +268,7 @@ func TestPropertyService_DeleteProperty(t *testing.T) {
 func TestPropertyService_DeleteProperty_NotFound(t *testing.T) {
 	// Arrange
 	mockRepo := new(mocks.PropertyRepository)
-	propertyService := services.NewPropertyService(mockRepo, nil, nil, nil)
+	propertyService := service.NewPropertyService(mockRepo, nil, nil, nil)
 
 	tenantID := uuid.New()
 	propertyID := uuid.New()

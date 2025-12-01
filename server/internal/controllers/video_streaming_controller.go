@@ -11,19 +11,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
 // VideoStreamingController handles video streaming endpoints
 type VideoStreamingController struct {
 	db      *gorm.DB
-	service *services.VideoStreamingService
-	dvr     *services.DVRService
+	service *service.VideoStreamingService
+	dvr     *service.DVRService
 }
 
 // NewVideoStreamingController creates a new video streaming controller
-func NewVideoStreamingController(db *gorm.DB, service *services.VideoStreamingService, dvr *services.DVRService) *VideoStreamingController {
+func NewVideoStreamingController(db *gorm.DB, service *service.VideoStreamingService, dvr *service.DVRService) *VideoStreamingController {
 	return &VideoStreamingController{
 		db:      db,
 		service: service,
@@ -142,7 +142,7 @@ func (ctrl *VideoStreamingController) CreateStream(c *fiber.Ctx) error {
 	}
 
 	// T508: Generate secure stream key
-	streamKey, err := services.GenerateStreamKey()
+	streamKey, err := service.GenerateStreamKey()
 	if err != nil {
 		logStreamEvent("ERROR", "stream_key_generation_failed", streamLog{
 			RequestID: requestID,
@@ -261,7 +261,7 @@ func (ctrl *VideoStreamingController) ValidateStream(c *fiber.Ctx) error {
 	})
 
 	// Validate stream key format
-	if err := services.ValidateStreamKeyFormat(req.Name); err != nil {
+	if err := service.ValidateStreamKeyFormat(req.Name); err != nil {
 		logStreamEvent("WARN", "rtmp_auth_rejected", streamLog{
 			RequestID: requestID,
 			StreamKey: req.Name[:min(8, len(req.Name))] + "...",

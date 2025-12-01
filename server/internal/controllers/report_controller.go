@@ -8,16 +8,16 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // ReportController handles report HTTP requests
 type ReportController struct {
-	service *services.ReportService
+	service *service.ReportService
 }
 
 // NewReportController creates a new report controller
-func NewReportController(service *services.ReportService) *ReportController {
+func NewReportController(service *service.ReportService) *ReportController {
 	return &ReportController{service: service}
 }
 

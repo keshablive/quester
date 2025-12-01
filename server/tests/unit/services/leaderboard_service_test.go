@@ -7,14 +7,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/mocks"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLeaderboardService_CreateLeaderboard(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	leaderboard := &models.Leaderboard{
@@ -39,7 +39,7 @@ func TestLeaderboardService_CreateLeaderboard(t *testing.T) {
 func TestLeaderboardService_FindByID(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -65,7 +65,7 @@ func TestLeaderboardService_FindByID(t *testing.T) {
 func TestLeaderboardService_FindAll(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -92,7 +92,7 @@ func TestLeaderboardService_FindAll(t *testing.T) {
 func TestLeaderboardService_Update(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	leaderboard := &models.Leaderboard{
@@ -116,7 +116,7 @@ func TestLeaderboardService_Update(t *testing.T) {
 func TestLeaderboardService_Delete(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -136,7 +136,7 @@ func TestLeaderboardService_Delete(t *testing.T) {
 func TestLeaderboardService_GetTopPlayers(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -163,7 +163,7 @@ func TestLeaderboardService_GetTopPlayers(t *testing.T) {
 func TestLeaderboardService_GetUserRank(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -185,7 +185,7 @@ func TestLeaderboardService_GetUserRank(t *testing.T) {
 func TestLeaderboardService_GetLeaderboardByPeriod(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -210,7 +210,7 @@ func TestLeaderboardService_GetLeaderboardByPeriod(t *testing.T) {
 func TestLeaderboardService_UpdateUserScore(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -231,7 +231,7 @@ func TestLeaderboardService_UpdateUserScore(t *testing.T) {
 func TestLeaderboardService_GetUserLeaderboardEntry(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -258,7 +258,7 @@ func TestLeaderboardService_GetUserLeaderboardEntry(t *testing.T) {
 func TestLeaderboardService_ResetLeaderboard(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.LeaderboardRepository)
-	_ = services.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
+	_ = service.NewLeaderboardService(nil, nil, nil, mockRepo, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()

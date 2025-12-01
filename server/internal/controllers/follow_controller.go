@@ -6,16 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // FollowController handles follow-related HTTP requests
 type FollowController struct {
-	followService *services.FollowService
+	followService *service.FollowService
 }
 
 // NewFollowController creates a new follow controller
-func NewFollowController(followService *services.FollowService) *FollowController {
+func NewFollowController(followService *service.FollowService) *FollowController {
 	return &FollowController{
 		followService: followService,
 	}

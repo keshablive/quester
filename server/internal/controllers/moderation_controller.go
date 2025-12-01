@@ -8,16 +8,16 @@ import (
 
 	"github.com/keshablive/quester/internal/framework/core"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // ModerationController handles AI moderation HTTP requests
 type ModerationController struct {
-	service *services.ModerationService
+	service *service.ModerationService
 }
 
 // NewModerationController creates a new moderation controller
-func NewModerationController(service *services.ModerationService) *ModerationController {
+func NewModerationController(service *service.ModerationService) *ModerationController {
 	return &ModerationController{
 		service: service,
 	}

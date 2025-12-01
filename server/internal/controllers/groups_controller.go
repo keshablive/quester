@@ -5,16 +5,16 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // GroupsController handles group-related requests
 type GroupsController struct {
-	messagingService *services.MessagingService
+	messagingService *service.MessagingService
 }
 
 // NewGroupsController creates a new groups controller
-func NewGroupsController(messagingService *services.MessagingService) *GroupsController {
+func NewGroupsController(messagingService *service.MessagingService) *GroupsController {
 	return &GroupsController{
 		messagingService: messagingService,
 	}

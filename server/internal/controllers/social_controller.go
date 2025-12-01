@@ -6,16 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // SocialController handles social interaction HTTP requests (posts, likes, comments, follows)
 type SocialController struct {
-	socialService *services.SocialService
+	socialService *service.SocialService
 }
 
 // NewSocialController creates a new social controller
-func NewSocialController(socialService *services.SocialService) *SocialController {
+func NewSocialController(socialService *service.SocialService) *SocialController {
 	return &SocialController{
 		socialService: socialService,
 	}

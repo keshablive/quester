@@ -7,8 +7,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/keshablive/quester/internal/framework/cache"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
 )
 
 // CheckBlacklistStatus handles GET /api/v1/auth/blacklist/check
@@ -41,7 +41,7 @@ func CheckBlacklistStatus(c *fiber.Ctx) error {
 	tokenHash := hashToken(token)
 
 	// Check blacklist
-	blacklistService := services.NewBlacklistService(cache.Client)
+	blacklistService := service.NewBlacklistService(cache.Client)
 	isBlacklisted := blacklistService.IsBlacklistedSimple(tokenHash)
 
 	// Return status
@@ -70,7 +70,7 @@ func CleanupBlacklist(c *fiber.Ctx) error {
 	}
 
 	// Perform cleanup
-	blacklistService := services.NewBlacklistService(cache.Client)
+	blacklistService := service.NewBlacklistService(cache.Client)
 	count, err := blacklistService.CleanupExpiredTokens()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

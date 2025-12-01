@@ -122,9 +122,9 @@ type KMSConfig struct {
 type TransactionServiceConfig struct {
 	TransactionRepo     interface{} // interfaces.TransactionRepository
 	UserRepo            interface{} // interfaces.UserRepository
-	PaymentManager      interface{} // *services.PaymentManager
+	PaymentManager      interface{} // *service.PaymentManager
 	MarketplaceRepo     interface{} // interfaces.MarketplaceRepository
-	NotificationService interface{} // *services.NotificationService (optional)
+	NotificationService interface{} // *service.NotificationService (optional)
 }
 
 // SocialServiceConfig holds all dependencies for SocialService
@@ -136,7 +136,7 @@ type SocialServiceConfig struct {
 	ActivityRepo        interface{} // interfaces.ActivityRepository
 	UserRepo            interface{} // interfaces.UserRepository
 	FollowRepo          interface{} // interfaces.FollowRepository
-	NotificationService interface{} // *services.NotificationService (optional)
+	NotificationService interface{} // *service.NotificationService (optional)
 }
 
 // MarketplaceServiceConfig holds all dependencies for MarketplaceService
@@ -155,7 +155,7 @@ type TwoFactorServiceConfig struct {
 	TrustedDeviceRepo interface{} // interfaces.TrustedDeviceRepository
 	TwoFALogRepo      interface{} // interfaces.TwoFALogRepository
 	UserRepo          interface{} // interfaces.UserRepository
-	KMSService        interface{} // *services.KMSService
+	KMSService        interface{} // *service.KMSService
 }
 
 // Config holds all application configuration

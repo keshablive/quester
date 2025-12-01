@@ -7,25 +7,25 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // SocialGamificationController handles social gamification HTTP requests
 // Implements FR-003 for XP viewing and feedback endpoints
 type SocialGamificationController struct {
-	gamifService       *services.SocialGamificationService
-	leaderboardService *services.LeaderboardService // T057: For social leaderboard endpoint
+	gamifService       *service.SocialGamificationService
+	leaderboardService *service.LeaderboardService // T057: For social leaderboard endpoint
 }
 
 // NewSocialGamificationController creates a new social gamification controller
-func NewSocialGamificationController(gamifService *services.SocialGamificationService) *SocialGamificationController {
+func NewSocialGamificationController(gamifService *service.SocialGamificationService) *SocialGamificationController {
 	return &SocialGamificationController{
 		gamifService: gamifService,
 	}
 }
 
 // SetLeaderboardService sets the leaderboard service for social leaderboard endpoints (T057)
-func (ctrl *SocialGamificationController) SetLeaderboardService(ls *services.LeaderboardService) {
+func (ctrl *SocialGamificationController) SetLeaderboardService(ls *service.LeaderboardService) {
 	ctrl.leaderboardService = ls
 }
 

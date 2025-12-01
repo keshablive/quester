@@ -7,18 +7,18 @@ import (
 	"github.com/keshablive/quester/internal/framework/core"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 // InteractionController handles social interaction HTTP requests
 type InteractionController struct {
-	interactionService *services.InteractionService
+	interactionService *service.InteractionService
 }
 
 // NewInteractionController creates a new interaction controller
-func NewInteractionController(interactionService *services.InteractionService) *InteractionController {
+func NewInteractionController(interactionService *service.InteractionService) *InteractionController {
 	return &InteractionController{
 		interactionService: interactionService,
 	}
@@ -169,7 +169,7 @@ func (ic *InteractionController) GetInteractions(c *fiber.Ctx) error {
 	offset := (page - 1) * limit
 
 	// Build filters
-	filters := services.InteractionFilters{
+	filters := service.InteractionFilters{
 		TenantID:        tenantID,
 		TargetType:      targetType,
 		TargetID:        targetID,

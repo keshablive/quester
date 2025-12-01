@@ -9,7 +9,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/controller"
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,12 +17,12 @@ import (
 // LeaderboardController handles leaderboard-related HTTP endpoints
 // T004: Struct-based controller pattern matching QuestController (013-leaderboard-controller-integration)
 type LeaderboardController struct {
-	leaderboardService *services.LeaderboardService
+	leaderboardService *service.LeaderboardService
 }
 
 // NewLeaderboardController creates a new LeaderboardController with injected dependencies
 // T005: Constructor for DI injection (013-leaderboard-controller-integration)
-func NewLeaderboardController(leaderboardService *services.LeaderboardService) *LeaderboardController {
+func NewLeaderboardController(leaderboardService *service.LeaderboardService) *LeaderboardController {
 	return &LeaderboardController{
 		leaderboardService: leaderboardService,
 	}

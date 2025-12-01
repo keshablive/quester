@@ -14,12 +14,12 @@ import (
 	"github.com/keshablive/quester/internal/framework/database"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // KMSController handles KMS admin endpoints
 type KMSController struct {
-	kmsService *services.KMSService
+	kmsService *service.KMSService
 }
 
 // NewKMSController creates a new KMS controller
@@ -31,7 +31,7 @@ func NewKMSController() (*KMSController, error) {
 
 	// Create repository for encryption key management
 	encKeyRepo := repositories.NewEncryptionKeyRepository(database.DB)
-	kmsService, err := services.NewKMSService(kmsConfig, encKeyRepo)
+	kmsService, err := service.NewKMSService(kmsConfig, encKeyRepo)
 	if err != nil {
 		return nil, err
 	}

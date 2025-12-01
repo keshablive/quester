@@ -8,18 +8,18 @@ import (
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/framework/utils"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 // ClassifiedAdController handles classified ad HTTP requests
 type ClassifiedAdController struct {
-	classifiedAdService *services.ClassifiedAdService
+	classifiedAdService *service.ClassifiedAdService
 }
 
 // NewClassifiedAdController creates a new classified ad controller
-func NewClassifiedAdController(classifiedAdService *services.ClassifiedAdService) *ClassifiedAdController {
+func NewClassifiedAdController(classifiedAdService *service.ClassifiedAdService) *ClassifiedAdController {
 	return &ClassifiedAdController{
 		classifiedAdService: classifiedAdService,
 	}
@@ -249,7 +249,7 @@ func (cac *ClassifiedAdController) SearchAds(c *fiber.Ctx) error {
 	limit, _ := strconv.Atoi(c.Query("limit", "20"))
 	offset, _ := strconv.Atoi(c.Query("offset", "0"))
 
-	params := services.ClassifiedAdSearchParams{
+	params := service.ClassifiedAdSearchParams{
 		TenantID:     tenantID,
 		AdType:       c.Query("ad_type"),
 		Status:       c.Query("status"),

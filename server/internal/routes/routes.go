@@ -13,7 +13,7 @@ import (
 	"github.com/keshablive/quester/internal/framework/websocket"
 	"github.com/keshablive/quester/internal/models"
 	"github.com/keshablive/quester/internal/repositories"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"gorm.io/gorm"
 )
 
@@ -24,9 +24,9 @@ func Setup(app *fiber.App, cont *container.Container) {
 	cfg := cont.MustResolve("config").(*config.Config)
 
 	// Resolve CacheService from container (007-api-performance-caching T036)
-	var cacheService *services.CacheService
+	var cacheService *service.CacheService
 	if cs, err := cont.Resolve("cacheService"); err == nil && cs != nil {
-		cacheService = cs.(*services.CacheService)
+		cacheService = cs.(*service.CacheService)
 		log.Println("✓ CacheService resolved for route injection (007-api-performance-caching)")
 	} else {
 		log.Println("⚠ CacheService not available - caching disabled for services")
@@ -91,22 +91,22 @@ func Setup(app *fiber.App, cont *container.Container) {
 	analyticsRepo := repositories.NewAnalyticsRepository(db)
 
 	// Initialize Services
-	notificationService := services.NewNotificationService(db)
-	ocrService := services.NewOCRService()
-	openAIService := services.NewOpenAIService()
+	notificationService := service.NewNotificationService(db)
+	ocrService := service.NewOCRService()
+	openAIService := service.NewOpenAIService()
 	propertyRepo := repositories.NewPropertyRepository(db)
-	propertyService := services.NewPropertyService(propertyRepo, db, ocrService, openAIService)
-	classifiedAdService := services.NewClassifiedAdService(db)
-	videoStreamingService := services.NewVideoStreamingService(db, nil) // Redis TBD
-	certificateService := services.NewCertificateService(db)
-	badgeService := services.NewBadgeService(db, nil, badgeRepo, badgeRepo, nil, notificationService) // logger=nil, Redis=nil (TBD)
+	propertyService := service.NewPropertyService(propertyRepo, db, ocrService, openAIService)
+	classifiedAdService := service.NewClassifiedAdService(db)
+	videoStreamingService := service.NewVideoStreamingService(db, nil) // Redis TBD
+	certificateService := service.NewCertificateService(db)
+	badgeService := service.NewBadgeService(db, nil, badgeRepo, badgeRepo, nil, notificationService) // logger=nil, Redis=nil (TBD)
 	questRepo := repositories.NewQuestRepository(db)
 	// 007-api-performance-caching T036: Inject CacheService into QuestService
-	var questService *services.QuestService
+	var questService *service.QuestService
 	if cacheService != nil {
-		questService = services.NewQuestServiceWithCache(db, nil, nil, questRepo, userRepo, badgeService, notificationService, cacheService)
+		questService = service.NewQuestServiceWithCache(db, nil, nil, questRepo, userRepo, badgeService, notificationService, cacheService)
 	} else {
-		questService = services.NewQuestService(db, nil, nil, questRepo, userRepo, badgeService, notificationService)
+		questService = service.NewQuestService(db, nil, nil, questRepo, userRepo, badgeService, notificationService)
 	}
 
 	// Two-Factor Service with repositories
@@ -115,16 +115,16 @@ func Setup(app *fiber.App, cont *container.Container) {
 	trustedDeviceRepo := repositories.NewTrustedDeviceRepository(db)
 	authAuditLogRepo := repositories.NewAuthAuditLogRepository(db)
 	encKeyRepo := repositories.NewEncryptionKeyRepository(db)
-	twoFactorService := services.NewTwoFactorService(cfg, twoFactorRepo, backupCodeRepo, trustedDeviceRepo, authAuditLogRepo, encKeyRepo)
+	twoFactorService := service.NewTwoFactorService(cfg, twoFactorRepo, backupCodeRepo, trustedDeviceRepo, authAuditLogRepo, encKeyRepo)
 
 	// Auth Service and Controller
 	refreshTokenRepo := repositories.NewRefreshTokenRepository(db)
-	blacklistService := services.NewBlacklistService(cache.Client)
-	authService := services.NewAuthService(userRepo, refreshTokenRepo, blacklistService)
+	blacklistService := service.NewBlacklistService(cache.Client)
+	authService := service.NewAuthService(userRepo, refreshTokenRepo, blacklistService)
 
-	analyticsService := services.NewAnalyticsService(analyticsRepo)
-	messagingService := services.NewMessagingService(db)
-	fcmService, _ := services.NewFCMService(cfg.FirebaseCredentialsPath, fcmTokenRepo)
+	analyticsService := service.NewAnalyticsService(analyticsRepo)
+	messagingService := service.NewMessagingService(db)
+	fcmService, _ := service.NewFCMService(cfg.FirebaseCredentialsPath, fcmTokenRepo)
 
 	// Payment Manager - T047: Initialize using PaymentConfig from framework config
 	var paymentManager *payment.PaymentManager
@@ -141,7 +141,7 @@ func Setup(app *fiber.App, cont *container.Container) {
 		log.Println("⚠ Payment config not available (payment features disabled)")
 	}
 
-	transactionService := services.NewTransactionService(
+	transactionService := service.NewTransactionService(
 		transactionRepo,
 		db,
 		marketplaceRepo,
@@ -150,7 +150,7 @@ func Setup(app *fiber.App, cont *container.Container) {
 		notificationService,
 	)
 
-	socialService := services.NewSocialService(
+	socialService := service.NewSocialService(
 		likeRepo,
 		commentRepo,
 		postRepo,
@@ -161,17 +161,17 @@ func Setup(app *fiber.App, cont *container.Container) {
 	)
 
 	// DVR Service
-	var s3ClientForDVR services.S3Uploader = nil
+	var s3ClientForDVR service.S3Uploader = nil
 	s3Enabled := false
 	if cfg.S3Bucket != "" && cfg.S3AccessKey != "" && cfg.S3SecretKey != "" {
 		s3Enabled = true
 	}
-	dvrConfig := &services.DVRConfig{
+	dvrConfig := &service.DVRConfig{
 		BaseDir:   "./dvr_storage",
 		S3Bucket:  cfg.S3Bucket,
 		S3Enabled: s3Enabled,
 	}
-	dvrService, err := services.NewDVRService(dvrConfig, s3ClientForDVR)
+	dvrService, err := service.NewDVRService(dvrConfig, s3ClientForDVR)
 	if err != nil {
 		dvrService = nil
 	}
@@ -197,12 +197,12 @@ func Setup(app *fiber.App, cont *container.Container) {
 	contentMilestoneRepo := repositories.NewContentMilestoneRepository(db)
 
 	// Initialize queue service for async XP processing (FR-013)
-	var queueService *services.QueueService
+	var queueService *service.QueueService
 	if redisClient != nil {
-		queueService = services.NewQueueService(redisClient)
+		queueService = service.NewQueueService(redisClient)
 	}
 
-	socialGamifService := services.NewSocialGamificationService(
+	socialGamifService := service.NewSocialGamificationService(
 		socialXPRepo,
 		dailyChallengeRepo,
 		contentMilestoneRepo,
@@ -244,7 +244,7 @@ func Setup(app *fiber.App, cont *container.Container) {
 	// Resolve from container where it was registered in app.go
 	var learningGamifController *controllers.LearningGamificationController
 	if learningGamifSvc, err := cont.Resolve("learningGamificationService"); err == nil {
-		if learningGamifService, ok := learningGamifSvc.(*services.LearningGamificationService); ok && learningGamifService != nil {
+		if learningGamifService, ok := learningGamifSvc.(*service.LearningGamificationService); ok && learningGamifService != nil {
 			// Inject optional dependencies
 			if queueService != nil {
 				learningGamifService.SetQueueService(queueService)
@@ -316,7 +316,7 @@ func Setup(app *fiber.App, cont *container.Container) {
 	// Resolve LeaderboardService from container and create controller
 	var leaderboardController *controllers.LeaderboardController
 	if leaderboardSvc, err := cont.Resolve("leaderboardService"); err == nil {
-		if leaderboardService, ok := leaderboardSvc.(*services.LeaderboardService); ok && leaderboardService != nil {
+		if leaderboardService, ok := leaderboardSvc.(*service.LeaderboardService); ok && leaderboardService != nil {
 			leaderboardController = controllers.NewLeaderboardController(leaderboardService)
 			log.Println("✓ LeaderboardController initialized (013-leaderboard-controller-integration)")
 		}
@@ -351,7 +351,7 @@ func Setup(app *fiber.App, cont *container.Container) {
 }
 
 // registerEventHandlers registers event handlers for the application
-func registerEventHandlers(app *fiber.App, notificationService *services.NotificationService) {
+func registerEventHandlers(app *fiber.App, notificationService *service.NotificationService) {
 	// TODO: Implement event handlers registration
 	// This function was missing after refactoring.
 	// It likely subscribes to an event bus for notifications.

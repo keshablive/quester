@@ -8,7 +8,7 @@ import (
 
 // TokenBlacklist manages revoked tokens.
 // Application implements this interface (typically using Redis) to enable
-// token revocation without framework importing application services.
+// token revocation without framework importing application service.
 type TokenBlacklist interface {
 	// Blacklist adds a token to the blacklist with expiration.
 	// The tokenHash should be a hash of the JWT token.

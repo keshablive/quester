@@ -5,16 +5,16 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // MetricsController handles dashboard metrics HTTP requests
 type MetricsController struct {
-	service *services.DashboardService
+	service *service.DashboardService
 }
 
 // NewMetricsController creates a new metrics controller
-func NewMetricsController(service *services.DashboardService) *MetricsController {
+func NewMetricsController(service *service.DashboardService) *MetricsController {
 	return &MetricsController{service: service}
 }
 

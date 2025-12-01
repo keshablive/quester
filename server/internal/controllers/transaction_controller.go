@@ -15,17 +15,17 @@ import (
 	"github.com/keshablive/quester/internal/framework/responses"
 	"github.com/keshablive/quester/internal/framework/utils"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 )
 
 // TransactionController handles transaction HTTP requests
 type TransactionController struct {
-	transactionService *services.TransactionService
+	transactionService *service.TransactionService
 	config             *config.Config
 }
 
 // NewTransactionController creates a new transaction controller
-func NewTransactionController(transactionService *services.TransactionService, cfg *config.Config) *TransactionController {
+func NewTransactionController(transactionService *service.TransactionService, cfg *config.Config) *TransactionController {
 	return &TransactionController{
 		transactionService: transactionService,
 		config:             cfg,

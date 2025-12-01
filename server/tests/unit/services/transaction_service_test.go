@@ -7,14 +7,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/keshablive/quester/internal/mocks"
 	"github.com/keshablive/quester/internal/models"
-	"github.com/keshablive/quester/internal/services"
+	"github.com/keshablive/quester/internal/framework/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTransactionService_Create(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -40,7 +40,7 @@ func TestTransactionService_Create(t *testing.T) {
 func TestTransactionService_FindByID(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -67,7 +67,7 @@ func TestTransactionService_FindByID(t *testing.T) {
 func TestTransactionService_FindAll(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -94,7 +94,7 @@ func TestTransactionService_FindAll(t *testing.T) {
 func TestTransactionService_Update(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	transaction := &models.Transaction{
@@ -118,7 +118,7 @@ func TestTransactionService_Update(t *testing.T) {
 func TestTransactionService_Delete(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -138,7 +138,7 @@ func TestTransactionService_Delete(t *testing.T) {
 func TestTransactionService_GetTransactionsByStatus(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -163,7 +163,7 @@ func TestTransactionService_GetTransactionsByStatus(t *testing.T) {
 func TestTransactionService_GetPendingEscrowTransactions(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -190,7 +190,7 @@ func TestTransactionService_GetPendingEscrowTransactions(t *testing.T) {
 func TestTransactionService_GetTransactionsByUserID(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -215,7 +215,7 @@ func TestTransactionService_GetTransactionsByUserID(t *testing.T) {
 func TestTransactionService_UpdateTransactionStatus(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	transactionID := uuid.New()
@@ -235,7 +235,7 @@ func TestTransactionService_UpdateTransactionStatus(t *testing.T) {
 func TestTransactionService_GetTransactionsByDateRange(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()
@@ -261,7 +261,7 @@ func TestTransactionService_GetTransactionsByDateRange(t *testing.T) {
 func TestTransactionService_GetUserBalance(t *testing.T) {
 	// Setup
 	mockRepo := new(mocks.TransactionRepository)
-	_ = services.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
+	_ = service.NewTransactionService(mockRepo, nil, nil, nil, nil, nil)
 
 	ctx := context.Background()
 	tenantID := uuid.New()

@@ -11,7 +11,7 @@ import (
 // Example implementation:
 //
 //	type UserController struct {
-//	    userService *services.UserService
+//	    userService *service.UserService
 //	}
 //
 //	func (c *UserController) RegisterRoutes(app *fiber.App) {
