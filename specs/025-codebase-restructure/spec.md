@@ -232,7 +232,7 @@ A clean architecture where:
 - **SC-006**: 0 import errors after refactoring (both `go build` and `npm run typecheck` pass)
 - **SC-007**: 0 test failures after refactoring (both `go test ./...` and `npm test` pass)
 - **SC-008**: All imports follow consistent patterns (verifiable by linting)
-- **SC-009**: New developer can locate any file in <30 seconds using folder structure alone
+- **SC-009**: New developer can locate any file in under 30 seconds using folder structure alone
 - **SC-010**: Build times do not increase by more than 10% after refactoring
 
 ---

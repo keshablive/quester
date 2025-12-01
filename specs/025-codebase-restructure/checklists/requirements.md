@@ -32,10 +32,10 @@
 ## Notes
 
 - Server has 323 Go files to potentially reorganize
-- Client has 348 TypeScript files to potentially reorganize  
-- 6 user stories covering both server and client
+- Client has 348 TypeScript files to potentially reorganize
+- 6 user stories covering both server and client refactoring
 - FR-001 to FR-008 cover server requirements
 - FR-010 to FR-015 cover client requirements
 - SC-001 to SC-010 provide measurable success criteria
-- Directory consolidation targets identified: middleware, websocket, config
+- Directory consolidation targets: middleware, websocket, config
 - Backward API compatibility explicitly required (FR-006)
