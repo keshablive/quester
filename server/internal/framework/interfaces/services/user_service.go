@@ -1,6 +1,4 @@
 // Package services defines service layer interfaces for the Quester platform.
-// These interfaces live in the framework layer and are implemented by
-// application-layer services in internal/services/.
 package services
 
 import (
@@ -38,6 +36,7 @@ type UserProfile struct {
 	ID          uuid.UUID `json:"id"`
 	TenantID    uuid.UUID `json:"tenant_id"`
 	Email       string    `json:"email"`
+	Username    string    `json:"username"`
 	FirstName   string    `json:"first_name"`
 	LastName    string    `json:"last_name"`
 	DisplayName string    `json:"display_name"`

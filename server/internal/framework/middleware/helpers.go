@@ -3,6 +3,7 @@ package middleware
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/keshablive/quester/internal/framework/controller"
 )
 
 // Auth is an alias for FiberAuthMiddleware for backward compatibility
@@ -34,7 +35,7 @@ func TenantMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Tenant ID should already be in context from auth middleware
 		// Just validate it exists
-		tenantID := c.Locals(FiberTenantIDKey)
+		tenantID := c.Locals(controller.FiberTenantIDKey)
 		if tenantID == nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "missing tenant context",
