@@ -43,19 +43,19 @@ type NotificationServiceInterface interface {
 
 // Notification represents a notification.
 type Notification struct {
-	ID          uuid.UUID      `json:"id"`
-	TenantID    uuid.UUID      `json:"tenant_id"`
-	UserID      uuid.UUID      `json:"user_id"`
-	Type        string         `json:"type"`
-	Title       string         `json:"title"`
-	Message     string         `json:"message"`
-	ActionURL   string         `json:"action_url,omitempty"`
-	IconURL     string         `json:"icon_url,omitempty"`
-	Priority    string         `json:"priority"`
-	Read        bool           `json:"read"`
-	ReadAt      *string        `json:"read_at,omitempty"`
-	Metadata    map[string]any `json:"metadata,omitempty"`
-	CreatedAt   string         `json:"created_at"`
+	ID        uuid.UUID      `json:"id"`
+	TenantID  uuid.UUID      `json:"tenant_id"`
+	UserID    uuid.UUID      `json:"user_id"`
+	Type      string         `json:"type"`
+	Title     string         `json:"title"`
+	Message   string         `json:"message"`
+	ActionURL string         `json:"action_url,omitempty"`
+	IconURL   string         `json:"icon_url,omitempty"`
+	Priority  string         `json:"priority"`
+	Read      bool           `json:"read"`
+	ReadAt    *string        `json:"read_at,omitempty"`
+	Metadata  map[string]any `json:"metadata,omitempty"`
+	CreatedAt string         `json:"created_at"`
 }
 
 // CreateNotificationInput contains data for creating a notification.

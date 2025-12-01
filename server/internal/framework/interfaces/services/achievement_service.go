@@ -40,19 +40,19 @@ type AchievementServiceInterface interface {
 
 // Achievement represents an achievement definition.
 type Achievement struct {
-	ID           uuid.UUID `json:"id"`
-	TenantID     uuid.UUID `json:"tenant_id"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	Category     string    `json:"category"`
-	Type         string    `json:"type"`
-	IconURL      string    `json:"icon_url"`
-	TargetValue  int       `json:"target_value"`
-	XPReward     int       `json:"xp_reward"`
-	CoinReward   int       `json:"coin_reward"`
-	BadgeID      *uuid.UUID `json:"badge_id,omitempty"`
-	Active       bool      `json:"active"`
-	CreatedAt    string    `json:"created_at"`
+	ID          uuid.UUID  `json:"id"`
+	TenantID    uuid.UUID  `json:"tenant_id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Category    string     `json:"category"`
+	Type        string     `json:"type"`
+	IconURL     string     `json:"icon_url"`
+	TargetValue int        `json:"target_value"`
+	XPReward    int        `json:"xp_reward"`
+	CoinReward  int        `json:"coin_reward"`
+	BadgeID     *uuid.UUID `json:"badge_id,omitempty"`
+	Active      bool       `json:"active"`
+	CreatedAt   string     `json:"created_at"`
 }
 
 // UserAchievement represents a user's progress on an achievement.

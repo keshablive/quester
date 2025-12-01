@@ -46,20 +46,20 @@ type StreamingServiceInterface interface {
 
 // Stream represents a video stream.
 type Stream struct {
-	ID          uuid.UUID    `json:"id"`
-	TenantID    uuid.UUID    `json:"tenant_id"`
-	CreatorID   uuid.UUID    `json:"creator_id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	ThumbnailURL string      `json:"thumbnail_url"`
-	Status      string       `json:"status"` // scheduled, live, ended
-	Visibility  string       `json:"visibility"` // public, private, unlisted
-	DVREnabled  bool         `json:"dvr_enabled"`
-	ChatEnabled bool         `json:"chat_enabled"`
-	ScheduledAt *string      `json:"scheduled_at,omitempty"`
-	StartedAt   *string      `json:"started_at,omitempty"`
-	EndedAt     *string      `json:"ended_at,omitempty"`
-	CreatedAt   string       `json:"created_at"`
+	ID           uuid.UUID `json:"id"`
+	TenantID     uuid.UUID `json:"tenant_id"`
+	CreatorID    uuid.UUID `json:"creator_id"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	ThumbnailURL string    `json:"thumbnail_url"`
+	Status       string    `json:"status"`     // scheduled, live, ended
+	Visibility   string    `json:"visibility"` // public, private, unlisted
+	DVREnabled   bool      `json:"dvr_enabled"`
+	ChatEnabled  bool      `json:"chat_enabled"`
+	ScheduledAt  *string   `json:"scheduled_at,omitempty"`
+	StartedAt    *string   `json:"started_at,omitempty"`
+	EndedAt      *string   `json:"ended_at,omitempty"`
+	CreatedAt    string    `json:"created_at"`
 }
 
 // CreateStreamInput contains data for creating a stream.
@@ -92,22 +92,22 @@ type StreamListResponse struct {
 
 // StreamIngest contains ingest information for a stream.
 type StreamIngest struct {
-	StreamID   uuid.UUID `json:"stream_id"`
-	IngestURL  string    `json:"ingest_url"`
-	StreamKey  string    `json:"stream_key"`
-	ExpiresAt  string    `json:"expires_at"`
+	StreamID  uuid.UUID `json:"stream_id"`
+	IngestURL string    `json:"ingest_url"`
+	StreamKey string    `json:"stream_key"`
+	ExpiresAt string    `json:"expires_at"`
 }
 
 // StreamStats contains real-time stream statistics.
 type StreamStats struct {
-	StreamID      uuid.UUID `json:"stream_id"`
-	ViewerCount   int       `json:"viewer_count"`
-	PeakViewers   int       `json:"peak_viewers"`
-	TotalViews    int       `json:"total_views"`
-	Duration      int64     `json:"duration_seconds"`
-	Bitrate       int       `json:"bitrate_kbps"`
-	Resolution    string    `json:"resolution"`
-	HealthStatus  string    `json:"health_status"`
+	StreamID     uuid.UUID `json:"stream_id"`
+	ViewerCount  int       `json:"viewer_count"`
+	PeakViewers  int       `json:"peak_viewers"`
+	TotalViews   int       `json:"total_views"`
+	Duration     int64     `json:"duration_seconds"`
+	Bitrate      int       `json:"bitrate_kbps"`
+	Resolution   string    `json:"resolution"`
+	HealthStatus string    `json:"health_status"`
 }
 
 // DVRSegment represents a recorded segment for DVR playback.

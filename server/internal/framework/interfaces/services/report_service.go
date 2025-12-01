@@ -41,32 +41,32 @@ type ReportServiceInterface interface {
 
 // Report represents a report configuration.
 type Report struct {
-	ID          uuid.UUID `json:"id"`
-	TenantID    uuid.UUID `json:"tenant_id"`
-	UserID      uuid.UUID `json:"user_id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Type        string    `json:"type"` // user_activity, course_performance, engagement, revenue, custom
-	Period      string    `json:"period"` // daily, weekly, monthly, quarterly, yearly, custom
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
-	Status      string    `json:"status"` // pending, processing, completed, failed
-	Format      string    `json:"format"` // pdf, excel, csv, json
-	FileURL     string    `json:"file_url,omitempty"`
+	ID          uuid.UUID  `json:"id"`
+	TenantID    uuid.UUID  `json:"tenant_id"`
+	UserID      uuid.UUID  `json:"user_id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Type        string     `json:"type"`   // user_activity, course_performance, engagement, revenue, custom
+	Period      string     `json:"period"` // daily, weekly, monthly, quarterly, yearly, custom
+	StartDate   time.Time  `json:"start_date"`
+	EndDate     time.Time  `json:"end_date"`
+	Status      string     `json:"status"` // pending, processing, completed, failed
+	Format      string     `json:"format"` // pdf, excel, csv, json
+	FileURL     string     `json:"file_url,omitempty"`
 	ScheduleID  *uuid.UUID `json:"schedule_id,omitempty"`
-	CreatedAt   string    `json:"created_at"`
-	UpdatedAt   string    `json:"updated_at"`
+	CreatedAt   string     `json:"created_at"`
+	UpdatedAt   string     `json:"updated_at"`
 }
 
 // CreateReportInput contains data for creating a report.
 type CreateReportInput struct {
-	Name        string    `json:"name" validate:"required"`
-	Description string    `json:"description"`
-	Type        string    `json:"type" validate:"required"`
-	Period      string    `json:"period" validate:"required"`
-	StartDate   time.Time `json:"start_date" validate:"required"`
-	EndDate     time.Time `json:"end_date" validate:"required"`
-	Format      string    `json:"format"`
+	Name        string         `json:"name" validate:"required"`
+	Description string         `json:"description"`
+	Type        string         `json:"type" validate:"required"`
+	Period      string         `json:"period" validate:"required"`
+	StartDate   time.Time      `json:"start_date" validate:"required"`
+	EndDate     time.Time      `json:"end_date" validate:"required"`
+	Format      string         `json:"format"`
 	Parameters  map[string]any `json:"parameters"`
 }
 
@@ -104,14 +104,14 @@ type ReportSummary struct {
 
 // ReportSchedule represents a recurring report schedule.
 type ReportSchedule struct {
-	ID           uuid.UUID `json:"id"`
-	ReportID     uuid.UUID `json:"report_id"`
-	Frequency    string    `json:"frequency"` // daily, weekly, monthly
-	DayOfWeek    *int      `json:"day_of_week,omitempty"` // 0-6 for weekly
-	DayOfMonth   *int      `json:"day_of_month,omitempty"` // 1-31 for monthly
-	Time         string    `json:"time"` // HH:MM format
-	Recipients   []string  `json:"recipients"`
-	NextRunAt    string    `json:"next_run_at"`
-	LastRunAt    *string   `json:"last_run_at,omitempty"`
-	Active       bool      `json:"active"`
+	ID         uuid.UUID `json:"id"`
+	ReportID   uuid.UUID `json:"report_id"`
+	Frequency  string    `json:"frequency"`              // daily, weekly, monthly
+	DayOfWeek  *int      `json:"day_of_week,omitempty"`  // 0-6 for weekly
+	DayOfMonth *int      `json:"day_of_month,omitempty"` // 1-31 for monthly
+	Time       string    `json:"time"`                   // HH:MM format
+	Recipients []string  `json:"recipients"`
+	NextRunAt  string    `json:"next_run_at"`
+	LastRunAt  *string   `json:"last_run_at,omitempty"`
+	Active     bool      `json:"active"`
 }
