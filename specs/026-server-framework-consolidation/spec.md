@@ -32,7 +32,7 @@ As a developer, I want the server to build without duplicate declaration errors 
 
 1. **Given** the server codebase, **When** I run `go build ./...`, **Then** the build succeeds with no errors
 2. **Given** duplicate declarations in `auth_service.go`, `login_service.go`, `signup_service.go`, and `refresh_token_service.go`, **When** the code is refactored, **Then** each type and function is declared exactly once
-3. **Given** shared types like `LoginRequest`, `SignupRequest`, `RefreshResponse`, **When** consolidated, **Then** they reside in a single file and are imported where needed
+3. **Given** shared types like `LoginRequest`, `SignupRequest`, `RefreshResponse`, **When** consolidated, **Then** they reside in a single `auth_types.go` file and are imported by the separate service files (`login_service.go`, `signup_service.go`, `refresh_token_service.go`)
 
 ---
 
@@ -62,8 +62,8 @@ As a developer, I want all repositories organized under `internal/framework/` wi
 
 **Acceptance Scenarios**:
 
-1. **Given** 39 repository files in `internal/repositories/`, **When** reorganized, **Then** they follow the `GenericRepository` embedding pattern
-2. **Given** repository imports, **When** updated, **Then** all imports point to correct framework paths
+1. **Given** 39 repository files in `internal/repositories/`, **When** reorganized, **Then** they are moved to `internal/app/repositories/` and follow the `GenericRepository` embedding pattern
+2. **Given** repository imports, **When** updated, **Then** all imports point to `internal/app/repositories/` and use framework base from `internal/framework/repository/`
 3. **Given** tenant-scoped queries, **When** reviewed, **Then** all repositories enforce tenant isolation
 
 ---
@@ -109,8 +109,9 @@ As a developer, I want all models organized with consistent patterns so that dat
 
 **Acceptance Scenarios**:
 
-1. **Given** 47 model files in `internal/models/`, **When** reviewed, **Then** tenant-scoped models implement `TenantModel`
-2. **Given** model imports, **When** updated, **Then** all imports are consistent
+1. **Given** 47 model files in `internal/models/`, **When** reviewed, **Then** models remain at `internal/models/` as a shared independent package
+2. **Given** tenant-scoped models, **When** reviewed, **Then** they implement `TenantModel` interface
+3. **Given** model imports, **When** updated, **Then** all imports are consistent across framework and app packages
 
 ---
 
@@ -136,8 +137,12 @@ As a developer, I want all import paths updated correctly so that the codebase c
   - Split into separate files with clear responsibilities
 - How to handle shared utility functions across services?
   - Create a shared utilities package in `internal/framework/utils/`
+- What happens to `internal/utils/` (response.go, validation.go)?
+  - Merge into `internal/framework/utils/` to maintain single utils location
 - What happens to backup files in `.backup/`?
   - Keep for reference during refactoring, remove after verification
+- What is the rollback strategy if build fails mid-refactor?
+  - Use git tags at phase boundaries (`pre-phase-1`, `post-phase-1`, etc.) to enable precise rollback to last working state
 
 ## Requirements *(mandatory)*
 
@@ -174,6 +179,16 @@ As a developer, I want all import paths updated correctly so that the codebase c
 - **SC-007**: All repositories (39 files) follow consistent `GenericRepository` pattern
 - **SC-008**: All imports updated and verified (0 broken imports)
 - **SC-009**: Build time remains within 10% of baseline
+
+## Clarifications
+
+### Session 2025-12-01
+
+- Q: When resolving duplicate declarations in auth services, which consolidation strategy? → A: Keep separate service files, extract shared types to `auth_types.go`
+- Q: Where should `internal/models/` be placed in the final structure? → A: Keep at `internal/models/` (shared, independent package)
+- Q: Rollback strategy if refactoring causes build failures mid-way? → A: Git tags at phase boundaries (e.g., `pre-phase-1`, `post-phase-1`)
+- Q: Where should `internal/repositories/` be placed? → A: Move to `internal/app/repositories/` (app-specific implementations)
+- Q: What should happen to `internal/utils/` since `internal/framework/utils/` exists? → A: Merge into `internal/framework/utils/` (single utils location)
 
 ## Assumptions
 
