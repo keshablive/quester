@@ -183,7 +183,7 @@ A clean architecture where:
   - `internal/middleware/` → `internal/framework/middleware/`
   - `internal/websocket/` → `internal/framework/websocket/`
   - `internal/config/` → `internal/framework/config/`
-- **FR-004**: Server MUST define interfaces for all 60+ services in `internal/framework/interfaces/services/`
+- **FR-004**: Server MUST define interfaces for critical path services (~15 core: auth, user, payment, courses) in `internal/framework/interfaces/services/`; remaining services deferred to future phases
 - **FR-005**: Server MUST update all import paths after file moves
 - **FR-006**: Server MUST maintain backward compatibility with existing API contracts
 - **FR-007**: Server `go build ./...` MUST succeed after all changes
@@ -226,7 +226,7 @@ A clean architecture where:
 
 - **SC-001**: Server framework builds independently (`go build ./internal/framework/...` succeeds with 0 application imports)
 - **SC-002**: Server has 0 duplicate directories (only one location for middleware, websocket, config)
-- **SC-003**: Server has interface definitions for 100% of services (60+ interfaces)
+- **SC-003**: Server has interface definitions for critical path services (~15 interfaces for auth, user, payment, courses)
 - **SC-004**: Client `core/` has exactly 8 top-level subdirectories with clear purposes
 - **SC-005**: Client `components/` has exactly 4 top-level subdirectories (ui, shared, features, layout)
 - **SC-006**: 0 import errors after refactoring (both `go build` and `npm run typecheck` pass)
@@ -245,6 +245,17 @@ A clean architecture where:
 4. The server's go.mod module path is `github.com/keshablive/quester`
 5. No external systems depend on internal import paths
 6. IDE auto-import will assist developers during transition
+
+---
+
+## Clarifications
+
+### Session 2025-12-01
+
+- Q: File conflict resolution strategy when consolidating duplicate directories? → A: Prefer framework version; merge unique app-specific code into framework
+- Q: Execution order - server first, client first, parallel, or by layer? → A: Server first, then client (establishes patterns before applying to client)
+- Q: Service interface scope - all at once or phased? → A: Critical path first (~15 core services: auth, user, payment, courses), defer remaining to subsequent phases
+- Q: Rollback strategy if issues arise mid-refactor? → A: Git checkpoints with atomic commits per logical unit; each directory consolidation = 1 commit for easy revert
 
 ---
 
