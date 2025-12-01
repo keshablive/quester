@@ -62,8 +62,12 @@ git tag pre-phase-2
 # 2. Update imports in all files
 # 3. Create service/index.go
 
-# Verify
+# Verify build
 go build ./...
+
+# Verify BaseService embedding (FR-004)
+grep -l "BaseService" internal/framework/service/*.go | wc -l
+# Expected: ~60 (most services embed BaseService)
 
 # Checkpoint
 git add -A && git commit -m "feat(026): consolidate services into framework"
@@ -82,8 +86,12 @@ git tag pre-phase-3
 # 2. Update imports in all files
 # 3. Create repository/index.go
 
-# Verify
+# Verify build
 go build ./...
+
+# Verify GenericRepository embedding (FR-005)
+grep -l "GenericRepository" internal/framework/repository/*.go | wc -l
+# Expected: ~39 (most repos embed GenericRepository)
 
 # Checkpoint
 git add -A && git commit -m "feat(026): consolidate repositories into framework"

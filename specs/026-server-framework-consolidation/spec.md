@@ -193,7 +193,7 @@ As a developer, I want all import paths updated correctly so that the codebase c
 - Q6: Directory cleanup strategy after moving files? → A: Delete empty directories immediately after moving files
 - Q7: Adapters directory handling? → A: Keep `internal/adapters/` as separate package (not part of framework)
 - Q8: Mocks directory handling? → A: Keep `internal/mocks/` as dedicated top-level package for all mocks
-- Q9: Test file location strategy? → A: Centralize all tests in `tests/unit/` directory with mirrored structure
+- Q9: Test file location strategy? → A: Centralize all tests in `tests/unit/` directory with mirrored structure. **Scope note**: This applies to new tests; existing tests remain in `tests/unit/` and `tests/integration/` with import paths updated during refactor.
 - Q10: Migrations directory handling? → A: Keep `internal/migrations/` as separate top-level package (not part of framework)
 
 ## Assumptions

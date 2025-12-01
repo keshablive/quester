@@ -124,6 +124,8 @@
 - [ ] T072 [US2] [US7] Update all imports from `internal/services` → `internal/framework/service` across codebase
 - [ ] T073 [US2] Create `server/internal/framework/service/index.go` with package exports (facade pattern per Q5)
 - [ ] T074 [US2] [US7] Run `go build ./...` in `server/` - verify zero errors
+- [ ] T074a [US2] Verify services embed `BaseService`: `grep -l "BaseService" server/internal/framework/service/*.go | wc -l` (FR-004)
+- [ ] T074b [US2] Spot-check 5 services for `BaseService` field: `achievement_service.go`, `auth_service.go`, `user_service.go`, `quest_service.go`, `notification_service.go`
 - [ ] T075 [US2] Delete empty `server/internal/services/` directory
 - [ ] T076 Create git tag `post-phase-3-services`
 
@@ -180,6 +182,8 @@
 - [ ] T117 [US3] [US7] Update all imports from `internal/repositories` → `internal/framework/repository` across codebase
 - [ ] T118 [US3] Create `server/internal/framework/repository/index.go` with package exports (facade pattern per Q5)
 - [ ] T119 [US3] [US7] Run `go build ./...` in `server/` - verify zero errors
+- [ ] T119a [US3] Verify repos embed `GenericRepository`: `grep -l "GenericRepository" server/internal/framework/repository/*.go | wc -l` (FR-005)
+- [ ] T119b [US3] Spot-check 5 repos for `GenericRepository` field: `user_repository.go`, `quest_repository.go`, `notification_repository.go`, `achievement_repository.go`, `post_repository.go`
 - [ ] T120 [US3] Delete empty `server/internal/repositories/` directory
 - [ ] T121 Create git tag `post-phase-4-repositories`
 
